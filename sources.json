@@ -696,6 +696,43 @@
    "kind": "إعلام",
    "tier": 2,
    "hama": true
+  },
+  {
+   "id": "mashf_alwatani_hama",
+   "name": "الهيئة العامة لمشفى حماة الوطني",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": true
+  },
+  {
+   "id": "CivilAffairsSy",
+   "name": "الإدارة العامة للشؤون المدنية",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "SyrianVirtualUniversity",
+   "name": "الجامعة الافتراضية السورية",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "mahroukatt",
+   "name": "محروقات – الشركة السورية لتخزين وتوزيع المواد البترولية",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false,
+   "unverified": true
+  },
+  {
+   "id": "syriatel",
+   "name": "سيريتل",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 2,
+   "hama": false,
+   "unverified": true
   }
  ],
  "rss": [
