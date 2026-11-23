@@ -1,7 +1,7 @@
 {
  "cache": {
   "lirascope": {
-   "at": "2026-11-23T17:28+03:00",
+   "at": "2026-11-23T18:00+03:00",
    "data": {
     "market": {
      "AED": {
@@ -47,12 +47,12 @@
      "EGP": {
       "buy": 2.77,
       "sell": 2.81,
-      "at": "2026-11-23T14:19:39.416968Z"
+      "at": "2026-11-23T14:58:41.754059Z"
      },
      "EUR": {
-      "buy": 164.8,
-      "sell": 166.6,
-      "at": "2026-11-23T14:27:52.498592Z"
+      "buy": 164.5,
+      "sell": 166.4,
+      "at": "2026-11-23T14:58:41.754036Z"
      },
      "GBP": {
       "buy": 197.9699,
@@ -117,7 +117,7 @@
      "SAR": {
       "buy": 40.04,
       "sell": 40.58,
-      "at": "2026-11-23T14:23:45.055467Z"
+      "at": "2026-11-23T14:50:27.546104Z"
      },
      "SEK": {
       "buy": 14.7843,
@@ -155,16 +155,16 @@
     },
     "gold_usd": {
      "14K": 69.0,
-     "18K": 89.0,
-     "21K": 104.0,
-     "22K": 109.0,
+     "18K": 88.0,
+     "21K": 103.0,
+     "22K": 108.0,
      "24K": 118.0
     },
-    "usdt_usd": 0.99925645
+    "usdt_usd": 0.99895206
    }
   },
   "sptoday": {
-   "at": "2026-11-23T17:28+03:00",
+   "at": "2026-11-23T18:00+03:00",
    "data": {
     "market": {
      "USD": {
@@ -172,8 +172,8 @@
       "sell": 152.25
      },
      "EUR": {
-      "buy": 164.8,
-      "sell": 166.6
+      "buy": 164.5,
+      "sell": 166.4
      },
      "TRY": {
       "buy": 2.98,
@@ -197,7 +197,7 @@
    }
   },
   "cbs": {
-   "at": "2026-11-23T17:28+03:00",
+   "at": "2026-11-23T18:00+03:00",
    "data": {
     "date": "2026-11-23",
     "rates": {
@@ -213,7 +213,7 @@
    }
   },
   "sytra": {
-   "at": "2026-11-23T17:28+03:00",
+   "at": "2026-11-23T18:00+03:00",
    "data": {
     "unit": "الليرة السورية الجديدة",
     "fuel": {
@@ -254,11 +254,11 @@
      "date": "2026-11-22",
      "page": "https://sytra.me/prices/usd"
     },
-    "generated_at": "2026-11-23T14:28:43+00:00"
+    "generated_at": "2026-11-23T15:00:35+00:00"
    }
   },
   "prayer": {
-   "at": "2026-11-23T17:28+03:00",
+   "at": "2026-11-23T18:00+03:00",
    "data": {
     "date": "2026-11-23",
     "method": "Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan",
@@ -278,9 +278,9 @@
    }
   },
   "weather": {
-   "at": "2026-11-23T17:28+03:00",
+   "at": "2026-11-23T18:00+03:00",
    "data": {
-    "now": 21.5,
+    "now": 19.9,
     "days": [
      {
       "date": "2026-11-23",
@@ -822,7 +822,7 @@
   }
  },
  "started": true,
- "last_run": "2026-11-23T17:28:37+03:00",
+ "last_run": "2026-11-23T18:00:30+03:00",
  "news": {
   "tg": {
    "bunatmoad": 516,
@@ -839,7 +839,7 @@
    "homsgov1": 8909,
    "daraagov1": 10789,
    "damascusgov1": 16206,
-   "deirezzorgov1": 15642,
+   "deirezzorgov1": 15649,
    "rdamascusgov1": 18742,
    "tartusgov1": 25984,
    "homsculture": 901,
@@ -877,9 +877,25 @@
    "syrmofj": 3852,
    "syrmoff": 10274,
    "syrsmot": 11805,
-   "alekhbariahsy": 241775,
-   "sana_gov": 192360,
-   "alsouriyatv": 12670
+   "alekhbariahsy": 241783,
+   "sana_gov": 192376,
+   "alsouriyatv": 12671,
+   "sypresidency": 2875,
+   "sy_defense": 2229,
+   "z_hama_z": 4270,
+   "shouon2024": 2266,
+   "HamaEmergency": 1126,
+   "alriyada_hama": 185,
+   "makhabiz_hama": 142,
+   "HamaUniversity2014": 1028,
+   "hamah_medical_association": 2150,
+   "HamaChamberOfIndustry": 2130,
+   "jewelers2021": 1883,
+   "Syredcrescent": 10649,
+   "damascus122021": 4549,
+   "syriapam": 9522,
+   "syrianGASP": 277,
+   "SecSyria": 993
   },
   "rss": {
    "sana": [
@@ -1089,7 +1105,12 @@
     "https://sana.sy/?p=2643054",
     "https://sana.sy/?p=2643082",
     "https://sana.sy/?p=2643069",
-    "https://sana.sy/?p=2643050"
+    "https://sana.sy/?p=2643050",
+    "https://sana.sy/?p=2643120",
+    "https://sana.sy/?p=2643113",
+    "https://sana.sy/?p=2643115",
+    "https://sana.sy/?p=2643098",
+    "https://sana.sy/?p=2643085"
    ],
    "fedaa": [
     "https://fedaa.alwehda.gov.sy/?p=132104",
@@ -1162,7 +1183,9 @@
     "https://alwatan.sy/?p=2490139",
     "https://alwatan.sy/?p=2490137",
     "https://alwatan.sy/?p=2490130",
-    "https://alwatan.sy/?p=2490128"
+    "https://alwatan.sy/?p=2490128",
+    "https://alwatan.sy/?p=2490144",
+    "https://alwatan.sy/?p=2490141"
    ],
    "enab": [
     "https://www.enabbaladi.net/?p=834640",
