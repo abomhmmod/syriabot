@@ -14,17 +14,26 @@ function fetch(url, o) {
   return {getResponseCode: () => out.code, getContentText: () => out.text};
 }
 const store = {GEMINI_API_KEY: process.env.GEMINI_API_KEY || '', CHAT_ID: '1', TELEGRAM_TOKEN: ''};
+// البيانات الخاصّة: بدل Drive مجلّدٌ على الحاسوب (PRIV_DIR)، فيه hay.jsonl وملفّات social-YYYY-MM-DD.jsonl.
+let PRIV_DIR = process.env.PRIV_DIR || '';
+const privFiles = () => (PRIV_DIR && fs.existsSync(PRIV_DIR) ? fs.readdirSync(PRIV_DIR).filter(n => /\.jsonl$/.test(n)) : []);
+const setPriv = dir => { PRIV_DIR = dir; store.PRIV_FILES = JSON.stringify(Object.fromEntries(privFiles().map(n => [n, 'id-' + n]))); };
 const ctx = {
   UrlFetchApp: {fetch, fetchAll: reqs => reqs.map(q => fetch(q.url, q))},
   PropertiesService: {getScriptProperties: () => ({getProperty: k => store[k] || null, setProperty: (k, v) => { store[k] = v; }})},
-  Utilities: {sleep: ms => cp.spawnSync('python', ['-I', '-c', 'import time,sys; time.sleep(' + ms / 1000 + ')']), formatDate: (d, tz, f) => { const s = new Date(d.getTime() + 3 * 3600e3).toISOString(); return f.length > 10 ? s.slice(0, 16).replace('T', ' ') : s.slice(0, 10); }},
+  Utilities: {computeDigest: (alg, str) => [...require('crypto').createHash('sha256').update(str, 'utf8').digest()].map(x => (x > 127 ? x - 256 : x)),
+    DigestAlgorithm: {SHA_256: 1}, Charset: {UTF_8: 1}, newBlob: t => ({getBytes: () => [...Buffer.from(t, 'utf8')]}), sleep: ms => cp.spawnSync('python', ['-I', '-c', 'import time,sys; time.sleep(' + ms / 1000 + ')']), formatDate: (d, tz, f) => { const s = new Date(d.getTime() + 3 * 3600e3).toISOString(); return f.length > 10 ? s.slice(0, 16).replace('T', ' ') : s.slice(0, 10); }},
   LockService: {getScriptLock: () => ({tryLock: () => true, releaseLock: () => {}})},
-  ScriptApp: {getProjectTriggers: () => [], newTrigger: () => ({timeBased: () => ({everyMinutes: () => ({create: () => {}})})})},
+  ContentService: {createTextOutput: t => ({setMimeType: () => t}), MimeType: {JSON: 1}},
+  ScriptApp: {getOAuthToken: () => 'x', getProjectTriggers: () => [], newTrigger: () => ({timeBased: () => ({everyMinutes: () => ({create: () => {}})})})},
   Logger: {log: console.log}, console, Date, JSON, Math, Number, String, Object, Array, RegExp, Error,
 };
 vm.createContext(ctx);
 vm.runInContext(fs.readFileSync(path.join(__dirname, '..', 'apps-script', 'Code.gs'), 'utf8'), ctx);
 const run = code => vm.runInContext(code, ctx);
+ctx.HOST_READ = names => Object.fromEntries(names.filter(n => fs.existsSync(path.join(PRIV_DIR, n))).map(n => [n, fs.readFileSync(path.join(PRIV_DIR, n), 'utf8')]));
+run('privRead_ = function (names, idx) { return HOST_READ(names.filter(function (n) { return idx[n]; })); }');
+setPriv(PRIV_DIR);
 
 if (process.argv[2] === '--live') {
   let qs = process.argv.slice(3);
@@ -64,6 +73,54 @@ check('news archive loads from the repository', news.length > 300 && news[0].nam
 ctx.N = news;
 const r2 = run('rank_("ماذا نشرت محافظة حماة؟", N, 28)');
 check('rank on the real archive: Hama governorate posts found', r2.length > 0 && r2.some(p => /حماة|حماه/.test(p.name)), r2.slice(0, 5).map(p => p.name).join(' | '));
+// ---------- البيانات الخاصّة: مجلّدٌ تجريبيّ بأسماء وأرقام مصطنعة
+const os = require('os'), tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'priv-'));
+const today = new Date(Date.now() + 3 * 3600e3).toISOString().slice(0, 10), nowTs = Math.floor(Date.now() / 1000);
+fs.writeFileSync(path.join(tmp, 'hay.jsonl'), [
+  {id: 'hay:1', kind: 'hay', source: 'دليل الحيّ (تجربة)', title: 'أرقام ضروريّة › مراكز الغاز', text: 'المركز: مركز غاز الزيتونة · المكان: شارع الورد · الرقم: 0999123456 · أين ورد: 2026-11-08 إلى 2026-11-23', url: ''},
+  {id: 'hay:2', kind: 'hay', source: 'دليل الحيّ (تجربة)', title: 'أرقام ضروريّة › حِرفيّون', text: 'الخدمة: معلّم صحّيّة · الرقم: ٠٩٤٤ ٥٥٥ ٦٦٦ · واتساب wa.me/963955000111 · سجّل 1025 اسمًا بسعر 115 ليرة', url: ''},
+].map(x => JSON.stringify(x)).join('\n') + '\n');
+fs.writeFileSync(path.join(tmp, 'social-' + today + '.jsonl'), [
+  {id: 'fb:1', n: 'أخبار حيّ الزيتونة', k: 'فيسبوك', t: 'انقطاع المياه عن حيّ الزيتونة حتّى المساء بسبب إصلاح الخطّ الرئيس', u: 'https://facebook.com/1', ts: nowTs - 600},
+  {id: 'x:2', n: 'مراسل تجريبيّ', k: 'X', t: 'افتتاح سوق جديد في المدينة', u: 'https://x.com/2', ts: nowTs - 900},
+].map(x => JSON.stringify(x)).join('\n') + '\n');
+setPriv(tmp);
+const pv = run('loadPrivate_(3)');
+check('private: guide entries and followed pages load from the private folder', pv.hay.length === 2 && pv.social.length === 2 && pv.hay[0].hay && pv.social[0].tier === 3 && /غير رسميّ/.test(pv.social[0].name), JSON.stringify(pv).slice(0, 200));
+let seen = '';
+ctx.FAKE = p => {
+  seen = p;
+  const n = (p.match(/\[(\d+)\] دليل الحيّ \(تجربة\)\n[^\n]*مركز غاز الزيتونة/) || [])[1], m = (p.match(/\[(\d+)\] أخبار حيّ الزيتونة/) || [])[1];
+  return {found: true, lines: [{text: 'مركز غاز الزيتونة في شارع الورد، رقمه [هاتف-1] (من مجموعات الحيّ)', ref: Number(n)},
+    {text: 'معلّم الصحّيّة: هاتف-٢ وواتساب [ هاتف-3 ]', ref: Number(n)}, {text: 'بحسب صفحة أخبار حيّ الزيتونة: انقطاع المياه حتّى المساء', ref: Number(m)}]};
+};
+ctx.realGemini = run('gemini_');
+run('gemini_ = function (p, s) { return FAKE(p); }');
+ctx.Q = 'ما رقم مركز الغاز ومعلّم الصحّيّة؟ وهل انقطعت المياه في حيّ الزيتونة؟';
+const ans = run('answer_(Q)');
+check('private: no phone number of the guide reaches the model', !/0999123456|٠٩٤٤|963955000111/.test(seen) && /\[هاتف-1\]/.test(seen) && /\[هاتف-3\]/.test(seen), (seen.match(/مركز غاز الزيتونة[^\n]*/) || [''])[0]);
+check('private: dates and short amounts in the guide are not masked', /2026-11-08 إلى 2026-11-23/.test(seen) && /1025 اسمًا بسعر 115/.test(seen));
+check('private: the numbers come back in the answer, in every form of the token', ans.includes('رقمه 0999123456') && ans.includes('٠٩٤٤ ٥٥٥ ٦٦٦') && ans.includes('963955000111') && !/هاتف-/.test(ans), ans);
+check('private: guide line has a plain source label, page line has its link', ans.includes('<i>↗ دليل الحيّ</i>') && ans.includes('<a href="https://facebook.com/1">↗ أخبار حيّ الزيتونة</a>'), ans);
+check('private: the followed page is marked unofficial in the prompt', /أخبار حيّ الزيتونة \(فيسبوك، غير رسميّ\)/.test(seen));
+setPriv('');
+run('answer_(Q)');
+check('private: without private files the answer still works from public data', !/مركز غاز الزيتونة/.test(seen) && seen.includes('=== البيانات ==='));
+run('gemini_ = realGemini');
+// الاستقبال: المفتاح يُسجَّل عند أوّل رفع ثمّ لا يُقبل غيره، والأسماء الغريبة تُهمل
+const puts = [];
+ctx.HOST_PUT = (name, text) => { puts.push(name); return 'id-' + name; };
+run('privPut_ = function (name, text, idx) { return HOST_PUT(name, text); }; drive_ = function () { return {getResponseCode: function () { return 200; }, getContentText: function () { return "{}"; }}; }');
+ctx.B = {key: 'k'.repeat(40), files: [{name: 'hay.jsonl', text: 'x'}, {name: '../evil.txt', text: 'x'}, {name: 'social-2026-11-23.jsonl', text: 'y'}], keep: ['hay.jsonl', 'social-2026-11-23.jsonl']};
+const u1 = run('receive_(B)');
+check('upload: first upload registers the key and saves only well-named files', u1.ok && u1.saved.join() === 'hay.jsonl,social-2026-11-23.jsonl' && store.PUSH_KEY_SHA.length === 64 && puts.length === 2, JSON.stringify(u1));
+ctx.B2 = {key: 'z'.repeat(40), files: [{name: 'hay.jsonl', text: 'bad'}]};
+check('upload: another key is refused, a short key too', run('receive_(B2)').ok === false && run('receive_({key: "short"})').ok === false && puts.length === 2);
+ctx.B3 = {key: 'k'.repeat(40), files: [], keep: ['hay.jsonl']};
+const u3 = run('receive_(B3)');
+check('upload: files no longer kept on the PC are removed from the index', u3.ok && u3.files === 1 && !JSON.parse(store.PRIV_FILES)['social-2026-11-23.jsonl']);
+fs.rmSync(tmp, {recursive: true, force: true});
+
 console.log('\nfacts sheet: ' + facts.length + ' chars · archive: ' + news.length + ' posts · top for Hama: ' + r2.slice(0, 4).map(p => p.name).join('، '));
 console.log(fails ? '\nFAILED: ' + fails : '\nALL PASSED');
 process.exit(fails ? 1 : 0);

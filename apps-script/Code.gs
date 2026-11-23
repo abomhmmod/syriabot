@@ -4,8 +4,14 @@
  * مؤقّت يشغّل poll() كلّ دقيقة: يقرأ رسائل صاحب البوت من تيليغرام ويجيب عن كلّ سؤال من بيانات البوت نفسها:
  *   - state.json في المستودع: الأسعار والصرف والذهب والمواقيت والطقس وسلّة حماة.
  *   - news/YYYY-MM-DD.jsonl: أرشيف ما نشرته المصادر الرسميّة (يُختار منه الأقرب إلى السؤال).
+ *   - directory/: الأدلّة (هواتف، جهات، سير…).
+ *   - بيانات صاحب البوت الخاصّة، من مجلّدٍ في Google Drive هذا الحساب لا من المستودع: منشورات صفحات فيسبوك وX التي
+ *     يتابعها (ملفّ لكلّ يوم) ودليل حيّه. يرفعها حاسوبه إلى doPost بمفتاح. أرقام الهواتف في دليل الحيّ تُحجب عن النموذج
+ *     وتُعاد في الجواب.
  * النموذج (Gemini) يصوغ الجواب من هذا السياق وحده ويذكر مصادره. وإن لم يجد شيئًا بحث في النت (نموذج واحد يدعم البحث
  * مجّانًا) ووسم الجواب «من النت، غير موثَّق».
+ *
+ * الأذونات (appsscript.json): script.external_request و script.scriptapp و drive.file (ملفّات ينشئها السكربت نفسه فقط).
  *
  * خصائص السكربت (Project Settings ← Script properties):
  *   TELEGRAM_TOKEN  رمز البوت   ·   GEMINI_API_KEY  مفتاح Gemini   ·   CHAT_ID  رقم محادثة صاحب البوت
@@ -17,7 +23,9 @@ var RAW = 'https://raw.githubusercontent.com/abomhmmod/syriabot/main/';
 var MODELS = ['gemini-3.6-flash', 'gemini-flash-lite-latest', 'gemini-2.5-flash', 'gemini-3-flash-preview'];
 var WEB_MODEL = 'gemini-2.5-flash';          // الوحيد الذي يبحث في النت على الحصّة المجّانيّة
 var AI_DAY_MAX = 150, WEB_DAY_MAX = 15;
-var TOP_POSTS = 28, TOP_DIR = 14, POST_CUT = 700;
+var TOP_POSTS = 28, TOP_DIR = 14, TOP_SOCIAL = 14, TOP_HAY = 16, POST_CUT = 700;
+var DRIVE = 'https://www.googleapis.com/drive/v3/files', PRIV_NAME = /^(social-\d{4}-\d\d-\d\d|hay)\.jsonl$/;
+var PHONE = /(?:\+|00)?[0-9٠-٩](?: ?[0-9٠-٩]){5,14}(?![0-9٠-٩\-:])/g;      // ستّة أرقام متتالية فأكثر: هاتف، لا تاريخ ولا مبلغ قصير
 var CUR = {USD: 'الدولار الأمريكيّ', EUR: 'اليورو', TRY: 'الليرة التركيّة', SAR: 'الريال السعوديّ', AED: 'الدرهم الإماراتيّ',
   EGP: 'الجنيه المصريّ', JOD: 'الدينار الأردنيّ', KWD: 'الدينار الكويتيّ', GBP: 'الجنيه الإسترلينيّ', QAR: 'الريال القطريّ',
   IQD: 'الدينار العراقيّ', LYD: 'الدينار الليبيّ', BHD: 'الدينار البحرينيّ', OMR: 'الريال العُمانيّ', SEK: 'الكرونة السويديّة',
@@ -61,7 +69,121 @@ function status_() {
     out.push('البوت: ' + (me.ok ? '@' + me.result.username : 'رمزه مرفوض'));
   }
   out.push('المؤقّتات: ' + ScriptApp.getProjectTriggers().length);
+  out.push('الملفّات الخاصّة: ' + Object.keys(privIndex_()).length);
   return out.join(' | ');
+}
+
+/** تجربة من المحرّر بعد إضافة إذن Drive: ينشئ مجلّد البوت الخاصّ، يكتب فيه ملفًّا صغيرًا ويقرؤه ويحذفه. */
+function setup_private() {
+  var id = privPut_('hay.jsonl', '{"id":"t","kind":"hay","source":"تجربة","title":"تجربة","text":"سطر عربيّ ١٢٣","url":""}\n', {});
+  var back = privRead_(['hay.jsonl'], {'hay.jsonl': id})['hay.jsonl'] || '';
+  drive_('delete', DRIVE + '/' + id);
+  var msg = 'Drive: ' + (back.indexOf('سطر عربيّ ١٢٣') >= 0 ? 'يعمل (كتابة وقراءة وحذف)' : 'لم يُقرأ ما كُتب') + ' | المجلّد: ' + folder_() + ' | ' + status_();
+  Logger.log(msg);
+  return msg;
+}
+
+/* ------------------------------------------------------------------ البيانات الخاصّة: الرفع من الحاسوب والتخزين في Drive */
+/** تطبيق الويب: يستقبل من حاسوب صاحب البوت ملفّاته الخاصّة {key, files:[{name, text}], keep:[names]} ويحفظها في مجلّد البوت. */
+function doPost(e) {
+  var out;
+  try {
+    out = receive_(JSON.parse(e.postData.contents));
+  } catch (x) {
+    out = {ok: false, error: String(x && x.message || x).slice(0, 200)};
+  }
+  return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
+}
+
+function receive_(b) {
+  var P = PropertiesService.getScriptProperties(), key = String((b && b.key) || '');
+  if (key.length < 30) return {ok: false, error: 'مفتاح ناقص'};
+  var sum = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, key, Utilities.Charset.UTF_8)
+    .map(function (x) { return ('0' + (x & 255).toString(16)).slice(-2); }).join('');
+  var known = P.getProperty('PUSH_KEY_SHA');
+  if (!known) P.setProperty('PUSH_KEY_SHA', sum);            // أوّل رفعٍ يسجّل بصمة المفتاح، ثمّ لا يُقبل غيره
+  else if (known !== sum) return {ok: false, error: 'مفتاح مرفوض'};
+  var idx = privIndex_(), saved = [];
+  (b.files || []).forEach(function (f) {
+    if (!f || !PRIV_NAME.test(f.name) || typeof f.text !== 'string' || f.text.length > 4000000) return;
+    idx[f.name] = privPut_(f.name, f.text, idx);
+    saved.push(f.name);
+    P.setProperty('PRIV_FILES', JSON.stringify(idx));
+  });
+  if (b.keep && b.keep.length) {                             // ما خرج من مدّة الحفظ على الحاسوب يُحذف هنا أيضًا
+    Object.keys(idx).forEach(function (n) {
+      if (b.keep.indexOf(n) < 0) { drive_('delete', DRIVE + '/' + idx[n]); delete idx[n]; }
+    });
+    P.setProperty('PRIV_FILES', JSON.stringify(idx));
+  }
+  return {ok: true, saved: saved, files: Object.keys(idx).length};
+}
+
+function privIndex_() {
+  try { return JSON.parse(PropertiesService.getScriptProperties().getProperty('PRIV_FILES') || '{}'); } catch (e) { return {}; }
+}
+
+function drive_(method, url, opt) {
+  var o = merge_({method: method, muteHttpExceptions: true, headers: {Authorization: 'Bearer ' + ScriptApp.getOAuthToken()}}, opt || {});
+  return UrlFetchApp.fetch(url, o);
+}
+
+function folder_() {
+  var P = PropertiesService.getScriptProperties(), id = P.getProperty('PRIV_FOLDER');
+  if (id) {
+    try { if (JSON.parse(drive_('get', DRIVE + '/' + id + '?fields=id,trashed').getContentText()).trashed === false) return id; } catch (e) {}
+  }
+  var r = drive_('post', DRIVE, {contentType: 'application/json',
+    payload: JSON.stringify({name: 'SyriaBot-private', mimeType: 'application/vnd.google-apps.folder'})});
+  if (r.getResponseCode() !== 200) throw new Error('Drive: تعذّر إنشاء المجلّد (' + r.getResponseCode() + ' ' + r.getContentText().slice(0, 120) + ')');
+  id = JSON.parse(r.getContentText()).id;
+  P.setProperty('PRIV_FOLDER', id);
+  return id;
+}
+
+/** يكتب ملفًّا نصّيًّا في مجلّد البوت (يحدّث الموجود أو ينشئه). يعيد معرّفه. */
+function privPut_(name, text, idx) {
+  var bytes = Utilities.newBlob(text, 'text/plain').getBytes(), id = idx[name];
+  var up = function (fid) {
+    return drive_('patch', 'https://www.googleapis.com/upload/drive/v3/files/' + fid + '?uploadType=media',
+      {contentType: 'text/plain; charset=utf-8', payload: bytes});
+  };
+  if (id && up(id).getResponseCode() === 200) return id;
+  var r = drive_('post', DRIVE, {contentType: 'application/json', payload: JSON.stringify({name: name, parents: [folder_()], mimeType: 'text/plain'})});
+  if (r.getResponseCode() !== 200) throw new Error('Drive: تعذّر إنشاء ' + name + ' (' + r.getResponseCode() + ')');
+  id = JSON.parse(r.getContentText()).id;
+  r = up(id);
+  if (r.getResponseCode() !== 200) throw new Error('Drive: تعذّر كتابة ' + name + ' (' + r.getResponseCode() + ')');
+  return id;
+}
+
+/** نصوص الملفّات المطلوبة من مجلّد البوت: {الاسم: النصّ}. ما تعذّرت قراءته يغيب. */
+function privRead_(names, idx) {
+  var token = ScriptApp.getOAuthToken(), out = {};
+  names = names.filter(function (n) { return idx[n]; });
+  if (!names.length) return out;
+  UrlFetchApp.fetchAll(names.map(function (n) {
+    return {url: DRIVE + '/' + idx[n] + '?alt=media', headers: {Authorization: 'Bearer ' + token}, muteHttpExceptions: true};
+  })).forEach(function (r, i) { if (r.getResponseCode() === 200) out[names[i]] = r.getContentText('UTF-8'); });
+  return out;
+}
+
+/** منشورات الصفحات التي يتابعها (آخر days يومًا) ومداخل دليل الحيّ، على هيئة المنشورات. */
+function loadPrivate_(days) {
+  var idx = privIndex_(), names = ['hay.jsonl'], now = Date.now() / 1000, out = {social: [], hay: []};
+  for (var i = 0; i < days; i++) names.push('social-' + day_(now - i * 86400) + '.jsonl');
+  var texts = privRead_(names, idx);
+  Object.keys(texts).forEach(function (n) {
+    texts[n].split('\n').forEach(function (l) {
+      if (!l) return;
+      try {
+        var r = JSON.parse(l);
+        if (n === 'hay.jsonl') out.hay.push({dir: true, hay: true, name: r.source, label: 'دليل الحيّ', title: r.title, text: r.title + ' — ' + r.text, url: '', ts: now, tier: 3});
+        else out.social.push({name: r.n + ' (' + r.k + '، غير رسميّ)', label: r.n, title: '', text: r.t, url: r.u, ts: r.ts, tier: 3});
+      } catch (x) {}
+    });
+  });
+  return out;
 }
 
 function poll() {
@@ -103,25 +225,43 @@ function handle_(token, chat, m) {
 
 var HELP = '👋 <b>اسألني عن سوريا وحماة.</b>\n\nأجيب ممّا يجمعه البوت: الأسعار والصرف والذهب، المحروقات والخبز، سلّة حماة، '
   + 'الطقس والمواقيت، وما تنشره الوزارات والمحافظات وسانا.\n\n<b>أمثلة</b>\n• كم سعر الدولار اليوم؟\n• كم صار المازوت؟\n• متى أذان المغرب؟\n'
-  + '• ما آخر أخبار وزارة الصحّة؟\n• ماذا نشرت محافظة حماة اليوم؟\n• كم سعر كيلو السكّر في حماة؟\n\n'
+  + '• ما آخر أخبار وزارة الصحّة؟\n• ماذا نشرت محافظة حماة اليوم؟\n• كم سعر كيلو السكّر في حماة؟\n• ما رقم مركز الغاز في حيّنا؟\n'
+  + '• ماذا تقول صفحات حماة عن الكهرباء؟\n\n'
   + '<i>أذكر مصدر كلّ جواب وتاريخه. وما لا أجده أبحث عنه في النت وأقول إنّه من النت.</i>';
 
 /* ------------------------------------------------------------------ الجواب */
 function answer_(q) {
   var state = getJson_(RAW + 'state.json');
-  var posts = rank_(q, loadNews_(/أمس|امس|الأسبوع|الاسبوع|الماضي|قبل|منذ|الشهر|تاريخ/.test(q) ? 10 : 3), TOP_POSTS);
+  var days = /أمس|امس|الأسبوع|الاسبوع|الماضي|قبل|منذ|الشهر|تاريخ/.test(q) ? 10 : 3;
+  var priv = {social: [], hay: []};
+  try { priv = loadPrivate_(days); } catch (e) {}                     // تعطّل Drive لا يمنع الجواب من المصادر العامّة
+  var posts = rank_(q, loadNews_(days), TOP_POSTS);
+  posts = posts.concat(rank_(q, priv.social, TOP_SOCIAL));            // صفحات فيسبوك وX التي يتابعها: غير رسميّة
   posts = posts.concat(rank_(q, loadDir_(), TOP_DIR, true));          // ثمّ مداخل الأدلّة الأقرب (هواتف، جهات، سير…)
+  posts = posts.concat(rank_(q, priv.hay, TOP_HAY, true));            // ثمّ دليل حيّه
+  var vault = [];                                                     // أرقام هواتف دليل الحيّ: لا تُرسل إلى النموذج، وتُعاد في الجواب
   var ctx = posts.map(function (p, i) {
-    return '[' + (i + 1) + '] ' + p.name + (p.dir ? '' : ' · ' + stamp_(p.ts)) + '\n' + p.text.replace(/\n+/g, ' ').slice(0, POST_CUT);
+    var text = p.text.replace(/\n+/g, ' ').slice(0, POST_CUT);
+    if (p.hay) text = text.replace(PHONE, function (m) { vault.push(m); return '[هاتف-' + vault.length + ']'; });
+    return '[' + (i + 1) + '] ' + p.name + (p.dir ? '' : ' · ' + stamp_(p.ts)) + '\n' + text;
   }).join('\n\n');
+  var unmask = function (s) {
+    return s.replace(/\[\s*هاتف[-– ]?([0-9٠-٩]+)\s*\]|هاتف-([0-9٠-٩]+)/g, function (m, a, b) {
+      var n = Number((a || b).replace(/[٠-٩]/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'.indexOf(d); }));
+      return vault[n - 1] || m;
+    });
+  };
   var prompt = 'أنت مساعدٌ خاصّ لمواطنٍ يسكن مدينة حماة في سوريا. الوقت الآن ' + stamp_(Date.now() / 1000) + ' بتوقيت دمشق.\n'
     + 'أجب عن سؤاله بالعربيّة الفصحى، من «البيانات» و«المنشورات والأدلّة» أدناه وحدها. لا تستعمل معرفتك العامّة في أيّ رقمٍ أو خبرٍ أو اسم.\n'
     + 'المنشورات أخبارٌ بتواريخها، ومداخل الأدلّة (دليل الهاتف، دليل الجهات، السير الذاتيّة، التطبيقات، الحسابات الرسميّة، المواقع، الوعود) معلوماتٌ ثابتة بلا تاريخ.\n'
+    + 'ما كُتب بجانب اسمه «غير رسميّ» منشورُ صفحةٍ إخباريّة أو محلّيّة على فيسبوك أو X يتابعها السائل: انقل منه منسوبًا إلى صفحته («بحسب صفحة…»)، ولا تقدّمه على مصدرٍ رسميّ يخالفه، ولا تأخذ منه سعرًا رسميًّا.\n'
+    + '«دليل الحيّ» خلاصة مجموعات واتساب لجنة حيّ السائل (القصور، غرناطة 1، في حماة): المختار واللجنة، مراكز الغاز، الحرفيّون، مازوت التدفئة، الأعطال والشكاوى. استعمله حين يسأل عن حيّه أو عن خدمةٍ قريبة منه، واذكر أنّه من مجموعات الحيّ. الرموز التي على هيئة [هاتف-3] أرقام هواتف محجوبة عنك: حيث يلزم الرقم انسخ رمزه كما هو تمامًا.\n'
     + 'القواعد:\n'
     + '- انقل الأرقام كما هي، واذكر مع كلّ رقمٍ تاريخه ومصدره كما ورد في البيانات. الأسعار بالليرة السوريّة الجديدة.\n'
     + '- مصدر كلّ معلومةٍ وتاريخها هما المكتوبان في فقرتها نفسها من البيانات. لا تنسب إليها مصدر فقرةٍ أخرى ولا وقتها.\n'
     + '- الجواب في lines: كلّ معلومةٍ سطرٌ مستقلّ قصير، بلا مقدّمات ولا خاتمة، وثمانية أسطرٍ على الأكثر. لا تستعمل رموز التنسيق (* أو #).\n'
-    + '- لكلّ سطر ref: رقم المنشور الذي أُخذ منه، أو 0 إن أُخذ من «البيانات» (وعندها يُذكر مصدره وتاريخه في نصّ السطر).\n'
+    + '- لكلّ سطر ref: الرقم المكتوب بين معقوفين [N] قبل الفقرة التي أُخذ منها، خبرًا كانت أو مدخل دليلٍ أو مدخلًا من دليل الحيّ. و0 فقط لما أُخذ من قسم «البيانات» (وعندها يُذكر مصدره وتاريخه في نصّ السطر).\n'
+    + '- بنود دليل الحيّ تبدأ بتاريخها (شهر-يوم). إن سُئلت عن آخر ما جرى في أمرٍ فرتّبها زمنيًّا واذكر أحدثها وما انتهى إليه الأمر، كلّ بندٍ بتاريخه.\n'
     + '- إن كان السؤال عن أخبار جهةٍ فلخّص أحدث ما نشرته، كلّ خبرٍ في سطرٍ يبدأ بتاريخه (اليوم والشهر).\n'
     + '- إن سُئلت عن «اليوم» ولم يكن في المنشورات شيءٌ بتاريخ اليوم عن الموضوع، فقل في أوّل سطر إنّه لا جديد اليوم حتّى الآن، ثمّ اذكر أحدث الموجود بتاريخه.\n'
     + '- إن كان في السؤال أكثر من طلب فأجب عمّا تجده، واذكر في سطرٍ أخير ما لم تجد له جوابًا في مصادرك.\n'
@@ -137,7 +277,9 @@ function answer_(q) {
   // لكلّ سطرٍ رابط مصدره بجانبه، فيُراجَع الخبر بضغطة.
   return lines.map(function (l) {
     var p = posts[l.ref - 1];
-    return (lines.length > 1 ? '• ' : '') + esc_(tidy_(l.text)) + (p ? ' <a href="' + esc_(p.url) + '">↗ ' + esc_(p.name) + '</a>' : '');
+    var name = p ? esc_(p.label || p.name) : '';
+    return (lines.length > 1 ? '• ' : '') + esc_(unmask(tidy_(l.text)))
+      + (p ? (p.url ? ' <a href="' + esc_(p.url) + '">↗ ' + name + '</a>' : ' <i>↗ ' + name + '</i>') : '');
   }).join('\n\n');
 }
 
