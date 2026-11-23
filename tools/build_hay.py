@@ -10,9 +10,10 @@ from pathlib import Path
 
 BASE = Path(__file__).resolve().parent.parent
 EMPTY = {'', '—', '-', '–'}
-# قرار صاحب البوت: لا أرقام معلنين في الدليل. يُحذف ما كتب صاحبه إعلانه بنفسه، وما أُرسل رقمًا بلا وصف؛
-# ويبقى من أوصى به الجيران (حِرفيٌّ سُئل عنه فأُجيب برقمه) والجهات الرسميّة واللجنة.
+# قرار صاحب البوت (2026-11-23): لا أرقام معلنين ولا حِرفيّين في الدليل، ولو أوصى بهم الجيران. يُحذف قسم الحِرفيّين كلّه،
+# وما كتب صاحبه إعلانه بنفسه، وما أُرسل رقمًا بلا وصف؛ ويبقى ما يخصّ اللجنة والجهات الرسميّة والخدمات العامّة.
 ADS = re.compile(r'إعلان من صاحبه|لا توصية|الخدمة: غير واضح')
+ADS_SECTION = re.compile(r'حِ?رفيّ?ون')
 
 
 def text(parts):
@@ -106,7 +107,7 @@ def build(page):
     g.feed(Path(page).read_text(encoding='utf-8'))
     until = re.search(r'إلى (\d{4}-\d\d-\d\d)', ' '.join(e['text'] for e in g.out[:3]))
     source = 'دليل الحيّ (من مجموعات واتساب لجنة الحيّ' + (f'، حتّى {until.group(1)}' if until else '') + ')'
-    kept = [e for e in g.out if not ADS.search(e['text'])]
+    kept = [e for e in g.out if not ADS.search(e['text']) and not ADS_SECTION.search(e['section'])]
     return [{'id': f'hay:{i}', 'kind': 'hay', 'source': source, 'title': e['section'] or g.title, 'text': e['text'], 'url': ''}
             for i, e in enumerate(kept, 1)]
 
