@@ -30,7 +30,8 @@ var CUR = {USD: 'الدولار الأمريكيّ', EUR: 'اليورو', TRY: '
   EGP: 'الجنيه المصريّ', JOD: 'الدينار الأردنيّ', KWD: 'الدينار الكويتيّ', GBP: 'الجنيه الإسترلينيّ', QAR: 'الريال القطريّ',
   IQD: 'الدينار العراقيّ', LYD: 'الدينار الليبيّ', BHD: 'الدينار البحرينيّ', OMR: 'الريال العُمانيّ', SEK: 'الكرونة السويديّة',
   CAD: 'الدولار الكنديّ', AUD: 'الدولار الأستراليّ', CHF: 'الفرنك السويسريّ', RUB: 'الروبل الروسيّ', DZD: 'الدينار الجزائريّ',
-  MAD: 'الدرهم المغربيّ', TND: 'الدينار التونسيّ', DKK: 'الكرونة الدنماركيّة', NOK: 'الكرونة النرويجيّة'};
+  MAD: 'الدرهم المغربيّ', TND: 'الدينار التونسيّ', DKK: 'الكرونة الدنماركيّة', NOK: 'الكرونة النرويجيّة', BRL: 'الريال البرازيليّ',
+  MYR: 'الرينغيت الماليزيّ', NZD: 'الدولار النيوزيلنديّ', SGD: 'الدولار السنغافوريّ', ZAR: 'الراند الجنوب أفريقيّ'};
 var ITEMS = {gasoline_95: 'بنزين 95 (لليتر)', gasoline_90: 'بنزين 90 (لليتر)', diesel: 'المازوت (لليتر)',
   diesel_heating: 'مازوت التدفئة (لليتر)', gas_home: 'أسطوانة الغاز المنزليّ', bread: 'ربطة الخبز'};
 var PRAYER = [['Fajr', 'الفجر'], ['Sunrise', 'الشروق'], ['Dhuhr', 'الظهر'], ['Asr', 'العصر'], ['Maghrib', 'المغرب'], ['Isha', 'العشاء']];
@@ -193,6 +194,10 @@ function poll() {
     var P = PropertiesService.getScriptProperties();
     var token = P.getProperty('TELEGRAM_TOKEN'), chat = P.getProperty('CHAT_ID');
     if (!token || !chat) return;
+    if (P.getProperty('KB') !== KB_VER) {                     // لوحة الأزرار تُرسل مرّةً واحدة عند كلّ تغييرٍ فيها
+      var k = tg_(token, 'sendMessage', {chat_id: chat, parse_mode: 'HTML', disable_notification: true, text: KB_HELLO, reply_markup: keyboard_()});
+      if (k.ok) P.setProperty('KB', KB_VER);
+    }
     var r = tg_(token, 'getUpdates', {offset: Number(P.getProperty('OFFSET') || 0), timeout: 0, allowed_updates: ['message']});
     if (!r.ok) return;
     r.result.forEach(function (u) {
@@ -207,26 +212,204 @@ function poll() {
 }
 
 function handle_(token, chat, m) {
-  var q = m.text.trim(), html;
+  var q = m.text.trim(), html = null, extra = {};
   if (/^\/(start|help)\b/.test(q)) {
     html = HELP;
+    extra = {reply_markup: keyboard_()};
   } else {
-    tg_(token, 'sendChatAction', {chat_id: chat, action: 'typing'});
-    try {
-      html = answer_(q);
-    } catch (e) {
-      html = 'تعذّر الجواب الآن (' + esc_(String(e && e.message || e).slice(0, 120)) + '). أعد السؤال بعد دقيقة.';
+    try { html = quick_(q); } catch (e) { html = null; }      // زرٌّ جوابه من البيانات مباشرةً؛ وإن تعذّر فالطريق العاديّ
+    if (!html) {
+      tg_(token, 'sendChatAction', {chat_id: chat, action: 'typing'});
+      try {
+        html = answer_(ASK[q] || q);
+      } catch (e) {
+        html = 'تعذّر الجواب الآن (' + esc_(String(e && e.message || e).slice(0, 120)) + '). أعد السؤال بعد دقيقة.';
+      }
     }
   }
-  var base = {chat_id: chat, reply_parameters: {message_id: m.message_id}, link_preview_options: {is_disabled: true}};
+  var base = merge_({chat_id: chat, reply_parameters: {message_id: m.message_id}, link_preview_options: {is_disabled: true}}, extra);
   var r = tg_(token, 'sendMessage', merge_(base, {text: html, parse_mode: 'HTML'}));
   if (!r.ok) tg_(token, 'sendMessage', merge_(base, {text: html.replace(/<[^>]+>/g, '')}));       // رفض التنسيق: يُرسل نصًّا
+}
+
+/* ------------------------------------------------------------------ لوحة الأزرار: أسئلة متكرّرة */
+// الزرّ يرسل نصّه رسالةً عاديّة، فلا يحتاج استقبالًا خاصًّا. ستّةٌ تُجاب من state.json مباشرةً بلا نموذج (الرقم كما هو)،
+// و«أرقام الحيّ» من دليل الحيّ في Drive بلا نموذج أيضًا، والاثنان الباقيان سؤالان جاهزان يمرّان بالطريق العاديّ.
+var KB_VER = '1';
+var KEYS = [['💱 العملات', '🥇 الذهب', '⛽ المحروقات'], ['🕌 المواقيت', '🌤 الطقس', '🧺 السلّة'], ['📰 أخبار اليوم', '📍 أخبار حماة', '☎️ أرقام الحيّ']];
+var ASK = {'📰 أخبار اليوم': 'ما أهمّ ما صدر في سوريا اليوم ممّا يعني المواطن؟', '📍 أخبار حماة': 'ما أهمّ أخبار محافظة حماة ومدينتها اليوم؟'};
+var KB_HELLO = '⌨️ <b>أزرار للأسئلة المتكرّرة</b>\nتجدها أسفل المحادثة. الأسعار والمواقيت والطقس والسلّة وأرقام الحيّ تُجاب من البيانات مباشرةً، '
+  + 'والأخبار يلخّصها النموذج. وما زلت تكتب أيّ سؤالٍ كما تشاء.';
+var MAIN_CUR = [['USD', '💵', 'الدولار'], ['EUR', '💶', 'اليورو'], ['TRY', '🇹🇷', 'الليرة التركيّة'], ['SAR', '🇸🇦', 'الريال السعوديّ'], ['AED', '🇦🇪', 'الدرهم الإماراتيّ']];
+var GROUPS = [['cereals and tubers', '🌾 حبوب ونشويّات'], ['pulses and nuts', '🫘 بقول'], ['meat, fish and eggs', '🍗 لحوم وبيض'], ['milk and dairy', '🥛 ألبان'],
+  ['oil and fats', '🫒 زيوت'], ['vegetables and fruits', '🥬 خضار وفواكه'], ['miscellaneous food', '🧂 سكّر وملح ومتفرّقات'], ['non-food', '🧴 منظّفات ونظافة'], ['services', '⛽ وقود وخدمات']];
+var UNITS = {'L': 'ليتر', 'Packet': 'علبة', 'Head': 'رأس', 'Day': 'يوم', 'Bar': 'قطعة', '30 pcs': '30 بيضة', '1 GB': '1 غيغا'};
+var UNIT_WORD = {KG: 'كغ', G: 'غ', L: 'ليتر', ML: 'مل', PCS: 'قطعة', GB: 'غيغا'};
+
+function keyboard_() {
+  return {keyboard: KEYS.map(function (row) { return row.map(function (t) { return {text: t}; }); }), resize_keyboard: true, is_persistent: true,
+    input_field_placeholder: 'اسأل عن سوريا وحماة…'};
+}
+
+/** جواب الزرّ من البيانات مباشرةً، أو null إن لم يكن النصّ زرًّا من هذا النوع. */
+function quick_(q) {
+  var k = q.replace(/^[^ء-ي]+/, '').trim();
+  var fn = {'العملات': qRates_, 'الذهب': qGold_, 'المحروقات': qFuel_, 'المواقيت': qPrayer_, 'الطقس': qWeather_, 'السلّة': qBasket_}[k];
+  if (fn) return fn(getJson_(RAW + 'state.json'));
+  return k === 'أرقام الحيّ' ? qHay_() : null;
+}
+
+function dm_(d) { var x = String(d || '').slice(0, 10).split('-'); return x.length === 3 ? Number(x[2]) + '-' + Number(x[1]) : (d || '؟'); }
+function hm_(at) { return String(at || '').slice(11, 16); }
+
+function qRates_(s) {
+  var c = s.cache || {}, ls = (c.lirascope || {}).data || {}, own = !!(ls.market && ls.market.USD);
+  var m = own ? ls.market : ((c.sptoday || {}).data || {}).market || {};
+  if (!m.USD) return 'لا أسعار صرف في بيانات البوت الآن.';
+  var two = function (k) { return num_(m[k].buy, 2) + ' / ' + num_(m[k].sell, 2); };
+  var rows = MAIN_CUR.filter(function (x) { return m[x[0]]; }).map(function (x) { return x[1] + ' ' + x[2] + ' ' + two(x[0]); });
+  if (ls.usdt_usd) rows.push('🪙 تيثر USDT ' + num_(ls.usdt_usd * m.USD.sell, 2));
+  var L = ['💱 <b>العملات</b>', '<b>السوق</b> (شراء / مبيع · ' + (own ? 'ليراسكوب' : 'الليرة اليوم') + ')\n' + rows.join('\n')];
+  var o = s.official;
+  if (o) L.push('<b>الرسميّ</b> (' + esc_(o.src) + ' ' + dm_(o.date) + ')\n💵 ' + num_(o.USD, 2) + (o.EUR ? ' · 💶 ' + num_(o.EUR, 2) : '')
+    + ' · الفجوة ' + ((m.USD.sell - o.USD) / o.USD * 100 >= 0 ? '+' : '') + ((m.USD.sell - o.USD) / o.USD * 100).toFixed(1) + '%');
+  var main = {};
+  MAIN_CUR.forEach(function (x) { main[x[0]] = 1; });
+  var rest = Object.keys(m).filter(function (k) { return !main[k]; }).sort(function (a, b) { return (CUR[a] || a).localeCompare(CUR[b] || b, 'ar'); });
+  if (rest.length) L.push('<blockquote expandable><b>بقيّة العملات في السوق · ' + rest.length + '</b>\n'
+    + rest.map(function (k) { return (CUR[k] ? CUR[k] + ' ' : 'عملة ') + k + ': ' + two(k); }).join('\n') + '</blockquote>');
+  L.push('<i>بالليرة الجديدة. قُرئت ' + hm_((c[own ? 'lirascope' : 'sptoday'] || {}).at) + '.</i>');
+  return L.join('\n\n');
+}
+
+function qGold_(s) {
+  var c = s.cache || {}, ls = (c.lirascope || {}).data || {}, g = s.gold || ((c.sytra || {}).data || {}).gold || {}, L = ['🥇 <b>الذهب</b> (ليرة جديدة للغرام)'];
+  var pair = function (b, v) { return (b ? num_(b) + ' / ' : '') + '<b>' + num_(v) + '</b>'; };
+  if (g.g21_sell) L.push('<b>نشرة الصاغة</b> ' + dm_(g.date) + (g.url ? ' · <a href="' + esc_(g.url) + '">' + esc_(g.src) + '</a>' : ' · سيترا')
+    + '\nعيار 21: ' + pair(g.g21_buy, g.g21_sell) + (g.g18_sell ? '\nعيار 18: ' + pair(g.g18_buy, g.g18_sell) : '') + '\n<i>شراء / مبيع.</i>');
+  var usd = ((ls.market || {}).USD || {}).sell, w = ls.gold_usd || {};
+  if (usd && Object.keys(w).length) L.push('<b>محسوبًا من السعر العالميّ ودولار السوق</b>\n' + Object.keys(w).sort().reverse().map(function (k) {
+    return 'عيار ' + k.replace('K', '') + ': ' + num_(w[k] * usd, 0);
+  }).join('\n'));
+  return L.length > 1 ? L.join('\n\n') : 'لا أسعار ذهب في بيانات البوت الآن.';
+}
+
+function qFuel_(s) {
+  var a = s.adopted || {}, keys = Object.keys(ITEMS).filter(function (k) { return a[k]; });
+  if (!keys.length) return 'لا أسعار محروقات في بيانات البوت الآن.';
+  var L = ['⛽ <b>المحروقات والخبز</b> (ليرة جديدة)', keys.map(function (k) {
+    return '• ' + ITEMS[k] + ': <b>' + num_(a[k].value) + '</b>' + (a[k].single ? ' *' : '') + ' <i>منذ ' + dm_(a[k].date) + '</i>';
+  }).join('\n')];
+  var p = Object.keys(s.pending || {});
+  if (p.length) L.push('⚠️ لم يُحسم بعد: ' + p.map(function (k) { return ITEMS[k] || k; }).join('، '));
+  L.push('<i>الأسعار الرسميّة. * من مصدرٍ واحد' + (keys.some(function (k) { return a[k].src; }) ? ' (خبرٌ رسميّ أو سيترا)' : '') + '.</i>');
+  return L.join('\n\n');
+}
+
+function qPrayer_(s) {
+  var p = ((s.cache || {}).prayer || {}).data;
+  if (!p) return 'لا مواقيت في بيانات البوت الآن.';
+  var now = stamp_(Date.now() / 1000), next = null;
+  if (now.slice(0, 10) === p.date) PRAYER.forEach(function (x) { if (!next && x[0] !== 'Sunrise' && p[x[0]] > now.slice(11)) next = x; });
+  var L = ['🕌 <b>مواقيت حماة</b> · ' + dm_(p.date), PRAYER.map(function (x) {
+    var iq = p.iqama && p.iqama[x[0]] != null ? ' <i>(الإقامة بعد ' + p.iqama[x[0]] + ' د)</i>' : '';
+    return (next === x ? '▶️ ' : '• ') + x[1] + ' <b>' + p[x[0]] + '</b>' + iq;
+  }).join('\n')];
+  if (next) {
+    var t = p[next[0]].split(':'), n = now.slice(11).split(':'), d = (t[0] - n[0]) * 60 + (t[1] - n[1]);
+    L.push('القادمة: ' + next[1] + ' بعد ' + (d >= 60 ? Math.floor(d / 60) + ' س و' : '') + (d % 60) + ' د.');
+  } else if (now.slice(0, 10) !== p.date) {
+    L.push('<i>هذه مواقيت ' + dm_(p.date) + '؛ مواقيت اليوم تُحدَّث مع أوّل تحديثٍ للّوحة.</i>');
+  }
+  L.push('<i>بحساب تطبيق «مسجدك» لمسجد طلحة الخير.</i>');
+  return L.join('\n\n');
+}
+
+function qWeather_(s) {
+  var c = (s.cache || {}).weather || {}, w = c.data;
+  if (!w || !w.days || !w.days.length) return 'لا طقس في بيانات البوت الآن.';
+  var today = day_(Date.now() / 1000);
+  var L = ['🌤 <b>طقس حماة</b>'];
+  if (w.now != null) L.push('الآن <b>' + Math.round(w.now) + '°</b> <i>(قراءة ' + hm_(c.at) + ')</i>');
+  L.push(w.days.map(function (x) {
+    var name = x.date === today ? 'اليوم' : (x.date > today ? 'غدًا' : dm_(x.date));
+    return '• ' + name + ': <b>' + Math.round(x.max) + '°</b> / ' + Math.round(x.min) + '° · ' + (WMO[x.code] || 'متقلّب')
+      + (x.rain >= 0.5 ? ' · مطر ' + x.rain + ' مم' : (x.prob >= 40 ? ' · احتمال مطر ' + x.prob + '%' : ''));
+  }).join('\n'));
+  L.push('<i>العظمى / الصغرى. المصدر Open-Meteo.</i>');
+  return L.join('\n\n');
+}
+
+function unit_(unit, item) {
+  if (unit === 'KG' || (unit === 'Day' && /^Wage/.test(item))) return '';
+  if (item === 'Parsley') return 'ربطة';
+  if (UNITS[unit]) return UNITS[unit];
+  var m = /^([\d.]+)\s*([A-Za-z]+)$/.exec(unit || '');
+  return m ? m[1] + ' ' + (UNIT_WORD[m[2].toUpperCase()] || m[2]) : (unit || '');
+}
+
+function qBasket_(s) {
+  var months = (s.basket || {}).months || {}, mk = Object.keys(months).sort();
+  if (!mk.length) return 'لا سلّة في بيانات البوت الآن.';
+  var cur = months[mk[mk.length - 1]], prev = mk.length > 1 ? months[mk[mk.length - 2]] : {}, by = {}, up = [], down = [], known = {};
+  GROUPS.forEach(function (g) { known[g[0]] = 1; });
+  Object.keys(cur).sort(function (a, b) { return (FOOD[a] || a).localeCompare(FOOD[b] || b, 'ar'); }).forEach(function (k) {
+    var unit = cur[k][0], price = cur[k][1], cat = cur[k][2] || '', name = FOOD[k] || k, u = unit_(unit, k);
+    if (cat === 'non-food' && /^(Fuel|Internet|Wage|Water)/.test(k)) cat = 'services';
+    if (!known[cat]) cat = 'miscellaneous food';
+    (by[cat] = by[cat] || []).push('• ' + esc_(name) + (u ? ' (' + u + ')' : '') + ': <b>' + num_(price, 0) + '</b>');
+    var old = prev[k] ? prev[k][1] : null;
+    if (old && Math.abs(price - old) / old >= 0.05) (price > old ? up : down).push([Math.abs(price - old) / old,
+      '• ' + esc_(name) + ': ' + num_(old, 0) + ' ← <b>' + num_(price, 0) + '</b> (' + (price > old ? '+' : '') + ((price - old) / old * 100).toFixed(1) + '%)']);
+  });
+  var top = function (rows) {
+    rows.sort(function (a, b) { return b[0] - a[0]; });
+    return rows.slice(0, 6).map(function (r) { return r[1]; }).join('\n') + (rows.length > 6 ? '\n<i>و' + (rows.length - 6) + ' أخرى في القائمة.</i>' : '');
+  };
+  var L = ['🧺 <b>سلّة حماة · ' + mk[mk.length - 1].slice(0, 7) + '</b>'];
+  if (up.length) L.push('⬆️ <b>ارتفع عن الشهر السابق</b>\n' + top(up));
+  if (down.length) L.push('⬇️ <b>انخفض</b>\n' + top(down));
+  if (!up.length && !down.length && mk.length > 1) L.push('↔️ لا تغيّر يُذكر عن الشهر السابق.');
+  L.push('<blockquote expandable>📋 <b>الأسعار كلّها · ' + Object.keys(cur).length + ' مادّة</b>\n<i>بالليرة الجديدة، وللكيلو ما لم تُذكر وحدة.</i>\n\n'
+    + GROUPS.filter(function (g) { return by[g[0]]; }).map(function (g) { return '<b>' + g[1] + '</b>\n' + by[g[0]].join('\n'); }).join('\n\n') + '</blockquote>');
+  L.push('<i>متوسّط ثلاثة باعة في سوق المدينة. المصدر: برنامج الأغذية العالميّ.</i>');
+  return L.join('\n\n');
+}
+
+/** أرقام دليل الحيّ (مراكز الغاز، الطوارئ، الحرفيّون، ومن له رقمٌ من المسؤولين) من ملفّه في Drive، بلا نموذج. */
+function qHay_() {
+  var t = privRead_(['hay.jsonl'], privIndex_())['hay.jsonl'];
+  if (!t) return 'دليل الحيّ غير متاحٍ الآن.';
+  var groups = {}, order = [], source = '';
+  t.split('\n').forEach(function (l) {
+    if (!l) return;
+    var e;
+    try { e = JSON.parse(l); } catch (x) { return; }
+    source = source || e.source;
+    var sec = e.title.split(' › '), isNum = sec[0] === 'أرقام ضروريّة', isMan = sec[0] === 'المسؤولون ولجنة الحيّ' && sec.length === 1 && /[0-9٠-٩]{6,}/.test(e.text);
+    if (!isNum && !isMan) return;
+    var head = (isNum ? sec[1] || sec[0] : 'المسؤولون').replace(/\s*\(.*$/, ''), lines = [];
+    e.text.split(' · ').forEach(function (part, i) {
+      var j = part.indexOf(': '), key = j > 0 ? part.slice(0, j) : '', val = (j > 0 ? part.slice(j + 2) : part).trim();
+      if (key === 'أين ورد' || !val || /^(—|لم يُكتب\.?|لم يُذكر)$/.test(val)) return;
+      if (i === 0) lines.push('<b>' + esc_(val.slice(0, 90)) + '</b>');
+      else if (key === 'الرقم' || key === 'الهاتف') lines.push('📞 ' + esc_(val.slice(0, 120)));
+      else lines.push(esc_(val.length > 150 ? val.slice(0, 150) + '…' : val));
+    });
+    if (!groups[head]) { groups[head] = []; order.push(head); }
+    groups[head].push(lines.join('\n'));
+  });
+  if (!order.length) return 'لا أرقام في دليل الحيّ.';
+  return '☎️ <b>أرقام الحيّ</b>\n\n' + order.map(function (h) {
+    return '<b>' + esc_(h) + '</b>\n<blockquote expandable>' + groups[h].join('\n\n') + '</blockquote>';
+  }).join('\n\n') + '\n\n<i>' + esc_(source) + '. الأرقام كما وردت في المجموعات، ولم أتحقّق منها.</i>';
 }
 
 var HELP = '👋 <b>اسألني عن سوريا وحماة.</b>\n\nأجيب ممّا يجمعه البوت: الأسعار والصرف والذهب، المحروقات والخبز، سلّة حماة، '
   + 'الطقس والمواقيت، وما تنشره الوزارات والمحافظات وسانا.\n\n<b>أمثلة</b>\n• كم سعر الدولار اليوم؟\n• كم صار المازوت؟\n• متى أذان المغرب؟\n'
   + '• ما آخر أخبار وزارة الصحّة؟\n• ماذا نشرت محافظة حماة اليوم؟\n• كم سعر كيلو السكّر في حماة؟\n• ما رقم مركز الغاز في حيّنا؟\n'
   + '• ماذا تقول صفحات حماة عن الكهرباء؟\n\n'
+  + '<b>الأزرار</b> أسفل المحادثة للأسئلة المتكرّرة: الأسعار والمواقيت والطقس والسلّة وأرقام الحيّ من البيانات مباشرةً، والأخبار ملخّصة.\n\n'
   + '<i>أذكر مصدر كلّ جواب وتاريخه. وما لا أجده أبحث عنه في النت وأقول إنّه من النت.</i>';
 
 /* ------------------------------------------------------------------ الجواب */

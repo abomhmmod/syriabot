@@ -35,6 +35,14 @@ ctx.HOST_READ = names => Object.fromEntries(names.filter(n => fs.existsSync(path
 run('privRead_ = function (names, idx) { return HOST_READ(names.filter(function (n) { return idx[n]; })); }');
 setPriv(PRIV_DIR);
 
+if (process.argv[2] === '--quick') {          // يطبع جواب كلّ زرٍّ من أزرار البيانات كما سيُرسل (PRIV_DIR لأرقام الحيّ)
+  for (const label of run('KEYS').flat()) {
+    ctx.Q = label;
+    const a = run('quick_(Q)');
+    console.log('\n===== ' + label + (a ? ' · ' + a.length + ' حرفًا' : ' · يمرّ بالنموذج: ' + run('ASK[Q]')) + '\n' + (a || ''));
+  }
+  process.exit(0);
+}
 if (process.argv[2] === '--live') {
   let qs = process.argv.slice(3);
   if (qs[0] === '--models') { ctx.MODELS = qs[1].split(','); run('MODELS = this.MODELS'); qs = qs.slice(2); }
@@ -119,6 +127,39 @@ check('upload: another key is refused, a short key too', run('receive_(B2)').ok 
 ctx.B3 = {key: 'k'.repeat(40), files: [], keep: ['hay.jsonl']};
 const u3 = run('receive_(B3)');
 check('upload: files no longer kept on the PC are removed from the index', u3.ok && u3.files === 1 && !JSON.parse(store.PRIV_FILES)['social-2026-11-23.jsonl']);
+// ---------- لوحة الأزرار: أجوبة البيانات بلا نموذج، والتوجيه، وإرسال اللوحة مرّةً واحدة
+const kb = run('keyboard_()');
+check('buttons: three rows of three, persistent', kb.keyboard.length === 3 && kb.keyboard.every(r => r.length === 3 && r.every(b => b.text)) && kb.is_persistent && kb.resize_keyboard);
+const quick = label => { ctx.Q = label; return run('quick_(Q)'); };
+const marks = {'💱 العملات': ['الدولار', 'بقيّة العملات', 'الرسميّ', 'الفجوة'], '🥇 الذهب': ['نشرة الصاغة', 'عيار 21', 'عيار 24'], '⛽ المحروقات': ['بنزين 95', 'ربطة الخبز', 'منذ'],
+  '🕌 المواقيت': ['الفجر', 'المغرب', 'مسجدك'], '🌤 الطقس': ['طقس حماة', 'العظمى'], '🧺 السلّة': ['سلّة حماة', 'الأسعار كلّها', 'blockquote expandable']};
+for (const [label, need] of Object.entries(marks)) {
+  const a = quick(label) || '';
+  check('buttons: ' + label.replace(/^[^ء-ي]+/, '') + ' answered from the data, fits one message', need.every(x => a.includes(x)) && a.length < 4000 && !/undefined|NaN|null/.test(a), a.slice(0, 200));
+}
+check('buttons: a typed question is not a button', quick('كم سعر الدولار اليوم؟') === null && quick('📰 أخبار اليوم') === null);
+setPriv(tmp);
+const hayq = quick('☎️ أرقام الحيّ');
+check('buttons: neighbourhood numbers come from the private guide, grouped and folded', hayq.includes('<b>مراكز الغاز</b>') && hayq.includes('<b>مركز غاز الزيتونة</b>') && hayq.includes('📞 0999123456') && hayq.includes('blockquote expandable') && !hayq.includes('أين ورد'), hayq);
+setPriv('');
+check('buttons: no guide file gives a plain note', /غير متاح/.test(quick('☎️ أرقام الحيّ')));
+const calls = [], asked2 = [];
+ctx.HOST_TG = (method, payload) => { calls.push([method, payload]); return method === 'getUpdates' ? {ok: true, result: []} : {ok: true, result: {message_id: 9}}; };
+ctx.HOST_ASK = q => { asked2.push(q); return 'جواب'; };
+run('tg_ = function (token, method, payload) { return HOST_TG(method, payload); }; answer_ = function (q) { return HOST_ASK(q); }');
+ctx.M = t => ({text: t, message_id: 5, chat: {id: 1}});
+run('handle_("t", "1", M("🕌 المواقيت"))');
+check('buttons: a data button is answered at once, without the model or a typing notice', calls.length === 1 && calls[0][0] === 'sendMessage' && calls[0][1].text.includes('مواقيت حماة') && asked2.length === 0, JSON.stringify(calls.map(c => c[0])));
+calls.length = 0; run('handle_("t", "1", M("📍 أخبار حماة"))');
+check('buttons: a news button asks its ready question the normal way', asked2.length === 1 && /أخبار محافظة حماة/.test(asked2[0]) && calls.map(c => c[0]).join() === 'sendChatAction,sendMessage', asked2.join());
+calls.length = 0; run('handle_("t", "1", M("ما آخر أخبار وزارة الصحّة؟"))');
+check('buttons: a typed question goes through unchanged', asked2[1] === 'ما آخر أخبار وزارة الصحّة؟');
+calls.length = 0; run('handle_("t", "1", M("/start"))');
+check('buttons: /start brings the help with the keyboard', calls.length === 1 && calls[0][1].reply_markup && calls[0][1].reply_markup.keyboard.length === 3 && /الأزرار/.test(calls[0][1].text), JSON.stringify(calls[0][1]).slice(0, 200));
+store.TELEGRAM_TOKEN = 't'; calls.length = 0; delete store.KB;
+run('poll()'); run('poll()');
+const hello = calls.filter(c => c[0] === 'sendMessage');
+check('buttons: the keyboard is announced once, silently', hello.length === 1 && hello[0][1].reply_markup.keyboard.length === 3 && hello[0][1].disable_notification === true && store.KB === run('KB_VER'), JSON.stringify(calls.map(c => c[0])));
 fs.rmSync(tmp, {recursive: true, force: true});
 
 console.log('\nfacts sheet: ' + facts.length + ' chars · archive: ' + news.length + ' posts · top for Hama: ' + r2.slice(0, 4).map(p => p.name).join('، '));
