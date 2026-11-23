@@ -679,6 +679,15 @@ def run(dry=None, bulletin_now=False, basket_now=False):
     except Exception as ex:
         print(f'news collector failed: {type(ex).__name__}: {ex}', file=sys.stderr)
 
+    # الأدلّة (هواتف، جهات، سير، تطبيقات…): تُجلب مرّةً في اليوم إلى directory/ ليقرأها مستقبِل السؤال والجواب.
+    if t.hour >= cfg.get('bulletin_hour', 7) and state.get('directory_day') != f'{t:%Y-%m-%d}':
+        try:
+            import directory
+            print('directory:', directory.build(root))
+            state['directory_day'] = f'{t:%Y-%m-%d}'
+        except Exception as ex:
+            print(f'directory failed: {type(ex).__name__}: {ex}', file=sys.stderr)
+
     if basket_now and not first:
         b = basket_text(basket, cfg)
         if b:

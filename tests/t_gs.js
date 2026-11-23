@@ -17,7 +17,7 @@ const store = {GEMINI_API_KEY: process.env.GEMINI_API_KEY || '', CHAT_ID: '1', T
 const ctx = {
   UrlFetchApp: {fetch, fetchAll: reqs => reqs.map(q => fetch(q.url, q))},
   PropertiesService: {getScriptProperties: () => ({getProperty: k => store[k] || null, setProperty: (k, v) => { store[k] = v; }})},
-  Utilities: {formatDate: (d, tz, f) => { const s = new Date(d.getTime() + 3 * 3600e3).toISOString(); return f.length > 10 ? s.slice(0, 16).replace('T', ' ') : s.slice(0, 10); }},
+  Utilities: {sleep: ms => cp.spawnSync('python', ['-I', '-c', 'import time,sys; time.sleep(' + ms / 1000 + ')']), formatDate: (d, tz, f) => { const s = new Date(d.getTime() + 3 * 3600e3).toISOString(); return f.length > 10 ? s.slice(0, 16).replace('T', ' ') : s.slice(0, 10); }},
   LockService: {getScriptLock: () => ({tryLock: () => true, releaseLock: () => {}})},
   ScriptApp: {getProjectTriggers: () => [], newTrigger: () => ({timeBased: () => ({everyMinutes: () => ({create: () => {}})})})},
   Logger: {log: console.log}, console, Date, JSON, Math, Number, String, Object, Array, RegExp, Error,
