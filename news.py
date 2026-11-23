@@ -154,8 +154,11 @@ def read_rss(src, seen, now, first_hours=48):
 
 
 def item(src, uid, ts, title, text, url):
-    return {'id': uid, 'src': src['id'], 'name': src['name'], 'kind': src.get('kind', ''), 'tier': src.get('tier', 3),
-            'hama': bool(src.get('hama')), 'ts': int(ts), 'title': title.strip(), 'text': text[:TEXT_MAX], 'url': url}
+    it = {'id': uid, 'src': src['id'], 'name': src['name'], 'kind': src.get('kind', ''), 'tier': src.get('tier', 3),
+          'hama': bool(src.get('hama')), 'ts': int(ts), 'title': title.strip(), 'text': text[:TEXT_MAX], 'url': url}
+    if src.get('unverified'):                # قناةٌ رسميّتها مرجَّحة لا مؤكَّدة: تُجمع وتُقرأ، ولا يُؤخذ منها سعر
+        it['uv'] = True
+    return it
 
 
 # ------------------------------------------------------------------ الجمع والحفظ

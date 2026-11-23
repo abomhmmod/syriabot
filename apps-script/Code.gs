@@ -845,7 +845,7 @@ function loadNews_(days) {
   return out;
 }
 
-var DIRS = ['phone', 'entity', 'cv', 'account', 'app', 'site', 'promise'];
+var DIRS = ['phone', 'entity', 'source', 'cv', 'account', 'app', 'site', 'promise'];
 
 /** مداخل الأدلّة كلّها (نحو 1200 مدخلًا صغيرًا) على هيئة المنشورات، ليجري عليها الاختيار نفسه. */
 function loadDir_() {

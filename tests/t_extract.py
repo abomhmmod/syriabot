@@ -48,6 +48,10 @@ check('candidate: private paper, golden-seconds title, gas of another word are n
       and not extract.is_candidate(item(4, 'خطة الثواني الذهبية لسلامتك على الطرق 100 متر', 'نصّ طويل فيه 100 متر وأرقام أخرى كثيرة 2026'))
       and not extract.is_candidate(item(5, 'وفد من غازي عنتاب يزور حلب', 'بحث الوفد 3 مشاريع مشتركة في المدينة الصناعية بحلب')))
 
+check('candidate: a channel whose official status is only likely gives no prices', not extract.is_candidate(dict(G, uv=True))
+      and news.item({'id': 'x', 'name': 'ن', 'tier': 1, 'unverified': True}, 'i', 1, 't', 'x', 'u').get('uv') is True
+      and 'uv' not in news.item({'id': 'x', 'name': 'ن', 'tier': 1}, 'i', 1, 't', 'x', 'u'))
+
 # ---------- التحقّق الحرفيّ
 ok, why = v(fact(1, 'gold21_sell', 15900, 'بلغ سعر غرام الذهب عيار 21 قيراطاً 15900 ليرة سورية للمبيع'))
 check('gold 21 sell: accepted, quote kept, day and source carried', ok and ok['value'] == 15900 and ok['day'] == '2026-12-01' and ok['name'] == 'سانا' and '15900' in ok['quote'], why)

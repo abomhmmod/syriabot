@@ -476,6 +476,219 @@
    "kind": "إعلام",
    "tier": 2,
    "hama": false
+  },
+  {
+   "id": "altejara_aldakhilia_hama",
+   "name": "مديرية التجارة الداخلية وحماية المستهلك في حماة",
+   "kind": "مديرية",
+   "tier": 1,
+   "hama": true,
+   "unverified": true
+  },
+  {
+   "id": "z_hama_z",
+   "name": "مديرية الزراعة والإصلاح الزراعي في حماة",
+   "kind": "مديرية",
+   "tier": 1,
+   "hama": true,
+   "unverified": true
+  },
+  {
+   "id": "shouon2024",
+   "name": "مديرية الشؤون الاجتماعية والعمل في حماة",
+   "kind": "مديرية",
+   "tier": 1,
+   "hama": true,
+   "unverified": true
+  },
+  {
+   "id": "HamaEmergency",
+   "name": "مديرية الطوارئ وإدارة الكوارث في حماة",
+   "kind": "مديرية",
+   "tier": 1,
+   "hama": true,
+   "unverified": true
+  },
+  {
+   "id": "qasr_adli_hama",
+   "name": "عدلية حماة",
+   "kind": "مديرية",
+   "tier": 1,
+   "hama": true,
+   "unverified": true
+  },
+  {
+   "id": "HaamaMD",
+   "name": "مديرية إعلام حماة",
+   "kind": "مديرية",
+   "tier": 1,
+   "hama": true,
+   "unverified": true
+  },
+  {
+   "id": "alriyada_hama",
+   "name": "مديرية الرياضة والشباب في حماة",
+   "kind": "مديرية",
+   "tier": 1,
+   "hama": true,
+   "unverified": true
+  },
+  {
+   "id": "almawarid_almayiya_hama",
+   "name": "مديرية الموارد المائية في حماة",
+   "kind": "مديرية",
+   "tier": 1,
+   "hama": true,
+   "unverified": true
+  },
+  {
+   "id": "makhabiz_hama",
+   "name": "المؤسسة السورية للمخابز - فرع حماة",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": true,
+   "unverified": true
+  },
+  {
+   "id": "mahroukat_hama",
+   "name": "محروقات حماة (سادكوب)",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": true,
+   "unverified": true
+  },
+  {
+   "id": "kahraba_hama",
+   "name": "الشركة العامة لكهرباء محافظة حماة",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": true,
+   "unverified": true
+  },
+  {
+   "id": "barid_hama",
+   "name": "مديرية بريد حماة",
+   "kind": "مديرية",
+   "tier": 1,
+   "hama": true,
+   "unverified": true
+  },
+  {
+   "id": "majlis_hama",
+   "name": "مجلس مدينة حماة",
+   "kind": "جهة رسميّة",
+   "tier": 1,
+   "hama": true,
+   "unverified": true
+  },
+  {
+   "id": "thaqafa_hama",
+   "name": "مديرية الثقافة في حماة",
+   "kind": "مديرية",
+   "tier": 1,
+   "hama": true,
+   "unverified": true
+  },
+  {
+   "id": "HamaUniversity2014",
+   "name": "جامعة حماة",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": true,
+   "unverified": true
+  },
+  {
+   "id": "hamah_medical_association",
+   "name": "نقابة أطباء سورية - فرع حماة",
+   "kind": "نقابة أو غرفة",
+   "tier": 2,
+   "hama": true,
+   "unverified": true
+  },
+  {
+   "id": "hamachamber",
+   "name": "غرفة تجارة حماة",
+   "kind": "نقابة أو غرفة",
+   "tier": 2,
+   "hama": true,
+   "unverified": true
+  },
+  {
+   "id": "HamaChamberOfIndustry",
+   "name": "غرفة صناعة حماة",
+   "kind": "نقابة أو غرفة",
+   "tier": 2,
+   "hama": true,
+   "unverified": true
+  },
+  {
+   "id": "jewelers2021",
+   "name": "الهيئة العامة لإدارة المعادن الثمينة",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "Syredcrescent",
+   "name": "الهلال الأحمر العربي السوري",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "damascus122021",
+   "name": "جامعة دمشق",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "syriapam",
+   "name": "مجلس الشعب السوري",
+   "kind": "رئاسة وجهات سياديّة",
+   "tier": 1,
+   "hama": false,
+   "unverified": true
+  },
+  {
+   "id": "gdca_sy",
+   "name": "المديرية العامة للمصالح العقارية",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false,
+   "unverified": true
+  },
+  {
+   "id": "syrianGASP",
+   "name": "الهيئة العامة للإمداد والتوريد",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false,
+   "unverified": true
+  },
+  {
+   "id": "SecSyria",
+   "name": "الشركة السورية للكهرباء SEC",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false,
+   "unverified": true
+  },
+  {
+   "id": "spc_syr",
+   "name": "الشركة السورية للبترول SPC",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false,
+   "unverified": true
+  },
+  {
+   "id": "dgam_sy",
+   "name": "المديرية العامة للآثار والمتاحف",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false,
+   "unverified": true
   }
  ],
  "rss": [

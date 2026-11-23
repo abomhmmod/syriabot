@@ -114,7 +114,7 @@ def past_tense(text, start, span, value):
 
 def is_candidate(it):
     """خبرٌ من مصدرٍ رسميّ عنوانه عن إحدى الموادّ وفي نصّه أرقام."""
-    return it.get('tier', 3) <= 2 and len(it.get('text', '')) >= 40 and bool(TITLE.search(flat(it.get('title', '')))) \
+    return it.get('tier', 3) <= 2 and not it.get('uv') and len(it.get('text', '')) >= 40 and bool(TITLE.search(flat(it.get('title', '')))) \
         and bool(re.search(r'\d', flat(it['text'])))
 
 

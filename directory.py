@@ -138,8 +138,24 @@ def build_entities():
     return out
 
 
+def build_sources():
+    """المصادر التي يتابعها البوت نفسه (sources.json): لتُعرف الجهة وقناتها حين يُسأل عنها، لا عن أخبارها فقط."""
+    s = json.loads((Path(__file__).resolve().parent / 'sources.json').read_text(encoding='utf-8'))
+    out = []
+    for x in s.get('telegram', []):
+        text = (f"{x.get('kind') or 'جهة'} · قناتها على تيليغرام: https://t.me/{x['id']} (@{x['id']})" + (' · في محافظة حماة' if x.get('hama') else '')
+                + (' · رسميّتها مرجَّحة من اسمها ووصفها، ولم تتأكّد من مصدرٍ ثانٍ' if x.get('unverified') else ' · قناة رسميّة')
+                + ' · البوت يتابع ما تنشره')
+        out.append(entry('source', 'مصادر البوت', 'tg-' + x['id'], x['name'], text, f"https://t.me/{x['id']}"))
+    for x in s.get('rss', []):
+        site = re.match(r'https?://[^/]+', x['url'])
+        out.append(entry('source', 'مصادر البوت', 'rss-' + x['id'], x['name'], f"{x.get('kind') or 'إعلام'} · موقعه: {site.group(0) if site else x['url']} · البوت يتابع ما ينشره",
+                         site.group(0) if site else x['url']))
+    return out
+
+
 BUILDERS = {'phone': build_phonebook, 'app': build_apps, 'account': build_official, 'cv': build_cvs, 'site': build_sites,
-            'promise': build_promises, 'entity': build_entities}
+            'promise': build_promises, 'entity': build_entities, 'source': build_sources}
 
 
 def build(base):
