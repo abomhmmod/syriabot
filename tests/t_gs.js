@@ -275,6 +275,52 @@ check('ask: if the split fails, the question goes on unchanged', nAsk() === befo
 plans.length = 0; before = nAsk();
 send('كم سعر الدولار اليوم؟');
 check('ask: a question with no private word never calls the splitter', plans.length === 0 && nAsk() === before + 1);
+// ---------- حساب غير محفوظ يُقال عنه ذلك ولا يُسأل عنه النموذج
+before = nAsk();
+nextPlan = {parts: [{kind: 'account', terms: ['claude', 'كلود'], text: 'حسابي في claude'}, {kind: 'phone', terms: ['أبي', 'ابي'], text: 'رقم أبي'}, {kind: 'public', terms: [], text: 'موعد أذان الظهر'}]};
+out = send('أعطني حسابي في claude ورقم أبي وموعد أذان الظهر');
+check('ask: an account that is not saved is reported as missing, not sent to the model', /ليس في القسم الخاصّ: «حسابي في claude»/.test(out) && out.includes('0999000111') && nAsk() === before + 1
+  && asked2[asked2.length - 1] === 'موعد أذان الظهر', out.slice(0, 300));
+// ---------- متانة الاتّصال بالنموذج: إعادة المحاولة، وعدم الرفض بلا محاولة، وسبب التعذّر
+run('gemini_ = realGemini');
+const realFetch = ctx.UrlFetchApp.fetch;
+let script = [], fetched = [], slept = 0;
+const okBody = JSON.stringify({candidates: [{content: {parts: [{text: '{"a":"نعم"}'}]}}]});
+ctx.UrlFetchApp.fetch = (url, o) => {
+  if (!/generativelanguage/.test(url)) return realFetch(url, o);
+  const model = url.split('/models/')[1].split(':')[0], step = script.shift() || [503, 'overloaded'];
+  fetched.push(model + ':' + step[0]);
+  return {getResponseCode: () => step[0], getContentText: () => (step[0] === 200 ? okBody : step[1] || 'err')};
+};
+const realSleep = ctx.Utilities.sleep;
+ctx.Utilities.sleep = ms => { slept += ms; };
+const ask1 = () => run('gemini_("س", {type: "object", properties: {a: {type: "string"}}})');
+store.AI_REST = '{}'; store.AI_DAY = ''; script = [[503], [200]]; fetched = []; slept = 0;
+let g1 = ask1();
+check('model: a passing overload is retried on the same model and answers', g1 && g1.a === 'نعم' && fetched.join() === 'gemini-3.6-flash:503,gemini-3.6-flash:200' && slept > 0 && store.AI_REST === '{}', fetched.join() + ' ' + store.AI_REST);
+store.AI_REST = '{}'; script = [[429], [200]]; fetched = [];
+g1 = ask1();
+const rest1 = JSON.parse(store.AI_REST);
+check('model: a quota refusal moves to the next model and rests the first five minutes', g1 && fetched.join() === 'gemini-3.6-flash:429,gemini-flash-lite-latest:200' && rest1['gemini-3.6-flash'] > Date.now() + 200000
+  && rest1['gemini-3.6-flash'] < Date.now() + 400000 && !rest1['gemini-flash-lite-latest'], fetched.join());
+const far = Date.now() + 500000;
+store.AI_REST = JSON.stringify({'gemini-3.6-flash': far + 1000, 'gemini-flash-lite-latest': far, 'gemini-2.5-flash': far + 2000, 'gemini-3-flash-preview': far + 3000});
+script = [[200]]; fetched = [];
+g1 = ask1();
+check('model: when every model is resting, the one due first is tried anyway', g1 && fetched.join() === 'gemini-flash-lite-latest:200', fetched.join());
+store.AI_REST = '{}'; script = []; fetched = [];
+g1 = ask1();
+const rest2 = JSON.parse(store.AI_REST);
+check('model: when all fail the reason is kept, and an overload rests each model only a minute and a half', g1 === null && fetched.length === 8 && /3\.6-flash 503/.test(run('AI_FAIL')) && /503/.test(store.AI_ERR)
+  && Object.values(rest2).every(t => t < Date.now() + 100000), fetched.join() + ' | ' + store.AI_ERR);
+// ---------- النموذج معطّل: الجواب من البيانات مباشرةً
+ctx.DIRP = [{dir: true, name: 'دليل الهاتف · المساحة السوريّة', text: 'شرطة النجدة (طوارئ) — طوارئ · شرطة النجدة · الرقم: 112', url: 'https://syrian.zone/phonebook', ts: 1, tier: 2},
+  {name: 'سانا', text: 'خبر لا علاقة له', url: 'u', ts: 2, tier: 2}];
+const off = run('offline_("موعد أذان الظهر ورقم شرطة النجدة", S, DIRP)');
+check('model down: prayer times and the nearest directory entries are given straight from the data, with the reason', /النموذج لا يردّ الآن/.test(off) && /503/.test(off) && /مواقيت حماة/.test(off) && /الرقم: 112/.test(off)
+  && /↗ دليل الهاتف/.test(off) && !/خبر لا علاقة له/.test(off) && off.length < 4096, off.slice(0, 300));
+check('model down: with nothing to show, a plain note with the reason', /تعذّر الوصول إلى النموذج الآن \(/.test(run('offline_("كيف حالك", S, [])')));
+ctx.UrlFetchApp.fetch = realFetch; ctx.Utilities.sleep = realSleep; store.AI_REST = '{}';
 fs.rmSync(tmp, {recursive: true, force: true});
 
 console.log('\nfacts sheet: ' + facts.length + ' chars · archive: ' + news.length + ' posts · top for Hama: ' + r2.slice(0, 4).map(p => p.name).join('، '));

@@ -376,7 +376,7 @@ function vaultAsk_(token, chat, q) {
     kind: {type: 'string', enum: ['phone', 'account', 'personal', 'public']}, terms: {type: 'array', items: {type: 'string'}}, text: {type: 'string'}},
     required: ['kind', 'terms', 'text']}}}, required: ['parts']});
   if (!plan || !plan.parts || !plan.parts.length) return q;                 // تعذّر التقسيم: الطريق العاديّ كما هو
-  var v = vaultOpen_(), blocks = [], rest = [];
+  var v = vaultOpen_(), blocks = [], rest = [], missing = [];
   var words = v.index.map(function (x) { return [x, ' ' + norm_(x[1]) + ' ']; });
   plan.parts.forEach(function (p) {
     if (p.kind === 'public' || !VAULT_KIND[p.kind]) { rest.push(p.text); return; }
@@ -394,13 +394,18 @@ function vaultAsk_(token, chat, q) {
         return hits.length > 0;
       });
     });
-    if (!hits.length) { rest.push(p.text); return; }         // ليس في القسم الخاصّ: لعلّه عامّ (رقم الإسعاف…)
+    if (!hits.length) {
+      if (p.kind === 'phone') rest.push(p.text);             // ليس في جهات الاتّصال: لعلّه رقم جهةٍ عامّة (الإسعاف…)
+      else missing.push(p.text);                             // حسابٌ أو معلومةٌ شخصيّة غير محفوظة: يُقال ذلك، ولا يُسأل عنها النموذج
+      return;
+    }
     hits.sort(function (a, b) { return a[1].length - b[1].length; });
     blocks.push(VAULT_KIND[p.kind] + ' <b>' + esc_(p.text) + '</b>\n' + hits.slice(0, 3).map(function (x) {
       return esc_(x[1]) + '\n<tg-spoiler>' + esc_(unbox_(v, v.vals[x[0]])) + '</tg-spoiler>';
     }).join('\n') + (hits.length > 3 ? '\n<i>و' + (hits.length - 3) + ' أخرى تطابق؛ اكتب «خاصّ» مع كلمةٍ أدقّ.</i>' : ''));
   });
-  if (!blocks.length) return q;
+  if (!blocks.length && !missing.length) return q;
+  if (missing.length) blocks.push('▫️ ليس في القسم الخاصّ: ' + missing.map(function (t) { return '«' + esc_(t) + '»'; }).join('، ') + '.');
   var html = blocks.join('\n\n') + '\n\n<i>من القسم الخاصّ. تُحذف هذه الرسالة بعد دقيقتين.</i>';
   var r = tg_(token, 'sendMessage', {chat_id: chat, text: html, parse_mode: 'HTML', disable_notification: true, link_preview_options: {is_disabled: true}});
   if (!r.ok) r = tg_(token, 'sendMessage', {chat_id: chat, text: html.replace(/<[^>]+>/g, ''), disable_notification: true});
@@ -718,7 +723,7 @@ function answer_(q) {
     + '=== البيانات ===\n' + facts_(state) + '\n\n=== المنشورات والأدلّة (الأقرب إلى السؤال) ===\n' + (ctx || '(لا شيء)') + '\n\n=== السؤال ===\n' + q;
   var out = gemini_(prompt, {type: 'object', properties: {found: {type: 'boolean'}, lines: {type: 'array', items: {type: 'object',
     properties: {text: {type: 'string'}, ref: {type: 'integer'}}, required: ['text', 'ref']}}}, required: ['found', 'lines']});
-  if (!out) return 'تعذّر الوصول إلى النموذج الآن. اللوحة المثبّتة فيها أحدث الأرقام، وأعد السؤال بعد قليل.';
+  if (!out) return offline_(q, state, posts);              // النموذج لا يردّ: ما في البيانات مباشرةً
   var lines = (out.lines || []).filter(function (l) { return l && String(l.text || '').trim(); }).slice(0, 8);
   if (out.found === false || !lines.length) return web_(q);
   // لكلّ سطرٍ رابط مصدره بجانبه، فيُراجَع الخبر بضغطة.
@@ -902,36 +907,81 @@ function rank_(q, posts, top, byScore) {
 }
 
 /* ------------------------------------------------------------------ Gemini وتيليغرام وأدوات صغيرة */
+var AI_FAIL = '';            // سبب آخر تعذّرٍ للنموذج في هذا التشغيل، ليُقال في الجواب
+
 function gemini_(prompt, schema) {
-  if (!count_('AI_DAY', AI_DAY_MAX)) return null;
-  var P = PropertiesService.getScriptProperties(), key = P.getProperty('GEMINI_API_KEY'), now = Date.now(), rest = {};
+  AI_FAIL = '';
+  if (!count_('AI_DAY', AI_DAY_MAX)) { AI_FAIL = 'بلغ عدد أسئلة اليوم حدّه'; return null; }
+  var P = PropertiesService.getScriptProperties(), key = P.getProperty('GEMINI_API_KEY'), rest = {}, t0 = Date.now();
   try { rest = JSON.parse(P.getProperty('AI_REST') || '{}'); } catch (e) {}
   var payload = JSON.stringify({contents: [{parts: [{text: prompt}]}],
     generationConfig: {temperature: 0.1, responseMimeType: 'application/json', responseSchema: schema}});
-  for (var i = 0; i < MODELS.length; i++) {
-    var m = MODELS[i];
-    if (rest[m] && rest[m] > now) continue;
-    // UrlFetchApp بلا مهلة: يُعلَّم النموذج «مستريحًا» قبل طلبه، فإن علّق الطلب لم يُجرَّب ثانيةً قبل ثلث ساعة، ويُمحى عند الجواب.
-    rest[m] = now + 20 * 60000;
-    P.setProperty('AI_REST', JSON.stringify(rest));
-    try {
-      var r = UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/models/' + m + ':generateContent',
-        {method: 'post', contentType: 'application/json', headers: {'x-goog-api-key': key}, payload: payload, muteHttpExceptions: true});
-      var code = r.getResponseCode();
-      if (code !== 200) {
-        rest[m] = now + (code === 429 ? 5 : 10) * 60000;           // حدّ الدقيقة أو اليوم: خمس دقائق ثمّ يُجرَّب. تعطّلٌ عابر: عشر.
-        P.setProperty('AI_REST', JSON.stringify(rest));
+  var order = MODELS.filter(function (m) { return !(rest[m] > t0); });
+  if (!order.length) {                                    // كلّها مستريحة: يُجرَّب أقربها عودةً، فلا يُرفض سؤالٌ بلا محاولة
+    order = MODELS.slice().sort(function (a, b) { return rest[a] - rest[b]; }).slice(0, 1);
+  }
+  var errs = [], body = '';
+  for (var i = 0; i < order.length; i++) {
+    var m = order[i];
+    for (var attempt = 0; attempt < 2; attempt++) {
+      var now = Date.now();
+      // UrlFetchApp بلا مهلة: يُعلَّم النموذج «مستريحًا» قبل طلبه، فإن علّق الطلب لم يُجرَّب ثانيةً قبل ثلث ساعة، ويُمحى عند الجواب.
+      rest[m] = now + 20 * 60000;
+      P.setProperty('AI_REST', JSON.stringify(rest));
+      var code = 0;
+      try {
+        var r = UrlFetchApp.fetch('https://generativelanguage.googleapis.com/v1beta/models/' + m + ':generateContent',
+          {method: 'post', contentType: 'application/json', headers: {'x-goog-api-key': key}, payload: payload, muteHttpExceptions: true});
+        code = r.getResponseCode();
+        if (code === 200) {
+          var parts = JSON.parse(r.getContentText()).candidates[0].content.parts;
+          var out = JSON.parse(parts.map(function (x) { return x.text || ''; }).join(''));
+          delete rest[m];
+          P.setProperty('AI_REST', JSON.stringify(rest));
+          P.setProperty('AI_LAST', m);
+          return out;
+        }
+        body = r.getContentText().slice(0, 240);
+      } catch (e) {
+        body = String(e && e.message || e).slice(0, 240);       // جوابٌ بلا نصٍّ صالح، أو تعذّر الاتّصال
+      }
+      errs.push(m.replace('gemini-', '') + ' ' + (code || 'خطأ'));
+      if ((code >= 500 || code === 0) && attempt === 0) {       // ازدحامٌ عابر أو جوابٌ ناقص: محاولةٌ ثانية للنموذج نفسه بعد قليل
+        Utilities.sleep(2500);
         continue;
       }
-      var parts = JSON.parse(r.getContentText()).candidates[0].content.parts;
-      var out = JSON.parse(parts.map(function (x) { return x.text || ''; }).join(''));
-      delete rest[m];
+      // حدّ الدقيقة أو اليوم: خمس دقائق. ازدحام: دقيقة ونصف. خطأ في الطلب نفسه: عشر.
+      rest[m] = now + (code === 429 ? 300000 : (code >= 500 || code === 0) ? 90000 : 600000);
       P.setProperty('AI_REST', JSON.stringify(rest));
-      P.setProperty('AI_LAST', m);
-      return out;
-    } catch (e) {}
+      break;
+    }
   }
+  AI_FAIL = errs.join('، ');
+  P.setProperty('AI_ERR', stamp_(Date.now() / 1000) + ' ' + AI_FAIL + ' :: ' + body);
   return null;
+}
+
+/** حين لا يردّ النموذج: ما يطابق السؤال من البيانات مباشرةً بلا صياغة (المواقيت، الطقس، الأسعار، وأقرب مداخل الأدلّة). */
+function offline_(q, state, posts) {
+  var n = ' ' + norm_(q) + ' ', blocks = [], size = 0;
+  [[/ (ال)?(اذان|صلاه|صلوات|مواقيت|فجر|ظهر|عصر|مغرب|عشاء|شروق) /, qPrayer_], [/ (ال)?(طقس|جو|حراره|مطر|امطار) /, qWeather_],
+    [/ (ال)?(دولار|يورو|صرف|عمله|عملات|ريال|درهم) /, qRates_], [/ (ال)?(ذهب|عيار|غرام) /, qGold_],
+    [/ (ال)?(بنزين|مازوت|غاز|خبز|محروقات) /, qFuel_], [/ (ال)?(سله|سكر|رز|زيت|لحم|بيض|خضار) /, qBasket_]].forEach(function (p) {
+    if (!p[0].test(n) || size > 3000) return;
+    try {
+      var b = p[1](state);
+      blocks.push(b);
+      size += b.length;
+    } catch (e) {}
+  });
+  var dir = posts.filter(function (p) { return p.dir; }).slice(0, 4).map(function (p) {
+    var name = esc_(p.label || p.name);
+    return '• ' + esc_(p.text.replace(/\s+/g, ' ').slice(0, 230)) + (p.url ? ' <a href="' + esc_(p.url) + '">↗ ' + name + '</a>' : ' <i>↗ ' + name + '</i>');
+  });
+  if (dir.length && size < 3000) blocks.push('<b>أقرب ما في الأدلّة</b>\n' + dir.join('\n'));
+  var why = AI_FAIL ? ' (' + esc_(AI_FAIL) + ')' : '';
+  if (!blocks.length) return 'تعذّر الوصول إلى النموذج الآن' + why + '. اللوحة المثبّتة فيها أحدث الأرقام، وأعد السؤال بعد قليل.';
+  return '⚠️ <b>النموذج لا يردّ الآن</b>' + why + '. هذا ما في بياناتي مباشرةً، بلا صياغة:\n\n' + blocks.join('\n\n');
 }
 
 /** عدّاد يوميّ (بتوقيت دمشق) في خصائص السكربت. يعيد false حين يُبلغ الحدّ. */
