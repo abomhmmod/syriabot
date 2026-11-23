@@ -103,7 +103,7 @@ def save(path, data):
 
 
 # ------------------------------------------------------------------ الجلب
-def fetch(url, timeout=45, tries=2, raw=False):
+def fetch(url, timeout=45, tries=3, raw=False):
     err = None
     for i in range(tries):
         try:
