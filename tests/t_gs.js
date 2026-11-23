@@ -28,7 +28,8 @@ const ctx = {
     computeHmacSha256Signature: (data, key) => [...require('crypto').createHmac('sha256', Buffer.from(key.map(x => x & 255))).update(Buffer.from(data.map(x => x & 255))).digest()].map(x => (x > 127 ? x - 256 : x)),
     base64Encode: a => Buffer.from(a.map(x => x & 255)).toString('base64'),
     base64Decode: s => [...Buffer.from(s, 'base64')].map(x => (x > 127 ? x - 256 : x)),
-    getUuid: () => require('crypto').randomUUID(), sleep: ms => cp.spawnSync('python', ['-I', '-c', 'import time,sys; time.sleep(' + ms / 1000 + ')']), formatDate: (d, tz, f) => { const s = new Date(d.getTime() + 3 * 3600e3).toISOString(); return f.length > 10 ? s.slice(0, 16).replace('T', ' ') : s.slice(0, 10); }},
+    getUuid: () => require('crypto').randomUUID(), MacAlgorithm: {HMAC_SHA_512: 512},
+    computeHmacSignature: (alg, data, key) => [...require('crypto').createHmac('sha512', Buffer.from(key.map(x => x & 255))).update(Buffer.from(data.map(x => x & 255))).digest()].map(x => (x > 127 ? x - 256 : x)), sleep: ms => cp.spawnSync('python', ['-I', '-c', 'import time,sys; time.sleep(' + ms / 1000 + ')']), formatDate: (d, tz, f) => { const s = new Date(d.getTime() + 3 * 3600e3).toISOString(); return f.length > 10 ? s.slice(0, 16).replace('T', ' ') : s.slice(0, 10); }},
   LockService: {getScriptLock: () => ({tryLock: () => true, releaseLock: () => {}})},
   ContentService: {createTextOutput: t => ({setMimeType: () => t}), MimeType: {JSON: 1}},
   ScriptApp: {getOAuthToken: () => 'x', getProjectTriggers: () => [], newTrigger: () => ({timeBased: () => ({everyMinutes: () => ({create: () => {}})})})},
@@ -183,7 +184,9 @@ out = send('احفظ: بريد العمل = me@mail.example / السرّ: Ab=12=
 check('vault: saving needs no code, confirms by name only, and removes the message', /حُفظ: <b>بريد العمل<\/b>/.test(out) && !/me@mail/.test(out) && deleted() && store.VAULT_ID === 'id-vault.json' && store.VAULT_KEY.length > 40, out);
 out = send('احفظ الرقم الوطنيّ لأحمد = 01234567890');
 check('vault: the colon after the command is optional', /حُفظ/.test(out) && /2 في القسم/.test(out), out);
-check('vault: the stored file shows neither names nor values', !/me@mail|Ab=12|بريد|01234567890|الوطني/.test(FILES['vault.json']) && JSON.parse(FILES['vault.json']).ct.length > 40);
+let vf = JSON.parse(FILES['vault.json']);
+check('vault: the stored file has an encrypted index and one encrypted value per item, nothing readable', vf.v === 3 && vf.i.c.length > 40 && Object.keys(vf.vals).length === 2
+  && !/me@mail|Ab=12|بريد|01234567890|الوطني/.test(FILES['vault.json']));
 out = send('خاصّ بريد');
 check('vault: asking returns the value whole, covered, and queues the reply for deletion; the question stays', out.includes('<tg-spoiler>me@mail.example / السرّ: Ab=12==</tg-spoiler>') && /بريد العمل/.test(out)
   && JSON.parse(store.VAULT_DEL).length === 1 && !deleted(), out);
@@ -192,7 +195,7 @@ out = send('خاصّ');
 check('vault: the bare word lists names without values', /2 معلومة/.test(out) && /• بريد العمل/.test(out) && !/me@mail[.]example|01234567890/.test(out), out);
 check('vault: nothing of it went to the model', asked2.length === askedBefore);
 out = send('احفظ: بريد العمل = new@mail.example');
-check('vault: saving the same name updates it', /حُدّث/.test(out) && /2 في القسم/.test(out) && send('خاص بريد').includes('new@mail.example'));
+check('vault: saving the same name updates it', /حُدّث/.test(out) && /2 في القسم/.test(out) && send('خاص بريد').includes('new@mail.example') && Object.keys(JSON.parse(FILES['vault.json']).vals).length === 2);
 check('vault: a save without "=" is refused, and its message is still removed', /الصيغة/.test(send('احفظ: كلمة سرّ البنك 998877')) && deleted() && !send('خاص').includes('البنك'));
 out = send('احذف: بريد العمل');
 check('vault: deleting by exact name', /حُذف/.test(out) && /1 معلومة/.test(send('خاص')) && /لا معلومة بهذا الاسم/.test(send('احذف: شيء آخر')));
@@ -201,6 +204,30 @@ const key0 = store.VAULT_KEY;
 store.VAULT_KEY = Buffer.from('x'.repeat(32)).toString('base64');
 check('vault: the file does not open with another key', /لا يطابق مفتاحه/.test(send('خاص وطني')));
 store.VAULT_KEY = key0;
+// ملفٌّ بالصيغة القديمة (كتلة واحدة) يُقرأ ثمّ يُكتب بالجديدة عند أوّل حفظ
+run('(function () { var K = Utilities.base64Decode(PropertiesService.getScriptProperties().getProperty("VAULT_KEY")), n = rand16_(), '
+  + 'ct = xor_(K, n, bytes_(JSON.stringify({items: [{name: "معلومة قديمة", value: "قيمة من الصيغة القديمة", at: "2026-11-23"}]}))); '
+  + 'V_PUT("vault.json", JSON.stringify({v: 2, nonce: Utilities.base64Encode(n), ct: Utilities.base64Encode(ct), mac: seal_(K, n, ct)})); })()');
+check('vault: a file in the old format is still read', send('خاص قديمة').includes('قيمة من الصيغة القديمة'));
+send('احفظ: جديدة = 1');
+check('vault: and it is rewritten in the new format with nothing lost', JSON.parse(FILES['vault.json']).v === 3 && send('خاص قديمة').includes('قيمة من الصيغة القديمة') && /2 معلومة/.test(send('خاص')));
+// الاستيراد بالجملة من الحاسوب (doPost بمفتاح الرفع)
+const bulk = [];
+for (let k = 0; k < 600; k++) bulk.push({name: 'حساب site-' + k + '.example · user' + k, value: 'المستخدم: user' + k + '\nكلمة السرّ: p-' + k + '-x'});
+bulk.push({name: '', value: 'x'}, {name: 'بلا قيمة', value: '  '}, {name: 'نوع خطأ', value: 5}, null);
+ctx.B5 = {key: 'k'.repeat(40), files: [], vault: bulk};
+const t0 = Date.now(), imp = run('receive_(B5)'), took = Date.now() - t0;
+check('vault: bulk import adds the valid items and skips the bad ones', imp.ok && imp.vault.added === 600 && imp.vault.updated === 0 && imp.vault.total === 602, JSON.stringify(imp.vault) + ' ' + took + 'ms');
+check('vault: importing the same list again updates instead of duplicating', (r => r.vault.added === 0 && r.vault.updated === 600 && r.vault.total === 602)(run('receive_(B5)')));
+ctx.B6 = {key: 'z'.repeat(40), files: [], vault: [{name: 'دخيل', value: 'x'}]};
+check('vault: an import with a wrong key is refused', run('receive_(B6)').ok === false && !send('خاص دخيل').includes('<tg-spoiler>'));
+out = send('خاص site-77.example');
+check('vault: among several matches the closest name comes first', out.indexOf('p-77-x') > 0 && out.indexOf('p-77-x') < out.indexOf('p-177-x') && !/أخرى تطابق/.test(out), out.slice(0, 300));
+out = send('خاص site example');
+check('vault: a broad search shows twelve and counts the rest', (out.match(/<tg-spoiler>/g) || []).length === 12 && /و588 أخرى تطابق/.test(out) && out.length < 4096, out.slice(-200));
+check('vault: one exact item is found alone', (o => o.includes('p-599-x') && !/أخرى تطابق/.test(o))(send('خاص user599')));
+out = send('خاصّ');
+check('vault: a long list is shown as counts with a hint to search', /602 معلومة/.test(out) && /• حساب…: 600/.test(out) && !/site-77/.test(out) && out.length < 3500, out.slice(0, 300));
 store.VAULT_DEL = JSON.stringify([[201, 1], [202, Math.floor(Date.now() / 1000) + 600]]);
 calls.length = 0; run('poll()');
 check('vault: due replies are deleted on the next minute, later ones wait', calls.some(c => c[0] === 'deleteMessage' && c[1].message_id === 201) && !calls.some(c => c[0] === 'deleteMessage' && c[1].message_id === 202)

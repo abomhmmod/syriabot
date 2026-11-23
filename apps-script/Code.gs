@@ -117,7 +117,9 @@ function receive_(b) {
     });
     P.setProperty('PRIV_FILES', JSON.stringify(idx));
   }
-  return {ok: true, saved: saved, files: Object.keys(idx).length};
+  var out = {ok: true, saved: saved, files: Object.keys(idx).length};
+  if (b.vault && b.vault.length) out.vault = vaultImport_(b.vault);        // استيراد القسم الخاصّ بالجملة: يُكتب ولا يُقرأ من هنا
+  return out;
 }
 
 function privIndex_() {
@@ -235,13 +237,14 @@ function handle_(token, chat, m) {
 }
 
 /* ------------------------------------------------------------------ القسم الخاصّ: معلومات صاحب البوت السرّيّة */
-// يكتبها هو وحده («احفظ: الاسم = القيمة») ويسأل عنها («خاصّ كلمة»)، بلا رمز (قراره). لا يمرّ شيءٌ منها بأيّ نموذج: البحث
-// بالكود في الأسماء. التخزين ملفٌّ واحد في مجلّد البوت في Drive، مشفّر بمفتاحٍ عشوائيّ يُحفظ في خصائص السكربت (VAULT_KEY):
-// تدفّق مفاتيح من HMAC-SHA256 بعدّاد، وختم HMAC على المشفَّر. فالملفّ وحده لا يُقرأ، ومن يملك حساب جوجل هذا يملكه.
-// رسالة الحفظ تُحذف فورًا (فيها المعلومة)، والجواب يُرسل مغطًّى ويُحذف بعد VAULT_TTL ثانية.
-var VAULT_TTL = 120;
+// يكتبها هو وحده («احفظ: الاسم = القيمة») ويسأل عنها («خاصّ كلمة»)، بلا رمز (قراره)، أو يستوردها حاسوبه بالجملة عبر doPost
+// بمفتاح الرفع. لا يمرّ شيءٌ منها بأيّ نموذج: البحث بالكود في الأسماء. التخزين ملفٌّ واحد في مجلّد البوت في Drive، مشفّر
+// بمفتاحٍ عشوائيّ يُحفظ في خصائص السكربت (VAULT_KEY): فهرس الأسماء مشفّر وحده، وكلّ قيمةٍ مشفّرة وحدها (فلا يُفكّ عند
+// السؤال إلّا الفهرس وما طابق)، بتدفّق مفاتيح من HMAC-SHA512 بعدّاد وختم HMAC-SHA256. فالملفّ وحده لا يُقرأ، ومن يملك حساب
+// جوجل هذا يملكه. رسالة الحفظ تُحذف فورًا (فيها المعلومة)، والجواب يُرسل مغطًّى ويُحذف بعد VAULT_TTL ثانية.
+var VAULT_TTL = 120, VAULT_SHOW = 12, VAULT_LIST = 40;
 var VAULT_USAGE = '<b>تسجيل معلومة</b>\n<code>احفظ: بريد العمل = name@mail.com</code>\n\n'
-  + '<b>السؤال</b> (بكلمةٍ من الاسم)\n<code>خاصّ بريد</code>\n\n'
+  + '<b>السؤال</b> (بكلمةٍ أو أكثر من الاسم)\n<code>خاصّ بريد</code>\n\n'
   + '<b>قائمة الأسماء</b>\n<code>خاصّ</code>\n\n'
   + '<b>حذف معلومة</b>\n<code>احذف: بريد العمل</code>\n\n'
   + '<i>يُجاب بالكود وحده ولا يصل شيءٌ إلى أيّ نموذج. رسالة الحفظ تُحذف فورًا، والجواب يُحذف بعد دقيقتين.</i>';
@@ -250,7 +253,7 @@ function bytes_(s) { return Utilities.newBlob(String(s)).getBytes(); }
 function hmac_(key, data) { return Utilities.computeHmacSha256Signature(data, key); }
 function rand16_() { return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, Utilities.getUuid() + Utilities.getUuid() + Date.now()).slice(0, 16); }
 
-/** تشفير وفكّ بالعمليّة نفسها: XOR بتدفّقٍ من HMAC(مفتاح التشفير، الرقم العشوائيّ ‖ العدّاد). */
+/** الصيغة القديمة (ملفٌّ كلّه كتلة واحدة، كتل 32 بايتًا): تبقى لقراءة ملفٍّ كُتب بها ثمّ يُكتب بالجديدة. */
 function xor_(K, nonce, data) {
   var ke = hmac_(K, bytes_('enc')), out = [], block = null;
   for (var i = 0; i < data.length; i++) {
@@ -262,24 +265,85 @@ function xor_(K, nonce, data) {
 
 function seal_(K, nonce, ct) { return Utilities.base64Encode(hmac_(hmac_(K, bytes_('mac')), nonce.concat(ct))); }
 
-/** يفتح القسم: {K, items}. إن لم يُنشأ بعد (أو لا مفتاح له) يعيد قسمًا فارغًا بمفتاحٍ جديد يُحفظ عند أوّل كتابة. */
+/** تشفير وفكّ بالعمليّة نفسها: XOR بتدفّقٍ من HMAC-SHA512(مفتاح التشفير، الرقم العشوائيّ ‖ العدّاد)، 64 بايتًا للكتلة. */
+function xor5_(ke, nonce, data) {
+  var out = [], block = null;
+  for (var i = 0; i < data.length; i++) {
+    if (i % 64 === 0) block = Utilities.computeHmacSignature(Utilities.MacAlgorithm.HMAC_SHA_512, nonce.concat(bytes_(String(i / 64))), ke);
+    out.push(data[i] ^ block[i % 64]);
+  }
+  return out;
+}
+
+function box_(v, text) {
+  var n = rand16_(), c = xor5_(v.ke, n, bytes_(text));
+  return {n: Utilities.base64Encode(n), c: Utilities.base64Encode(c), m: Utilities.base64Encode(hmac_(v.km, n.concat(c)))};
+}
+
+function unbox_(v, b) {
+  var n = Utilities.base64Decode(b.n), c = Utilities.base64Decode(b.c);
+  if (Utilities.base64Encode(hmac_(v.km, n.concat(c))) !== b.m) throw new Error('ملفّ القسم الخاصّ لا يطابق مفتاحه');
+  return Utilities.newBlob(xor5_(v.ke, n, c)).getDataAsString('UTF-8');
+}
+
+/** يفتح القسم: {K, index: [[المعرّف، الاسم، التاريخ]], vals: {المعرّف: قيمةٌ مشفّرة}, map: {الاسم الموحَّد: المعرّف}}.
+ *  إن لم يُنشأ بعد يعيد قسمًا فارغًا بمفتاحٍ جديد يُحفظ عند أوّل كتابة. */
 function vaultOpen_() {
   var P = PropertiesService.getScriptProperties(), id = P.getProperty('VAULT_ID'), key = P.getProperty('VAULT_KEY');
-  if (!id || !key) return {K: rand16_().concat(rand16_()), items: [], fresh: true};
+  var v = {index: [], vals: {}, map: {}, fresh: !id || !key};
+  v.K = v.fresh ? rand16_().concat(rand16_()) : Utilities.base64Decode(key);
+  v.ke = hmac_(v.K, bytes_('enc5'));
+  v.km = hmac_(v.K, bytes_('mac'));
+  if (v.fresh) return v;
   var raw = privRead_(['vault.json'], {'vault.json': id})['vault.json'];
   if (!raw) throw new Error('تعذّرت قراءة ملفّ القسم الخاصّ من Drive');
-  var f = JSON.parse(raw), K = Utilities.base64Decode(key), nonce = Utilities.base64Decode(f.nonce), ct = Utilities.base64Decode(f.ct);
-  if (seal_(K, nonce, ct) !== f.mac) throw new Error('ملفّ القسم الخاصّ لا يطابق مفتاحه');
-  return {K: K, items: JSON.parse(Utilities.newBlob(xor_(K, nonce, ct)).getDataAsString('UTF-8')).items || []};
+  var f = JSON.parse(raw);
+  if (f.v === 3) {
+    v.index = JSON.parse(unbox_(v, f.i));
+    v.vals = f.vals || {};
+    v.index.forEach(function (x) { v.map[norm_(x[1])] = x[0]; });
+  } else {                                                 // الصيغة القديمة: تُقرأ كلّها وتُحمَّل بالجديدة في الذاكرة
+    var nonce = Utilities.base64Decode(f.nonce), ct = Utilities.base64Decode(f.ct);
+    if (seal_(v.K, nonce, ct) !== f.mac) throw new Error('ملفّ القسم الخاصّ لا يطابق مفتاحه');
+    (JSON.parse(Utilities.newBlob(xor_(v.K, nonce, ct)).getDataAsString('UTF-8')).items || []).forEach(function (x) { vaultSet_(v, x.name, x.value, x.at); });
+  }
+  return v;
+}
+
+/** يضع معلومةً (أو يحدّث التي بالاسم نفسه). يعيد true إن كانت موجودة. */
+function vaultSet_(v, name, value, at) {
+  var key = norm_(name), old = v.map[key];
+  if (old) {
+    delete v.vals[old];
+    v.index = v.index.filter(function (x) { return x[0] !== old; });
+  }
+  var id = Utilities.getUuid().replace(/-/g, '').slice(0, 10);
+  v.index.push([id, name, at || '']);
+  v.vals[id] = box_(v, value);
+  v.map[key] = id;
+  return !!old;
 }
 
 function vaultSave_(v) {
-  var P = PropertiesService.getScriptProperties(), nonce = rand16_();
-  var ct = xor_(v.K, nonce, bytes_(JSON.stringify({items: v.items})));
-  var body = JSON.stringify({v: 2, nonce: Utilities.base64Encode(nonce), ct: Utilities.base64Encode(ct), mac: seal_(v.K, nonce, ct)});
+  var P = PropertiesService.getScriptProperties();
+  var body = JSON.stringify({v: 3, i: box_(v, JSON.stringify(v.index)), vals: v.vals});
   var id = privPut_('vault.json', body, {'vault.json': v.fresh ? null : P.getProperty('VAULT_ID')});
   P.setProperty('VAULT_ID', id);
   if (v.fresh) P.setProperty('VAULT_KEY', Utilities.base64Encode(v.K));
+  v.fresh = false;
+}
+
+/** استيراد بالجملة من حاسوب صاحب البوت (عبر doPost بمفتاح الرفع): [{name, value}]. يعيد الأعداد فقط. */
+function vaultImport_(items) {
+  var v = vaultOpen_(), add = 0, upd = 0, today = day_(Date.now() / 1000);
+  items.forEach(function (x) {
+    if (!x || typeof x.name !== 'string' || typeof x.value !== 'string') return;
+    var name = x.name.replace(/\s+/g, ' ').trim();
+    if (!name || !x.value.trim() || name.length > 200 || x.value.length > 3000 || !norm_(name)) return;
+    if (vaultSet_(v, name, x.value.trim(), today)) upd++; else add++;
+  });
+  if (add || upd) vaultSave_(v);
+  return {added: add, updated: upd, total: v.index.length};
 }
 
 /** يحذف ما حان موعد حذفه من أجوبة القسم الخاصّ (يُستدعى كلّ دقيقة). */
@@ -319,33 +383,46 @@ function vault_(token, chat, m, q) {
       var i = rest.indexOf('=');
       if (i < 1 || !rest.slice(i + 1).trim()) return say('الصيغة:\n<code>احفظ: الاسم = القيمة</code>\n\nحذفتُ رسالتك احتياطًا، فأعد كتابتها.', true);
       v = vaultOpen_();
-      var name = rest.slice(0, i).trim(), val = rest.slice(i + 1).trim(), old = false;
-      key = norm_(name);
-      v.items = v.items.filter(function (x) { if (norm_(x.name) === key) { old = true; return false; } return true; });
-      v.items.push({name: name, value: val, at: day_(now)});
+      var name = rest.slice(0, i).replace(/\s+/g, ' ').trim(), old = vaultSet_(v, name, rest.slice(i + 1).trim(), day_(now));
       vaultSave_(v);
-      return say('✅ ' + (old ? 'حُدّث' : 'حُفظ') + ': <b>' + esc_(name) + '</b> (' + v.items.length + ' في القسم الخاصّ). حذفتُ رسالتك من المحادثة.', true);
+      return say('✅ ' + (old ? 'حُدّث' : 'حُفظ') + ': <b>' + esc_(name) + '</b> (' + v.index.length + ' في القسم الخاصّ). حذفتُ رسالتك من المحادثة.', true);
     }
     v = vaultOpen_();
     if (cmd[1] === 'احذف') {
       if (!rest) return say('الصيغة:\n<code>احذف: الاسم</code>', true);
-      key = norm_(rest);
-      var before = v.items.length;
-      v.items = v.items.filter(function (x) { return norm_(x.name) !== key; });
-      if (v.items.length === before) return say('لا معلومة بهذا الاسم تمامًا: «' + esc_(rest) + '». أرسل <code>خاصّ</code> لترى الأسماء.', true);
+      key = v.map[norm_(rest)];
+      if (!key) return say('لا معلومة بهذا الاسم تمامًا: «' + esc_(rest) + '». أرسل <code>خاصّ</code> مع كلمةٍ من الاسم لتراه كاملًا.', true);
+      delete v.vals[key];
+      v.index = v.index.filter(function (x) { return x[0] !== key; });
       vaultSave_(v);
       return say('🗑 حُذف: <b>' + esc_(rest) + '</b>.', true);
     }
     var toks = norm_(rest).split(' ').filter(function (t) { return t; });
-    if (!toks.length) {                                   // «خاصّ» وحدها: الأسماء ثمّ الطريقة
-      return say('🔐 <b>القسم الخاصّ · ' + v.items.length + ' معلومة</b>\n'
-        + (v.items.map(function (x) { return '• ' + esc_(x.name); }).sort().join('\n') || '(فارغ)') + '\n\n' + VAULT_USAGE, true);
+    if (!toks.length) {                                   // «خاصّ» وحدها: الأسماء (أو أعدادها إن كثرت) ثمّ الطريقة
+      var names = v.index.map(function (x) { return x[1]; }).sort(), body;
+      if (names.length <= VAULT_LIST) {
+        body = names.map(function (n) { return '• ' + esc_(n); }).join('\n') || '(فارغ)';
+      } else {
+        var groups = {};
+        names.forEach(function (n) { var g = n.split(' ')[0]; groups[g] = (groups[g] || 0) + 1; });
+        body = Object.keys(groups).sort(function (a, b) { return groups[b] - groups[a]; }).slice(0, 8).map(function (g) {
+          return '• ' + esc_(g) + '…: ' + groups[g];
+        }).join('\n') + '\n\nالأسماء كثيرة؛ اكتب <code>خاصّ</code> مع كلمةٍ من الاسم (مثل <code>خاصّ facebook</code> أو <code>خاصّ هاتف أحمد</code>).';
+      }
+      return say('🔐 <b>القسم الخاصّ · ' + names.length + ' معلومة</b>\n' + body + '\n\n' + VAULT_USAGE, true);
     }
-    var hits = v.items.filter(function (x) { var n = norm_(x.name); return toks.every(function (t) { return n.indexOf(t) >= 0; }); });
-    if (!hits.length) return say('لا معلومة في اسمها «' + esc_(rest) + '». أرسل <code>خاصّ</code> لترى الأسماء.', true);
-    return say(hits.slice(0, 12).map(function (x) {
-      return '🔐 <b>' + esc_(x.name) + '</b>\n<tg-spoiler>' + esc_(x.value) + '</tg-spoiler>' + (x.at ? '\n<i>سُجّلت ' + x.at + '</i>' : '');
-    }).join('\n\n') + note);
+    var hits = v.index.filter(function (x) { var n = ' ' + norm_(x[1]) + ' '; return toks.every(function (t) { return n.indexOf(t) >= 0; }); })
+      .sort(function (a, b) { return a[1].length - b[1].length; });
+    if (!hits.length) return say('لا معلومة في اسمها «' + esc_(rest) + '». أرسل <code>خاصّ</code> لترى ما في القسم.', true);
+    var parts = [], size = 0, shown = 0;
+    hits.slice(0, VAULT_SHOW).forEach(function (x) {
+      var val = unbox_(v, v.vals[x[0]]), block = '🔐 <b>' + esc_(x[1]) + '</b>\n<tg-spoiler>' + esc_(val) + '</tg-spoiler>';
+      if (size + block.length > 3400 && shown) return;
+      parts.push(block);
+      size += block.length;
+      shown++;
+    });
+    return say(parts.join('\n\n') + (hits.length > shown ? '\n\n<i>و' + (hits.length - shown) + ' أخرى تطابق؛ زد كلمةً لتضييق البحث.</i>' : '') + note);
   } catch (e) {
     return say('تعذّر فتح القسم الخاصّ: ' + esc_(String(e && e.message || e).slice(0, 120)), true);
   }
