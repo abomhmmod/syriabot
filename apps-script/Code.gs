@@ -235,41 +235,20 @@ function handle_(token, chat, m) {
 }
 
 /* ------------------------------------------------------------------ القسم الخاصّ: معلومات صاحب البوت السرّيّة */
-// يكتبها هو وحده («احفظ الرمز: الاسم = القيمة») ويسأل عنها («خاصّ الرمز كلمة»). لا يمرّ شيءٌ منها بأيّ نموذج: البحث بالكود.
-// التخزين ملفٌّ واحد في مجلّد البوت في Drive، مشفّر بمفتاحٍ يُشتقّ من الرمز (PBKDF2-HMAC-SHA256)، فلا يُفتح بلا الرمز:
-// تدفّق مفاتيح من HMAC-SHA256 بعدّاد، وختم HMAC على المشفَّر يكشف الرمز الخطأ. رسالة صاحبه تُحذف فورًا (فيها الرمز)،
-// والجواب يُرسل مغطًّى ويُحذف بعد VAULT_TTL ثانية. خمس محاولاتٍ خاطئة تقفل القسم ربع ساعة.
-var VAULT_ITERS = 2000, VAULT_TTL = 120, VAULT_TRIES = 5, VAULT_LOCK = 900, VAULT_PIN_MIN = 6;
-var VAULT_USAGE = '🔐 <b>القسم الخاصّ</b>\nمعلوماتك السرّيّة، يُجاب عنها بالكود وحده ولا تصل إلى أيّ نموذج. رسالتك تُحذف فورًا، والجواب يُحذف بعد دقيقتين.\n\n'
-  + '<b>أوّل مرّة</b>\n<code>رمز جديد 482913</code>\n(ستّة رموز على الأقلّ؛ احفظه، فلا يُسترجع)\n\n'
-  + '<b>تسجيل معلومة</b>\n<code>احفظ 482913: بريد العمل = name@mail.com</code>\n\n'
-  + '<b>السؤال</b>\n<code>خاصّ 482913 بريد</code>\n\n'
-  + '<b>قائمة الأسماء</b>\n<code>خاصّ 482913</code>\n\n'
-  + '<b>حذف معلومة</b>\n<code>احذف 482913: بريد العمل</code>\n\n'
-  + '<b>تغيير الرمز</b>\n<code>غيّر الرمز 482913 951357</code>';
-
-/** تجربة من المحرّر: كم يستغرق اشتقاق المفتاح وتشفير نصٍّ صغير هنا (لا يمسّ ملفّ القسم الخاصّ). */
-function vault_speed() {
-  var t0 = Date.now(), s = rand16_(), K = kdf_('test-code-123', s, VAULT_ITERS), t1 = Date.now();
-  var n = rand16_(), ct = xor_(K, n, bytes_(new Array(60).join('معلومة تجريبيّة 0123456789 '))), back = Utilities.newBlob(xor_(K, n, ct)).getDataAsString('UTF-8'), t2 = Date.now();
-  var msg = 'اشتقاق المفتاح (' + VAULT_ITERS + ' دورة): ' + (t1 - t0) + ' مللي ثانية | تشفير وفكّ ' + ct.length + ' بايتًا: ' + (t2 - t1) + ' مللي ثانية | سليم: ' + (back.indexOf('معلومة تجريبيّة') === 0);
-  Logger.log(msg);
-  return msg;
-}
+// يكتبها هو وحده («احفظ: الاسم = القيمة») ويسأل عنها («خاصّ كلمة»)، بلا رمز (قراره). لا يمرّ شيءٌ منها بأيّ نموذج: البحث
+// بالكود في الأسماء. التخزين ملفٌّ واحد في مجلّد البوت في Drive، مشفّر بمفتاحٍ عشوائيّ يُحفظ في خصائص السكربت (VAULT_KEY):
+// تدفّق مفاتيح من HMAC-SHA256 بعدّاد، وختم HMAC على المشفَّر. فالملفّ وحده لا يُقرأ، ومن يملك حساب جوجل هذا يملكه.
+// رسالة الحفظ تُحذف فورًا (فيها المعلومة)، والجواب يُرسل مغطًّى ويُحذف بعد VAULT_TTL ثانية.
+var VAULT_TTL = 120;
+var VAULT_USAGE = '<b>تسجيل معلومة</b>\n<code>احفظ: بريد العمل = name@mail.com</code>\n\n'
+  + '<b>السؤال</b> (بكلمةٍ من الاسم)\n<code>خاصّ بريد</code>\n\n'
+  + '<b>قائمة الأسماء</b>\n<code>خاصّ</code>\n\n'
+  + '<b>حذف معلومة</b>\n<code>احذف: بريد العمل</code>\n\n'
+  + '<i>يُجاب بالكود وحده ولا يصل شيءٌ إلى أيّ نموذج. رسالة الحفظ تُحذف فورًا، والجواب يُحذف بعد دقيقتين.</i>';
 
 function bytes_(s) { return Utilities.newBlob(String(s)).getBytes(); }
 function hmac_(key, data) { return Utilities.computeHmacSha256Signature(data, key); }
 function rand16_() { return Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, Utilities.getUuid() + Utilities.getUuid() + Date.now()).slice(0, 16); }
-
-/** المفتاح من الرمز: PBKDF2-HMAC-SHA256 (كتلة واحدة، 32 بايتًا). */
-function kdf_(pin, salt, iters) {
-  var key = bytes_(pin), u = hmac_(key, salt.concat([0, 0, 0, 1])), out = u.slice();
-  for (var i = 1; i < iters; i++) {
-    u = hmac_(key, u);
-    for (var j = 0; j < 32; j++) out[j] ^= u[j];
-  }
-  return out;
-}
 
 /** تشفير وفكّ بالعمليّة نفسها: XOR بتدفّقٍ من HMAC(مفتاح التشفير، الرقم العشوائيّ ‖ العدّاد). */
 function xor_(K, nonce, data) {
@@ -283,26 +262,24 @@ function xor_(K, nonce, data) {
 
 function seal_(K, nonce, ct) { return Utilities.base64Encode(hmac_(hmac_(K, bytes_('mac')), nonce.concat(ct))); }
 
-/** يفتح الملفّ بالرمز: {K, salt, items}؛ null إن لم يُنشأ القسم بعد؛ ويرمي 'PIN' إن كان الرمز خطأ. */
-function vaultOpen_(pin) {
-  var id = PropertiesService.getScriptProperties().getProperty('VAULT_ID');
-  if (!id) return null;
+/** يفتح القسم: {K, items}. إن لم يُنشأ بعد (أو لا مفتاح له) يعيد قسمًا فارغًا بمفتاحٍ جديد يُحفظ عند أوّل كتابة. */
+function vaultOpen_() {
+  var P = PropertiesService.getScriptProperties(), id = P.getProperty('VAULT_ID'), key = P.getProperty('VAULT_KEY');
+  if (!id || !key) return {K: rand16_().concat(rand16_()), items: [], fresh: true};
   var raw = privRead_(['vault.json'], {'vault.json': id})['vault.json'];
   if (!raw) throw new Error('تعذّرت قراءة ملفّ القسم الخاصّ من Drive');
-  var f = JSON.parse(raw), salt = Utilities.base64Decode(f.salt), nonce = Utilities.base64Decode(f.nonce), ct = Utilities.base64Decode(f.ct);
-  var K = kdf_(pin, salt, f.iters);
-  if (seal_(K, nonce, ct) !== f.mac) throw new Error('PIN');
-  var text = Utilities.newBlob(xor_(K, nonce, ct)).getDataAsString('UTF-8');
-  return {K: K, salt: salt, iters: f.iters, items: JSON.parse(text).items || []};
+  var f = JSON.parse(raw), K = Utilities.base64Decode(key), nonce = Utilities.base64Decode(f.nonce), ct = Utilities.base64Decode(f.ct);
+  if (seal_(K, nonce, ct) !== f.mac) throw new Error('ملفّ القسم الخاصّ لا يطابق مفتاحه');
+  return {K: K, items: JSON.parse(Utilities.newBlob(xor_(K, nonce, ct)).getDataAsString('UTF-8')).items || []};
 }
 
 function vaultSave_(v) {
   var P = PropertiesService.getScriptProperties(), nonce = rand16_();
   var ct = xor_(v.K, nonce, bytes_(JSON.stringify({items: v.items})));
-  var body = JSON.stringify({v: 1, salt: Utilities.base64Encode(v.salt), iters: v.iters, nonce: Utilities.base64Encode(nonce),
-    ct: Utilities.base64Encode(ct), mac: seal_(v.K, nonce, ct)});
-  var id = privPut_('vault.json', body, {'vault.json': P.getProperty('VAULT_ID')});
+  var body = JSON.stringify({v: 2, nonce: Utilities.base64Encode(nonce), ct: Utilities.base64Encode(ct), mac: seal_(v.K, nonce, ct)});
+  var id = privPut_('vault.json', body, {'vault.json': v.fresh ? null : P.getProperty('VAULT_ID')});
   P.setProperty('VAULT_ID', id);
+  if (v.fresh) P.setProperty('VAULT_KEY', Utilities.base64Encode(v.K));
 }
 
 /** يحذف ما حان موعد حذفه من أجوبة القسم الخاصّ (يُستدعى كلّ دقيقة). */
@@ -320,95 +297,58 @@ function vaultSweep_(token, chat) {
 /** أوامر القسم الخاصّ. يعيد true إن كانت الرسالة منها (فلا تذهب إلى الجواب العاديّ). */
 function vault_(token, chat, m, q) {
   var flat = q.replace(/[ً-ْٰـ]/g, '').replace(/[إأآ]/g, 'ا').replace(/^\s+/, '');
-  var cmd = /^(خاص|احفظ|احذف|رمز جديد|غير الرمز)(?=\s|:|$)/.exec(flat);
+  var cmd = /^(خاص|احفظ|احذف)(?=\s|:|$)/.exec(flat);
   if (!cmd) return false;
-  var P = PropertiesService.getScriptProperties(), rest = flat.slice(cmd[0].length).replace(/^[\s:]+/, '');
-  tg_(token, 'deleteMessage', {chat_id: chat, message_id: m.message_id});         // فيها الرمز أو المعلومة: لا تبقى في المحادثة
+  var P = PropertiesService.getScriptProperties(), now = Date.now() / 1000;
+  var rest = q.replace(/^\s*\S+?(?=\s|:|$)[\s:]*/, '').trim();        // ما بعد الأمر، بنصّه الأصليّ (القيمة تُحفظ كما كُتبت)
   var say = function (html, keep) {
     var r = tg_(token, 'sendMessage', {chat_id: chat, text: html, parse_mode: 'HTML', disable_notification: true, link_preview_options: {is_disabled: true}});
     if (!r.ok) r = tg_(token, 'sendMessage', {chat_id: chat, text: html.replace(/<[^>]+>/g, ''), disable_notification: true});
     if (r.ok && !keep) {
       var d = [];
       try { d = JSON.parse(P.getProperty('VAULT_DEL') || '[]'); } catch (e) {}
-      d.push([r.result.message_id, Math.floor(Date.now() / 1000) + VAULT_TTL]);
+      d.push([r.result.message_id, Math.floor(now) + VAULT_TTL]);
       P.setProperty('VAULT_DEL', JSON.stringify(d));
     }
     return true;
   };
-  var note = '\n\n<i>تُحذف هذه الرسالة بعد دقيقتين.</i>';
-  if (cmd[1] === 'خاص' && !rest) return say(VAULT_USAGE, true);
-  var lock = (P.getProperty('VAULT_FAIL') || '0|0').split('|'), now = Date.now() / 1000;
-  if (Number(lock[1]) > now) return say('🔒 القسم الخاصّ مقفل بعد محاولاتٍ خاطئة. يُفتح بعد ' + Math.ceil((Number(lock[1]) - now) / 60) + ' دقيقة.');
-  var open = function (pin) {                       // يفتح أو يجيب عن الخطأ ويعيد null
-    try {
-      var v = vaultOpen_(pin);
-      if (!v) { say('لم يُنشأ القسم الخاصّ بعد. أرسل: <code>رمز جديد 482913</code> (برمزٍ تختاره، ستّة رموز على الأقلّ).', true); return null; }
-      P.setProperty('VAULT_FAIL', '0|0');
-      return v;
-    } catch (e) {
-      if (String(e.message) !== 'PIN') { say('تعذّر فتح القسم الخاصّ: ' + esc_(String(e.message).slice(0, 100))); return null; }
-      var n = Number(lock[0]) + 1;
-      P.setProperty('VAULT_FAIL', n >= VAULT_TRIES ? '0|' + Math.floor(now + VAULT_LOCK) : n + '|0');
-      say(n >= VAULT_TRIES ? '🔒 الرمز خطأ للمرّة الخامسة. أُقفل القسم الخاصّ ربع ساعة.' : '❌ الرمز غير صحيح (' + n + ' من ' + VAULT_TRIES + ').');
-      return null;
+  var note = '\n\n<i>تُحذف هذه الرسالة بعد دقيقتين.</i>', v, key;
+  try {
+    if (cmd[1] === 'احفظ') {
+      tg_(token, 'deleteMessage', {chat_id: chat, message_id: m.message_id});       // فيها المعلومة: لا تبقى في المحادثة
+      var i = rest.indexOf('=');
+      if (i < 1 || !rest.slice(i + 1).trim()) return say('الصيغة:\n<code>احفظ: الاسم = القيمة</code>\n\nحذفتُ رسالتك احتياطًا، فأعد كتابتها.', true);
+      v = vaultOpen_();
+      var name = rest.slice(0, i).trim(), val = rest.slice(i + 1).trim(), old = false;
+      key = norm_(name);
+      v.items = v.items.filter(function (x) { if (norm_(x.name) === key) { old = true; return false; } return true; });
+      v.items.push({name: name, value: val, at: day_(now)});
+      vaultSave_(v);
+      return say('✅ ' + (old ? 'حُدّث' : 'حُفظ') + ': <b>' + esc_(name) + '</b> (' + v.items.length + ' في القسم الخاصّ). حذفتُ رسالتك من المحادثة.', true);
     }
-  };
-  // الرمز بأرقامٍ لاتينيّة دائمًا (لوحة المفاتيح قد تكتب ٤٨٢ مرّة و482 مرّة)، وبلا النقطتين الملتصقتين به
-  var parts = rest.split(/\s+/).map(function (p) {
-    return p.replace(/:+$/, '').replace(/[٠-٩]/g, function (d) { return '٠١٢٣٤٥٦٧٨٩'.indexOf(d); }).replace(/[۰-۹]/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d); });
-  }), v, name, i;
-  if (cmd[1] === 'رمز جديد') {
-    if (P.getProperty('VAULT_ID')) return say('للقسم الخاصّ رمزٌ من قبل. لتغييره: <code>غيّر الرمز القديم الجديد</code>.');
-    if (parts[0].length < VAULT_PIN_MIN || parts.length !== 1) return say('الرمز كلمةٌ واحدة بلا مسافات، ستّة رموز على الأقلّ.');
-    var s0 = rand16_();
-    vaultSave_({K: kdf_(parts[0], s0, VAULT_ITERS), salt: s0, iters: VAULT_ITERS, items: []});
-    return say('✅ أُنشئ القسم الخاصّ. احفظ رمزك: لا أحد يستطيع استرجاعه، وبلا الرمز لا يُفتح ما فيه.' + note);
+    v = vaultOpen_();
+    if (cmd[1] === 'احذف') {
+      if (!rest) return say('الصيغة:\n<code>احذف: الاسم</code>', true);
+      key = norm_(rest);
+      var before = v.items.length;
+      v.items = v.items.filter(function (x) { return norm_(x.name) !== key; });
+      if (v.items.length === before) return say('لا معلومة بهذا الاسم تمامًا: «' + esc_(rest) + '». أرسل <code>خاصّ</code> لترى الأسماء.', true);
+      vaultSave_(v);
+      return say('🗑 حُذف: <b>' + esc_(rest) + '</b>.', true);
+    }
+    var toks = norm_(rest).split(' ').filter(function (t) { return t; });
+    if (!toks.length) {                                   // «خاصّ» وحدها: الأسماء ثمّ الطريقة
+      return say('🔐 <b>القسم الخاصّ · ' + v.items.length + ' معلومة</b>\n'
+        + (v.items.map(function (x) { return '• ' + esc_(x.name); }).sort().join('\n') || '(فارغ)') + '\n\n' + VAULT_USAGE, true);
+    }
+    var hits = v.items.filter(function (x) { var n = norm_(x.name); return toks.every(function (t) { return n.indexOf(t) >= 0; }); });
+    if (!hits.length) return say('لا معلومة في اسمها «' + esc_(rest) + '». أرسل <code>خاصّ</code> لترى الأسماء.', true);
+    return say(hits.slice(0, 12).map(function (x) {
+      return '🔐 <b>' + esc_(x.name) + '</b>\n<tg-spoiler>' + esc_(x.value) + '</tg-spoiler>' + (x.at ? '\n<i>سُجّلت ' + x.at + '</i>' : '');
+    }).join('\n\n') + note);
+  } catch (e) {
+    return say('تعذّر فتح القسم الخاصّ: ' + esc_(String(e && e.message || e).slice(0, 120)), true);
   }
-  if (cmd[1] === 'غير الرمز') {
-    if (parts.length !== 2 || parts[1].length < VAULT_PIN_MIN) return say('الصيغة: <code>غيّر الرمز القديم الجديد</code>، والجديد ستّة رموز على الأقلّ.');
-    v = open(parts[0]);
-    if (!v) return true;
-    v.salt = rand16_();
-    v.K = kdf_(parts[1], v.salt, VAULT_ITERS);
-    v.iters = VAULT_ITERS;
-    vaultSave_(v);
-    return say('✅ تغيّر الرمز.' + note);
-  }
-  var pin = parts[0];
-  rest = q.replace(/^\s*\S+\s+\S+\s*:?\s*/, '');        // ما بعد الأمر والرمز، بنصّه الأصليّ (القيمة تُحفظ كما كُتبت)
-  if (cmd[1] === 'احفظ') {
-    i = rest.indexOf('=');
-    if (i < 1 || !rest.slice(i + 1).trim()) return say('الصيغة: <code>احفظ الرمز: الاسم = القيمة</code>');
-    v = open(pin);
-    if (!v) return true;
-    name = rest.slice(0, i).trim();
-    var val = rest.slice(i + 1).trim(), key = norm_(name), old = false;
-    v.items = v.items.filter(function (x) { if (norm_(x.name) === key) { old = true; return false; } return true; });
-    v.items.push({name: name, value: val, at: day_(now)});
-    vaultSave_(v);
-    return say('✅ ' + (old ? 'حُدّث' : 'حُفظ') + ': <b>' + esc_(name) + '</b> (' + v.items.length + ' في القسم الخاصّ).' + note);
-  }
-  if (cmd[1] === 'احذف') {
-    v = open(pin);
-    if (!v) return true;
-    key = norm_(rest);
-    var before = v.items.length;
-    v.items = v.items.filter(function (x) { return norm_(x.name) !== key; });
-    if (v.items.length === before) return say('لا معلومة بهذا الاسم تمامًا: «' + esc_(rest) + '». اكتب <code>خاصّ الرمز</code> لترى الأسماء.' + note);
-    vaultSave_(v);
-    return say('🗑 حُذف: <b>' + esc_(rest) + '</b>.' + note);
-  }
-  v = open(pin);                                         // خاصّ الرمز [كلمات]
-  if (!v) return true;
-  var toks = norm_(rest).split(' ').filter(function (t) { return t; });
-  if (!toks.length) {
-    return say('🔐 <b>في القسم الخاصّ ' + v.items.length + ' معلومة</b>\n' + (v.items.map(function (x) { return '• ' + esc_(x.name); }).sort().join('\n') || '(فارغ)') + note);
-  }
-  var hits = v.items.filter(function (x) { var n = norm_(x.name); return toks.every(function (t) { return n.indexOf(t) >= 0; }); });
-  if (!hits.length) return say('لا معلومة في اسمها «' + esc_(rest) + '». اكتب <code>خاصّ الرمز</code> لترى الأسماء.' + note);
-  return say(hits.slice(0, 12).map(function (x) {
-    return '🔐 <b>' + esc_(x.name) + '</b>\n<tg-spoiler>' + esc_(x.value) + '</tg-spoiler>' + (x.at ? '\n<i>سُجّلت ' + x.at + '</i>' : '');
-  }).join('\n\n') + note);
 }
 
 /* ------------------------------------------------------------------ لوحة الأزرار: أسئلة متكرّرة */
