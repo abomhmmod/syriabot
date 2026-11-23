@@ -183,6 +183,8 @@ class FakeTG:
         sent.append(('edit' if b.get('id') else 'new', text, True)); b.setdefault('id', 55); return True
 
 
+import directory
+directory.build = lambda base: {'stub': 0}        # الأدلّة تُجلب من الشبكة؛ اختبارها في مكانٍ آخر
 sb.Telegram = FakeTG
 os.environ['SYRIABOT_NOW'] = '2026-12-01T10:00:00+03:00'
 sb.run()
