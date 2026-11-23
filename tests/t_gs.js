@@ -57,7 +57,7 @@ check('rank: a question with no keywords gets the newest posts', run('rank_("م�
 const state = run('getJson_(RAW + "state.json")');
 ctx.S = state;
 const facts = run('facts_(S)');
-check('facts sheet: market, official, gold, fuel, weather, prayer, basket', ['سعر السوق', 'الدولار الأمريكيّ USD', 'السعر الرسميّ', 'جمعيّة الصاغة', 'بنزين 95', 'ربطة الخبز', 'طقس حماة', 'المغرب', 'مسجدك', 'سلّة حماة', 'سكّر [KG]'].every(x => facts.includes(x)), facts.slice(0, 300));
+check('facts sheet: market, official, gold, fuel, weather, prayer, basket', ['سعر السوق', 'الدولار الأمريكيّ USD', 'السعر الرسميّ', 'نشرة الصاغة', 'بنزين 95', 'ربطة الخبز', 'طقس حماة', 'المغرب', 'مسجدك', 'سلّة حماة', 'سكّر [KG]'].every(x => facts.includes(x)), facts.slice(0, 300));
 check('facts sheet is compact', facts.length < 9000, facts.length);
 const news = run('loadNews_(3)');
 check('news archive loads from the repository', news.length > 300 && news[0].name && news[0].ts, news.length);

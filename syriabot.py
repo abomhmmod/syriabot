@@ -325,12 +325,21 @@ def rule_fuel(data, state, alerts, first):
     sy, sp = data.get('sytra') or {}, (data.get('sptoday') or {}).get('fuel') or {}
     fuel, bread = sy.get('fuel') or {}, sy.get('bread') or {}
     today = f'{now():%Y-%m-%d}'
+    ex = state.get('extracted') or {}
     for key, (name, unit, sykey, two) in ITEMS.items():
         a = bread.get('price') if key == 'bread' else (fuel.get('prices') or {}).get(sykey)
         date = bread.get('since') if key == 'bread' else fuel.get('bulletin_date')
         b = sp.get(key) if two else None
         a, b = (float(a) if a is not None else None), (float(b) if b is not None else None)
         cur = adopted.get(key)
+        # الخبر الرسميّ أعلى من الموقعين: نشرةٌ أحدث من المعتمد، مستخرجة من خبرٍ ومتحقَّقٌ من نصّها، تُعتمد فورًا.
+        nw = ex.get(key)
+        if nw and cur and not first and nw['day'] > cur['date'] and abs(nw['value'] - cur['value']) >= 0.005:
+            alerts.append(f'🔔 <b>تغيّر سعر {name}</b>\n{n(cur["value"])} ← {n(nw["value"])} ل.س {unit} ({pct(nw["value"], cur["value"])})\n'
+                          f'عن <a href="{html.escape(nw["url"])}">{html.escape(nw["name"])}</a>:\n'
+                          f'<blockquote>{html.escape(nw["quote"])}</blockquote>')
+            adopted[key] = cur = {'value': nw['value'], 'date': nw['day'], 'single': True, 'src': nw['name'], 'news': nw['id']}
+            pending.pop(key, None)
         if a is None and b is None:
             continue
         agreed = a if (a is not None and (not two or b is None or abs(a - b) < 0.005)) else None
@@ -339,11 +348,18 @@ def rule_fuel(data, state, alerts, first):
             v = agreed if agreed is not None else (a if a is not None else b)
             adopted[key] = {'value': v, 'date': date or today, 'single': single or agreed is None}
             continue
+        behind = bool(cur.get('news')) and (date or '') < cur['date']      # الموقعان ما زالا على النشرة السابقة
         if agreed is not None and abs(agreed - cur['value']) < 0.005:
-            cur.update(date=date or cur['date'], single=single)
+            if behind:
+                cur['single'] = single
+            else:
+                adopted[key] = {'value': cur['value'], 'date': date or cur['date'], 'single': single}
             pending.pop(key, None)
             continue
-        if agreed is not None and not (two and b is None):       # اتّفق المصدران، أو المادّة بمصدرٍ واحد أصلًا
+        if behind:
+            continue
+        if agreed is not None and not (two and b is None) and not (cur.get('news') and (date or '') <= cur['date']):
+            # اتّفق المصدران، أو المادّة بمصدرٍ واحد أصلًا؛ ولا يُنقض خبرٌ رسميّ بنشرةٍ من اليوم نفسه عند الموقعين
             alerts.append(f'🔔 <b>تغيّر سعر {name}</b>\n{n(cur["value"])} ← {n(agreed)} ل.س {unit} ({pct(agreed, cur["value"])})\n'
                           + (f'من مصدرٍ واحد: سيترا (نشرة {short(date or today)}).' if not two else
                              f'اتّفق عليه سيترا و«الليرة اليوم» (نشرة {short(date or today)}).'))
@@ -354,9 +370,30 @@ def rule_fuel(data, state, alerts, first):
         sig = '|'.join(f'{s}={v}' for s, v in claims)
         if claims and pending.get(key) != sig:
             said = '، و'.join(f'{s} يذكر {n(v)}' for s, v in claims)
-            alerts.append(f'⚠️ <b>غير مؤكَّد: {name}</b>\n{said}، والمعتمد عندي {n(cur["value"])} ل.س {unit}.\n'
-                          f'لم يتّفق المصدران بعد، فأبقيت {n(cur["value"])}.')
+            why = f'وهو عن {cur["src"]}، فأبقيته حتّى يُحسم.' if cur.get('news') else f'لم يتّفق المصدران بعد، فأبقيت {n(cur["value"])}.'
+            alerts.append(f'⚠️ <b>غير مؤكَّد: {name}</b>\n{said}، والمعتمد عندي {n(cur["value"])} ل.س {unit}.\n{why}')
             pending[key] = sig
+
+
+def rule_gold(data, state):
+    """نشرة الذهب: من الخبر الرسميّ الذي نقلها (رقمٌ مستخرج ومتحقَّق من نصّه) أو من سيترا، أيّهما أحدث. في اليوم
+    الواحد يُقدَّم الخبر، إلّا إن تغيّر رقم سيترا بعد نشره (نشرةٌ ثانية في اليوم نفسه)."""
+    sy, ex = (data.get('sytra') or {}).get('gold') or {}, state.get('extracted') or {}
+    seen = state.setdefault('sytra_gold', {})
+    g = None
+    if sy.get('g21_sell'):
+        sig = f"{sy.get('date')}|{sy['g21_sell']}|{sy.get('g21_buy')}"
+        if seen.get('sig') != sig:
+            seen.update(sig=sig, at=now().timestamp() if seen.get('sig') else 0)
+        g = {'g21_sell': sy['g21_sell'], 'g21_buy': sy.get('g21_buy'), 'g18_sell': sy.get('g18_sell'), 'g18_buy': None,
+             'date': sy.get('date') or '', 'src': 'سيترا'}
+    nw = ex.get('gold21_sell')
+    if nw and (g is None or nw['day'] > g['date'] or (nw['day'] == g['date'] and nw['ts'] >= seen.get('at', 0))):
+        same = lambda k: ex[k]['value'] if k in ex and ex[k]['id'] == nw['id'] else None
+        g = {'g21_sell': nw['value'], 'g21_buy': same('gold21_buy'), 'g18_sell': same('gold18_sell'), 'g18_buy': same('gold18_buy'),
+             'date': nw['day'], 'src': nw['name'], 'url': nw['url'], 'quote': nw['quote']}
+    state['gold'] = g
+    return g or {}
 
 
 def rule_official(data, state, alerts, first):
@@ -405,10 +442,11 @@ def build_facts(data, state):
     main, msrc, alt = market_now(data)
     ls, sy = data.get('lirascope') or {}, data.get('sytra') or {}
     usd = main.get('USD') or {}
-    gold = sy.get('gold') or {}
+    gold = rule_gold(data, state)
     f = {'market': main, 'market_src': msrc, 'market_alt': alt, 'usd_sell': usd.get('sell'),
          'official': state.get('official'), 'adopted': state.get('adopted', {}),
          'gold_assoc_sell': gold.get('g21_sell'), 'gold_assoc_buy': gold.get('g21_buy'), 'gold_date': gold.get('date'),
+         'gold_src': gold.get('src') if gold.get('url') else None, 'gold_url': gold.get('url'),
          'gold_market': (ls.get('gold_usd') or {}).get('21K') and usd.get('sell') and ls['gold_usd']['21K'] * usd['sell'],
          'usdt': ls.get('usdt_usd') and usd.get('sell') and ls['usdt_usd'] * usd['sell'],
          'weather': data.get('weather'), 'prayer': data.get('prayer'),
@@ -463,7 +501,8 @@ def board_text(f, cfg):
         L.append(f'<b>الرسميّ</b> ({o["src"]} {short(o["date"])})\n{row}')
     g = []
     if f.get('gold_assoc_sell'):
-        g.append(f'الصاغة {n(f.get("gold_assoc_buy"))} / {n(f["gold_assoc_sell"])}' + (f' ({short(f["gold_date"])})' if f.get('gold_date') else ''))
+        tag = ' · '.join(x for x in (short(f['gold_date']) if f.get('gold_date') else '', f'<a href="{html.escape(f["gold_url"])}">{html.escape(f["gold_src"])}</a>' if f.get('gold_src') else '') if x)
+        g.append(f'الصاغة {n(f.get("gold_assoc_buy"))} / {n(f["gold_assoc_sell"])}' + (f' ({tag})' if tag else ''))
     if f.get('gold_market'):
         g.append(f'محسوبًا من السوق {n(f["gold_market"], 0)}')
     if g:
@@ -641,6 +680,30 @@ def run(dry=None, bulletin_now=False, basket_now=False):
     first = not state.get('started')
     alerts, t = [], now()
     data = collect(cfg, state, alerts)
+
+    # الجامع الصامت: يحفظ ما نشرته المصادر الرسميّة في news/، ولا يخرج منه إلى المحادثة إلّا تنبيه المراسيم.
+    # يسبق القواعد لتأخذ اللوحة أرقام أخبار هذه الساعة. تعطّله لا يمسّ اللوحة ولا الأسعار. أوّل تشغيلٍ له يملأ الأرشيف بلا تنبيه.
+    try:
+        import news
+        srcs = load(BASE / 'sources.json', {})
+        seeding = 'tg' not in state.get('news', {})
+        got, nfail = news.collect(srcs, state.setdefault('news', {}), t.timestamp())
+        added = news.store(root, got, cfg.get('keep_days', 60), t)
+        decrees = news.decree_alerts(added, state['news'], t.year)
+        if not seeding:
+            alerts += decrees
+        total = len(srcs.get('telegram', [])) + len(srcs.get('rss', []))
+        print(f'news: {len(added)} new post(s) kept, {nfail} of {total} source(s) not read, {len(decrees)} decree alert(s)'
+              + (' (first run: none sent)' if seeding else ''))
+        # الأرقام التي أعلنتها الأخبار نفسها (نشرة الذهب، المحروقات، الخبز): تُستخرج ويُتحقَّق من نصّها، ثمّ تحكم القواعد.
+        import extract
+        rule_gold(data, state)                           # ليقيس المستخرِج رقم الذهب الجديد على الحاليّ
+        facts_new = extract.run(root, state, added, t.timestamp())
+        if facts_new:
+            print('extract: ' + '، '.join(f'{f["key"]}={f["value"]:g} ({f["name"]} {f["day"]})' for f in facts_new))
+    except Exception as ex:
+        print(f'news collector failed: {type(ex).__name__}: {ex}', file=sys.stderr)
+
     rule_fuel(data, state, alerts, first)
     rule_official(data, state, alerts, first)
     facts = build_facts(data, state)
@@ -661,23 +724,6 @@ def run(dry=None, bulletin_now=False, basket_now=False):
             print(f'source wfp failed: {ex}', file=sys.stderr)
 
     ok = tg.board(state, board_text(facts, cfg))
-
-    # الجامع الصامت: يحفظ ما نشرته المصادر الرسميّة في news/، ولا يخرج منه إلى المحادثة إلّا تنبيه المراسيم.
-    # تعطّله لا يمسّ اللوحة ولا الأسعار. أوّل تشغيلٍ له يملأ الأرشيف بلا تنبيه.
-    try:
-        import news
-        srcs = load(BASE / 'sources.json', {})
-        seeding = 'tg' not in state.get('news', {})
-        got, nfail = news.collect(srcs, state.setdefault('news', {}), t.timestamp())
-        added = news.store(root, got, cfg.get('keep_days', 60), t)
-        decrees = news.decree_alerts(added, state['news'], t.year)
-        if not seeding:
-            alerts += decrees
-        total = len(srcs.get('telegram', [])) + len(srcs.get('rss', []))
-        print(f'news: {len(added)} new post(s) kept, {nfail} of {total} source(s) not read, {len(decrees)} decree alert(s)'
-              + (' (first run: none sent)' if seeding else ''))
-    except Exception as ex:
-        print(f'news collector failed: {type(ex).__name__}: {ex}', file=sys.stderr)
 
     # الأدلّة (هواتف، جهات، سير، تطبيقات…): تُجلب مرّةً في اليوم إلى directory/ ليقرأها مستقبِل السؤال والجواب.
     if t.hour >= cfg.get('bulletin_hour', 7) and state.get('directory_day') != f'{t:%Y-%m-%d}':

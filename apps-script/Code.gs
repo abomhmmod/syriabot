@@ -189,16 +189,17 @@ function facts_(s) {
     Object.keys(rates).forEach(function (k) { if (rates[k]) L.push('- ' + (CUR[k] || k) + ' ' + k + ': ' + num_(rates[k])); });
     if (m.USD) L.push('- الفجوة بين السوق والرسميّ للدولار: ' + ((m.USD.sell - o.USD) / o.USD * 100).toFixed(1) + '%');
   }
-  var g = sy.gold || {};
-  if (g.g21_sell) L.push('الذهب، نشرة جمعيّة الصاغة بتاريخ ' + g.date + ' (عبر سيترا): عيار 21 شراء ' + num_(g.g21_buy) + ' / مبيع ' + num_(g.g21_sell)
-    + (g.g18_sell ? '، عيار 18 مبيع ' + num_(g.g18_sell) : '') + ' للغرام.');
+  var g = s.gold || sy.gold || {};            // s.gold: ما اختارته القواعد بين خبرٍ رسميّ نقل النشرة وبين سيترا
+  if (g.g21_sell) L.push('الذهب، نشرة الصاغة بتاريخ ' + g.date + ' (' + (g.url ? 'عن ' + g.src + '، ' + g.url : 'عبر سيترا') + '): عيار 21 '
+    + (g.g21_buy ? 'شراء ' + num_(g.g21_buy) + ' / ' : '') + 'مبيع ' + num_(g.g21_sell)
+    + (g.g18_sell ? '، عيار 18 ' + (g.g18_buy ? 'شراء ' + num_(g.g18_buy) + ' / ' : '') + 'مبيع ' + num_(g.g18_sell) : '') + ' للغرام.');
   if (ls.gold_usd && m.USD) L.push('الذهب محسوبًا من السعر العالميّ وسعر السوق (ليراسكوب): '
     + Object.keys(ls.gold_usd).sort().map(function (k) { return 'عيار ' + k.replace('K', '') + ': ' + num_(ls.gold_usd[k] * m.USD.sell, 0); }).join('، ') + ' للغرام.');
   var a = s.adopted || {}, fd = (sy.fuel || {}).bulletin_date;
   if (Object.keys(a).length) {
     L.push('المحروقات والخبز (الأسعار الرسميّة المعتمدة' + (fd ? '، نشرة المحروقات ' + fd : '') + '):');
     Object.keys(ITEMS).forEach(function (k) {
-      if (a[k]) L.push('- ' + ITEMS[k] + ': ' + num_(a[k].value) + ' (منذ ' + a[k].date + (a[k].single ? '، من مصدرٍ واحد: سيترا' : '، باتّفاق سيترا والليرة اليوم') + ')');
+      if (a[k]) L.push('- ' + ITEMS[k] + ': ' + num_(a[k].value) + ' (منذ ' + a[k].date + (a[k].single ? '، من مصدرٍ واحد: ' + (a[k].src || 'سيترا') : '، باتّفاق سيترا والليرة اليوم') + ')');
     });
     Object.keys(s.pending || {}).forEach(function (k) { L.push('- لم يُحسم: ' + (ITEMS[k] || k) + '، ' + s.pending[k].replace(/\|/g, '، ').replace(/=/g, ' يذكر ')); });
   }

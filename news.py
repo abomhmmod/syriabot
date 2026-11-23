@@ -298,20 +298,20 @@ SCHEMA = {'type': 'object', 'properties': {k: {'type': 'array', 'items': {'type'
     for k in ('general', 'hama')}, 'required': ['general', 'hama']}
 
 
-def gemini(prompt, key, models=MODELS, timeout=90):
+def gemini(prompt, key, models=MODELS, timeout=90, schema=SCHEMA, temp=0.2, tag='digest'):
     body = json.dumps({'contents': [{'parts': [{'text': prompt}]}],
-                       'generationConfig': {'temperature': 0.2, 'responseMimeType': 'application/json', 'responseSchema': SCHEMA}}).encode()
+                       'generationConfig': {'temperature': temp, 'responseMimeType': 'application/json', 'responseSchema': schema}}).encode()
     for model in models:
         try:
             req = urllib.request.Request(GEMINI.format(model), body, {'x-goog-api-key': key, 'Content-Type': 'application/json'})
             with urllib.request.urlopen(req, timeout=timeout) as r:
                 j = json.load(r)
             text = ''.join(p.get('text', '') for p in j['candidates'][0]['content']['parts'])
-            print(f'digest written by {model}', file=sys.stderr)
+            print(f'{tag}: answered by {model}', file=sys.stderr)
             return json.loads(text)
         except Exception as ex:
             code = getattr(ex, 'code', '')
-            print(f'digest: {model} failed: {type(ex).__name__} {code}', file=sys.stderr)
+            print(f'{tag}: {model} failed: {type(ex).__name__} {code}', file=sys.stderr)
     return None
 
 
