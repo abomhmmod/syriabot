@@ -43,6 +43,15 @@ function install() {
   return s;
 }
 
+/** تجربة من المحرّر: يجيب عن سؤالٍ ثابت كما يجيب عن أسئلتك، ويرسل الجواب إلى المحادثة. */
+function selftest() {
+  var P = PropertiesService.getScriptProperties(), q = 'كم سعر الدولار اليوم؟ ومتى أذان المغرب؟';
+  var a = answer_(q);
+  var r = tg_(P.getProperty('TELEGRAM_TOKEN'), 'sendMessage', {chat_id: P.getProperty('CHAT_ID'), parse_mode: 'HTML',
+    text: '🧪 <b>تجربة:</b> ' + esc_(q) + '\n\n' + a, link_preview_options: {is_disabled: true}});
+  Logger.log((r.ok ? 'أُرسل' : 'لم يُرسل: ' + r.description) + ' | النموذج: ' + P.getProperty('AI_LAST') + '\n' + a.replace(/<[^>]+>/g, ''));
+}
+
 function status_() {
   var P = PropertiesService.getScriptProperties(), out = [];
   ['TELEGRAM_TOKEN', 'GEMINI_API_KEY', 'CHAT_ID'].forEach(function (k) { out.push(k + ': ' + (P.getProperty(k) ? 'موجود' : 'ناقص')); });
