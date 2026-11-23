@@ -1,7 +1,7 @@
 {
  "cache": {
   "lirascope": {
-   "at": "2026-11-23T11:47+03:00",
+   "at": "2026-11-23T11:52+03:00",
    "data": {
     "market": {
      "AED": {
@@ -52,7 +52,7 @@
      "EUR": {
       "buy": 165.2,
       "sell": 167.1,
-      "at": "2026-11-23T08:46:37.506152Z"
+      "at": "2026-11-23T08:50:44.222226Z"
      },
      "GBP": {
       "buy": 197.6443,
@@ -157,14 +157,14 @@
      "14K": 68.0,
      "18K": 87.0,
      "21K": 102.0,
-     "22K": 107.0,
+     "22K": 106.0,
      "24K": 116.0
     },
-    "usdt_usd": 0.9987464
+    "usdt_usd": 0.99870204
    }
   },
   "sptoday": {
-   "at": "2026-11-23T11:47+03:00",
+   "at": "2026-11-23T11:52+03:00",
    "data": {
     "market": {
      "USD": {
@@ -197,7 +197,7 @@
    }
   },
   "cbs": {
-   "at": "2026-11-23T11:47+03:00",
+   "at": "2026-11-23T11:52+03:00",
    "data": {
     "date": "2026-11-22",
     "rates": {
@@ -213,7 +213,7 @@
    }
   },
   "sytra": {
-   "at": "2026-11-23T11:47+03:00",
+   "at": "2026-11-23T11:52+03:00",
    "data": {
     "unit": "الليرة السورية الجديدة",
     "fuel": {
@@ -254,11 +254,11 @@
      "date": "2026-11-19",
      "page": "https://sytra.me/prices/usd"
     },
-    "generated_at": "2026-11-23T08:44:16+00:00"
+    "generated_at": "2026-11-23T08:52:49+00:00"
    }
   },
   "prayer": {
-   "at": "2026-11-23T11:47+03:00",
+   "at": "2026-11-23T11:54+03:00",
    "data": {
     "date": "2026-11-23",
     "method": "Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan",
@@ -307,7 +307,7 @@
   "sptoday": 0,
   "cbs": 0,
   "sytra": 0,
-  "weather": 0,
+  "weather": 1,
   "prayer": 0,
   "wfp": 0
  },
@@ -822,7 +822,7 @@
   }
  },
  "started": true,
- "last_run": "2026-11-23T11:47:28+03:00",
+ "last_run": "2026-11-23T11:52:44+03:00",
  "news": {
   "tg": {
    "bunatmoad": 516,
@@ -873,9 +873,9 @@
    "symosaal": 9233,
    "syrmofh": 17391,
    "syrmofe": 12901,
-   "symoeadm": 9784,
+   "symoeadm": 9792,
    "syrmofj": 3845,
-   "syrmoff": 10270,
+   "syrmoff": 10274,
    "syrsmot": 11797,
    "alekhbariahsy": 241720,
    "sana_gov": 192287,
@@ -1032,7 +1032,9 @@
     "https://sana.sy/?p=2642042",
     "https://sana.sy/?p=2642040",
     "https://sana.sy/?p=2641868",
-    "https://sana.sy/?p=2641994"
+    "https://sana.sy/?p=2641994",
+    "https://sana.sy/?p=2642837",
+    "https://sana.sy/?p=2642840"
    ],
    "fedaa": [
     "https://fedaa.alwehda.gov.sy/?p=132104",
