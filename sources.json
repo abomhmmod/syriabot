@@ -691,12 +691,11 @@
    "unverified": true
   },
   {
-   "id": "eamaliaat_hama",
-   "name": "فرع عمليات الأمن الداخلي في محافظة حماة",
-   "kind": "جهة رسميّة",
-   "tier": 1,
-   "hama": true,
-   "unverified": true
+   "id": "fedaa7",
+   "name": "صحيفة الفداء (حماة)",
+   "kind": "إعلام",
+   "tier": 2,
+   "hama": true
   }
  ],
  "rss": [
