@@ -446,7 +446,7 @@ def board_text(f, cfg):
     if m:
         rows = [f'{icon} {name} {n(m[c]["buy"], 2)} / {n(m[c]["sell"], 2)}' for c, icon, name in CURS if c in m]
         if f.get('usdt'):
-            rows.append(f'₮ USDT {n(f["usdt"], 2)}')
+            rows.append(f'🪙 تيثر USDT {n(f["usdt"], 2)}')      # يبدأ بالعربيّة حتّى لا ينقلب السطر إلى اليسار
         if f.get('market_alt'):
             rows.append(f'↔️ «الليرة اليوم» تذكر الدولار {n(f["market_alt"]["buy"], 2)} / {n(f["market_alt"]["sell"], 2)}')
         L.append(f'<b>السوق</b> (شراء / مبيع · {f["market_src"]})\n' + '\n'.join(rows))
