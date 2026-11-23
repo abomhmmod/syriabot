@@ -13,6 +13,7 @@
   python syriabot.py                 فحص عاديّ (يحتاج TELEGRAM_TOKEN و TELEGRAM_CHAT_ID)
   python syriabot.py --dry DIR       بلا تيليغرام: يكتب الرسائل والحالة في DIR
   python syriabot.py --bulletin-now  يرسل نشرة الصباح الآن ولو أُرسلت اليوم
+  python syriabot.py --basket-now    يرسل سلّة المدينة الآن
 """
 import csv, html, io, json, os, re, sys, time, urllib.error, urllib.parse, urllib.request
 from datetime import datetime, timedelta, timezone
@@ -43,12 +44,12 @@ WMO = {0: 'صافٍ', 1: 'صافٍ غالبًا', 2: 'غائم جزئيًّا', 
        99: 'عواصف رعديّة وبَرَد'}
 FOOD = {'Bread (bakery)': 'خبز الفرن', 'Bread (shop)': 'خبز المحلّات', 'Bulgur': 'برغل', 'Pasta (spaghetti)': 'معكرونة',
         'Noodles (instant, indomie)': 'إندومي', 'Potatoes': 'بطاطا', 'Rice': 'رزّ', 'Wheat flour': 'طحين', 'Eggs': 'بيض',
-        'Fish (tuna, canned)': 'تونة معلّبة', 'Livestock (sheep, two-year-old male)': 'خروف (عمره سنتان)',
+        'Fish (tuna, canned)': 'تونة معلّبة', 'Livestock (sheep, two-year-old male)': 'خروف بعمر سنتين',
         'Meat (beef, minced)': 'لحم عجل مفروم', 'Meat (chicken, legs)': 'أفخاذ فروج', 'Meat (chicken, plucked)': 'فروج منظّف',
         'Cheese': 'جبنة', 'Yogurt': 'لبن', 'Salt (iodised)': 'ملح', 'Sugar': 'سكّر', 'Bleach (chlorine)': 'كلور',
-        'Diapers': 'حفاضات', 'Dishwashing liquid': 'سائل جلي', 'Fuel (diesel)': 'مازوت (السوق)',
-        'Fuel (diesel, transport, parallel market)': 'مازوت النقل (السوق الموازية)', 'Fuel (gas)': 'غاز (السوق)',
-        'Fuel (gas, parallel market)': 'غاز (السوق الموازية)', 'Internet bundle': 'باقة إنترنت',
+        'Diapers': 'حفاضات', 'Dishwashing liquid': 'سائل جلي', 'Fuel (diesel)': 'مازوت السوق',
+        'Fuel (diesel, transport, parallel market)': 'مازوت النقل، السوق الموازية', 'Fuel (gas)': 'غاز السوق',
+        'Fuel (gas, parallel market)': 'غاز السوق الموازية', 'Internet bundle': 'باقة إنترنت',
         'Multipurpose soap': 'صابون', 'Sanitary pads': 'فوط صحّيّة', 'Toothpaste': 'معجون أسنان',
         'Wage (non-qualified labour)': 'أجرة يوم العامل', 'Lentils': 'عدس', 'Oil (vegetable)': 'زيت نباتيّ',
         'Tomatoes': 'بندورة', 'Onions': 'بصل', 'Cucumbers': 'خيار', 'Milk': 'حليب', 'Tea': 'شاي', 'Chickpeas': 'حمّص',
@@ -62,12 +63,15 @@ UNITS = {'KG': 'كغ', 'L': 'ليتر', 'Packet': 'علبة', 'Head': 'رأس', 
 UNIT_WORD = {'KG': 'كغ', 'G': 'غ', 'L': 'ليتر', 'ML': 'مل', 'PCS': 'قطعة', 'GB': 'غيغا'}
 GROUPS = [('cereals and tubers', 'حبوب ونشويّات'), ('pulses and nuts', 'بقول'), ('meat, fish and eggs', 'لحوم وبيض'),
           ('milk and dairy', 'ألبان'), ('oil and fats', 'زيوت'), ('vegetables and fruits', 'خضار وفواكه'),
-          ('miscellaneous food', 'متفرّقات'), ('non-food', 'غير غذائيّة')]
+          ('miscellaneous food', 'سكّر وملح ومتفرّقات'), ('non-food', 'منظّفات ونظافة'), ('services', 'وقود وخدمات')]
+GROUP_ICON = {'cereals and tubers': '🌾', 'pulses and nuts': '🫘', 'meat, fish and eggs': '🍗', 'milk and dairy': '🥛',
+              'oil and fats': '🫒', 'vegetables and fruits': '🥬', 'miscellaneous food': '🧂', 'non-food': '🧴',
+              'services': '⛽'}
 
 
 def unit_ar(unit, item=''):
     """الوحدة بالعربيّة، وفارغةٌ للكيلو (هو الأصل في السلّة)."""
-    if unit == 'KG':
+    if unit == 'KG' or (unit == 'Day' and item.startswith('Wage')):
         return ''
     if item == 'Parsley':
         return 'ربطة'
@@ -502,19 +506,24 @@ def basket_text(basket, cfg):
     for item, row in sorted(cur.items(), key=lambda x: FOOD.get(x[0], x[0])):
         unit, price, cat = row[0], row[1], (row[2] if len(row) > 2 else '')
         name, u = FOOD.get(item, item), unit_ar(unit, item)
-        by.setdefault(cat if cat in dict(GROUPS) else 'miscellaneous food', []).append(f'{name}{f" ({u})" if u else ""} {n(price, 0)}')
+        label = f'{name} ({u})' if u else name
+        if cat == 'non-food' and re.match(r'Fuel|Internet|Wage|Water', item):
+            cat = 'services'
+        by.setdefault(cat if cat in dict(GROUPS) else 'miscellaneous food', []).append(f'• {label}: <b>{n(price, 0)}</b>')
         old = (prev.get(item) or [None, None])[1]
         if old and abs(price - old) / old >= cfg.get('basket_pct', 5) / 100:
-            (up if price > old else down).append((abs(price - old) / old, f'{name} {pct(price, old)}'))
+            (up if price > old else down).append((abs(price - old) / old, f'• {name}: {n(old, 0)} ← <b>{n(price, 0)}</b> ({pct(price, old)})'))
     y, m, d = dates[-1].split('-')
-    L = [f'🧺 <b>سلّة {cfg["city"]}</b> · رصد {MONTHS[int(m) - 1]} {y}']
-    L += [f'<b>{ar}:</b> ' + ' · '.join(by[k]) for k, ar in GROUPS if k in by]
+    L = [f'🧺 <b>سلّة {cfg["city"]} · {MONTHS[int(m) - 1]} {y}</b>\n<i>بالليرة الجديدة، والسعر للكيلو ما لم تُذكر وحدة.</i>']
     if up:
-        L.append('⬆️ <b>ارتفع عن الشهر السابق:</b> ' + '، '.join(s for _, s in sorted(up, reverse=True)))
+        L.append('⬆️ <b>ارتفع عن الشهر السابق</b>\n' + '\n'.join(s for _, s in sorted(up, reverse=True)))
     if down:
-        L.append('⬇️ <b>انخفض:</b> ' + '، '.join(s for _, s in sorted(down, reverse=True)))
-    L.append('<i>السعر للكيلو ما لم تُذكر وحدة، بالليرة الجديدة. متوسّط ثلاثة باعة في سوق المدينة. المصدر: برنامج الأغذية العالميّ.</i>')
-    return '\n'.join(L)
+        L.append('⬇️ <b>انخفض</b>\n' + '\n'.join(s for _, s in sorted(down, reverse=True)))
+    if not up and not down and prev:
+        L.append('↔️ لا تغيّر يُذكر عن الشهر السابق.')
+    L += [f'{icon} <b>{ar}</b>\n' + '\n'.join(by[k]) for k, ar, icon in ((k, ar, GROUP_ICON.get(k, '▫️')) for k, ar in GROUPS) if k in by]
+    L.append('<i>متوسّط ثلاثة باعة في سوق المدينة. المصدر: برنامج الأغذية العالميّ.</i>')
+    return '\n\n'.join(L)
 
 
 def bulletin_text(f, state, cfg, new_basket):
@@ -609,7 +618,7 @@ class Telegram:
 
 
 # ------------------------------------------------------------------ التشغيل
-def run(dry=None, bulletin_now=False):
+def run(dry=None, bulletin_now=False, basket_now=False):
     cfg = load(BASE / 'config.json', {})
     state_path = (Path(dry) / 'state.json') if dry else BASE / 'state.json'
     state = load(state_path, None) if state_path.exists() else load(BASE / 'state.json', {}) if dry else {}
@@ -638,6 +647,10 @@ def run(dry=None, bulletin_now=False):
             print(f'source wfp failed: {ex}', file=sys.stderr)
 
     ok = tg.board(state, board_text(facts, cfg))
+    if basket_now and not first:
+        b = basket_text(basket, cfg)
+        if b:
+            tg.send(b, silent=True)
     if first and ok:
         tg.send('✅ <b>بدأ بوت سوريا.</b>\nاللوحة المثبّتة أعلى المحادثة تتحدّث كلّ ساعة بلا إشعار. تصلك نشرةٌ واحدة كلّ صباح، '
                 'وتنبيهٌ حين يتغيّر سعرٌ فعلًا.')
@@ -673,4 +686,5 @@ if __name__ == '__main__':
     except Exception:
         pass
     a = sys.argv[1:]
-    sys.exit(run(dry=a[a.index('--dry') + 1] if '--dry' in a else None, bulletin_now='--bulletin-now' in a))
+    sys.exit(run(dry=a[a.index('--dry') + 1] if '--dry' in a else None, bulletin_now='--bulletin-now' in a,
+                 basket_now='--basket-now' in a))

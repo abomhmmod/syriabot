@@ -6,6 +6,11 @@ on:
     # جدولة GitHub تُسقط كثيرًا من مواعيدها، فإن عملت أعادت تشغيل السلسلة إن انقطعت.
     - cron: '7 * * * *'
   workflow_dispatch:
+    inputs:
+      send_basket:
+        description: 'أرسل سلّة المدينة الآن'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -52,7 +57,7 @@ jobs:
 
       - name: الفحص
         if: steps.check.outputs.ready == 'true'
-        run: python3 syriabot.py
+        run: python3 syriabot.py ${{ inputs.send_basket == true && '--basket-now' || '' }}
 
       # إن فشل الفحص نُبّه تيليغرام مرّةً واحدة (العلامة run_failing في state.json تمنع التكرار)،
       # وأوّل تشغيلٍ ناجح بعدها يرسل «عاد بوت سوريا يعمل» ويمحوها.

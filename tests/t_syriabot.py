@@ -49,7 +49,10 @@ months = sb.parse_wfp(csv_lines, 'Hama')
 check('wfp: last two months of the city market only', sorted(months) == ['2026-10-15', '2026-11-15'] and months['2026-11-15']['Rice'][1] == 132)
 cfg = {'city': 'حماة', 'lat': 35.13, 'lon': 36.75, 'bulletin_hour': 7, 'move_pct': 2}
 bt = sb.basket_text({'months': months}, cfg)
-check('basket: grouped, units, rises and falls', all(x in bt for x in ('حبوب ونشويّات', 'رزّ 132', 'بيض (30 بيضة) 377', 'سائل جلي (900 مل) 237', 'رزّ +10.0%', 'سكّر -9.1%', 'تشرين الثاني 2026')), bt)
+check('basket: one item a line, grouped, units, rises and falls first',
+      all(x in bt for x in ('🌾 <b>حبوب ونشويّات</b>\n• رزّ: <b>132</b>', '• بيض (30 بيضة): <b>377</b>', '• سائل جلي (900 مل): <b>237</b>',
+                            '⬆️ <b>ارتفع عن الشهر السابق</b>\n• رزّ: 120 ← <b>132</b> (+10.0%)', '⬇️ <b>انخفض</b>\n• سكّر: 110 ← <b>100</b> (-9.1%)',
+                            'تشرين الثاني 2026')) and bt.index('ارتفع') < bt.index('حبوب'), bt)
 
 # ---------- القواعد
 os.environ['SYRIABOT_NOW'] = '2026-12-01T10:00:00+03:00'
