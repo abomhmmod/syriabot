@@ -1,0 +1,16 @@
+{
+ "city": "حماة",
+ "lat": 35.1318,
+ "lon": 36.7578,
+ "prayer": {
+  "mosque": "مسجد طلحة الخير",
+  "mosque_id": 1870,
+  "lat": 35.142650248604,
+  "lon": 36.770963957861,
+  "method": null
+ },
+ "wfp_market": "Hama",
+ "bulletin_hour": 7,
+ "move_pct": 2,
+ "basket_pct": 5
+}

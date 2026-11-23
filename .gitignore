@@ -1,0 +1,7 @@
+archive/
+sources/
+local/
+__pycache__/
+*.tmp
+*.pyc
+tests/fixtures/

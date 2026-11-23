@@ -1,0 +1,174 @@
+name: syriabot
+
+on:
+  schedule:
+    # احتياط. النبضات الدوريّة يقوم بها «الإيقاظ الذاتيّ» (مهمّة wake في آخر هذا الملفّ) كلّ ساعة.
+    # جدولة GitHub تُسقط كثيرًا من مواعيدها، فإن عملت أعادت تشغيل السلسلة إن انقطعت.
+    - cron: '7 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # لا يتداخل تشغيلان. (القيد على هذه المهمّة وحدها، حتّى لا يحجز انتظارُ مهمّة wake النبضةَ التالية.)
+    concurrency:
+      group: syriabot
+      cancel-in-progress: false
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    env:
+      TZ: Asia/Damascus
+      PYTHONUTF8: '1'
+      TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+    steps:
+      # آخر نسخة من الفرع لا نسخة لحظة الطلب، حتّى يرى التشغيل state.json الذي حفظه التشغيل السابق.
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: هل السرّان موجودان والبوت يردّ؟
+        id: check
+        run: |
+          if [ -z "$TELEGRAM_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
+            echo "السرّان TELEGRAM_TOKEN و TELEGRAM_CHAT_ID لم يُضافا بعد. لا شيء يُفعل حتّى يُضافا."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          resp=$(curl -sS --max-time 30 --retry 3 --retry-all-errors "https://api.telegram.org/bot${TELEGRAM_TOKEN}/getMe" || true)
+          if printf '%s' "$resp" | python3 -c 'import json,sys; j=json.load(sys.stdin); assert j.get("ok"); print("البوت يردّ.")'; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          elif printf '%s' "$resp" | grep -q '"ok":false'; then
+            echo "::error::رفض تيليغرام رمز البوت. صحّح السرّ TELEGRAM_TOKEN."
+            exit 1
+          else
+            echo "::error::لم يردّ تيليغرام. تُعاد المحاولة في النبضة التالية."
+            exit 1
+          fi
+
+      - name: الفحص
+        if: steps.check.outputs.ready == 'true'
+        run: python3 syriabot.py
+
+      # إن فشل الفحص نُبّه تيليغرام مرّةً واحدة (العلامة run_failing في state.json تمنع التكرار)،
+      # وأوّل تشغيلٍ ناجح بعدها يرسل «عاد بوت سوريا يعمل» ويمحوها.
+      - name: تنبيه عند فشل الفحص
+        if: failure() && steps.check.outputs.ready == 'true'
+        run: |
+          python3 - <<'PY'
+          import json, os, urllib.parse, urllib.request
+          try:
+              s = json.load(open('state.json', encoding='utf-8'))
+          except Exception:
+              s = {}
+          if s.get('run_failing'):
+              print('سبق التنبيه بهذا التعطّل.')
+              raise SystemExit
+          text = ('⚠️ تعذّر تشغيل بوت سوريا في هذه النبضة. تُعاد المحاولة كلّ ساعة، وسأخبرك حين يعود. '
+                  'التفاصيل في تبويب Actions من المستودع.')
+          data = urllib.parse.urlencode({'chat_id': os.environ['TELEGRAM_CHAT_ID'], 'text': text}).encode()
+          try:
+              urllib.request.urlopen('https://api.telegram.org/bot' + os.environ['TELEGRAM_TOKEN'] + '/sendMessage', data, timeout=30)
+          except Exception as e:
+              print('تعذّر التنبيه:', type(e).__name__)
+              raise SystemExit
+          s['run_failing'] = True
+          with open('state.json', 'w', encoding='utf-8') as f:
+              json.dump(s, f, ensure_ascii=False, indent=1)
+          print('أُرسل التنبيه.')
+          PY
+
+      - name: حفظ state.json
+        if: always() && steps.check.outputs.ready == 'true'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add state.json
+          if git diff --cached --quiet; then echo 'لا تغيير في الحالة'; exit 0; fi
+          git commit -q -m "state: $(date '+%Y-%m-%d %H:%M')"
+          for i in 1 2 3; do git pull -q --rebase origin "$GITHUB_REF_NAME" && git push -q origin "HEAD:$GITHUB_REF_NAME" && exit 0; sleep 5; done
+          exit 1
+
+  wake:
+    # الإيقاظ الذاتيّ: بعد انتهاء النبضة ينتظر GitHub مدّة مؤقّت البيئة wake-60 (60 دقيقة؛ تُضبط من
+    # Settings ← Environments)، ثمّ يطلب هذا التشغيلُ تشغيلًا جديدًا. والانتظار لا يشغل خادمًا.
+    # إن بدأ في الأثناء تشغيل أحدث (من الجدولة أو يدويًّا) فهو الذي يُكمل وهذا يتوقّف، فتبقى سلسلة واحدة.
+    # لا يبدأ قبل إضافة السرّين. وإيقاف البوت يكون بـ Disable workflow.
+    needs: run
+    if: ${{ always() && needs.run.outputs.ready == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: wake-60
+      deployment: false
+    permissions:
+      actions: write
+    steps:
+      - name: Request the next run
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REF: ${{ github.event.repository.default_branch || 'main' }}
+          TG_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TG_CHAT: ${{ secrets.TELEGRAM_CHAT_ID }}
+          # صمام أمان: لا يُطلب تشغيل جديد قبل مرور هذه الثواني على بدء هذا التشغيل. فلو لم يُطبَّق
+          # مؤقّت الانتظار (حُذفت البيئة أو أُلغي مؤقّتها، أو صار المستودع خاصًّا على الخطّة المجّانيّة)
+          # لتتابعت التشغيلات بلا توقّف.
+          MIN_AGE: 300
+        run: |
+          warn() {  # $1: سطر في سجلّ التشغيل، $2: تنبيه إلى تيليغرام
+            echo "::error::$1"
+            code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 30 "https://api.telegram.org/bot${TG_TOKEN}/sendMessage" \
+              --data-urlencode "chat_id=${TG_CHAT}" \
+              --data-urlencode "text=⚠️ ${GITHUB_REPOSITORY}: $2") || true
+            echo "Telegram warning: HTTP ${code:-none}"
+          }
+          wf="${GITHUB_WORKFLOW_REF#*/.github/workflows/}"; wf="${wf%@*}"
+          api="repos/$GITHUB_REPOSITORY/actions/workflows/$wf"
+
+          started=""
+          for i in 1 2 3 4 5 6; do
+            started=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" --jq .run_started_at 2>/dev/null) && [ -n "$started" ] && break
+            sleep 20
+          done
+          if [ -z "$started" ]; then
+            warn "Could not reach the GitHub API to read this run's start time." \
+                 "تعذّر الاتّصال بواجهة GitHub، فتوقّف التحديث الدوريّ. لإعادته افتح تبويب Actions في المستودع واضغط Run workflow."
+            exit 1
+          fi
+          age=$(( $(date +%s) - $(date -d "$started" +%s) ))
+          if [ "$age" -lt "$MIN_AGE" ]; then
+            warn "This run is only ${age}s old, so the wait timer was not applied. Not requesting another run." \
+                 "مؤقّت الانتظار لم يُطبَّق، فأوقفتُ الإيقاظ الذاتيّ حتّى لا تتتابع التشغيلات بلا توقّف. راجع المؤقّت في Settings ← Environments، وتأكّد أنّ المستودع عامّ، ثمّ اضغط Run workflow في تبويب Actions."
+            exit 1
+          fi
+
+          newest=""
+          for i in 1 2 3 4 5 6; do
+            newest=$(gh api "$api/runs?per_page=1" --jq '.workflow_runs[0] | "\(.id) \(.status)"' 2>/dev/null) && [ -n "$newest" ] && break
+            sleep 20
+          done
+          if [ -n "$newest" ] && [ "${newest%% *}" != "$GITHUB_RUN_ID" ] && [ "${newest#* }" != "completed" ]; then
+            echo "A newer run (${newest%% *}) is under way; it will request the next one."
+            exit 0
+          fi
+
+          err=""
+          for i in 1 2 3 4 5 6 7 8; do
+            if err=$(gh api -X POST "$api/dispatches" -f ref="$REF" 2>&1); then
+              echo "Next run requested."
+              exit 0
+            fi
+            echo "Attempt $i failed: $err"
+            case "$err" in
+              *"disabled workflow"*) echo "The workflow is disabled, so the chain stops here."; exit 0 ;;
+              *"HTTP 403"*|*"HTTP 404"*|*"HTTP 422"*) break ;;
+            esac
+            sleep 45
+          done
+          warn "Could not request the next run: $err" \
+               "تعذّر طلب التشغيل التالي، فتوقّف التحديث الدوريّ. لإعادته افتح تبويب Actions في المستودع واضغط Run workflow."
+          exit 1
