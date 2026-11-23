@@ -9,7 +9,7 @@ directory/<النوع>.jsonl، كلّ مدخلٍ سطر: {id, kind, source, titl
 
   python directory.py [DIR]     يبني الأدلّة في DIR (الأصل: مجلّد البوت) ويطبع عدد كلّ نوع
 """
-import html, json, re, sys, urllib.request
+import html, json, re, sys, urllib.parse, urllib.request
 from pathlib import Path
 
 UA = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
@@ -138,6 +138,82 @@ def build_entities():
     return out
 
 
+OSM_BOX = '35.075,36.680,35.205,36.840'              # مدينة حماة وأطرافها
+OSM_KIND = {'hospital': 'مشفى', 'clinic': 'عيادة أو مركز صحّيّ', 'doctors': 'عيادة طبيب', 'dentist': 'عيادة أسنان', 'pharmacy': 'صيدليّة', 'laboratory': 'مخبر',
+            'police': 'شرطة', 'fire_station': 'إطفاء ودفاع مدنيّ', 'ambulance_station': 'مركز إسعاف', 'post_office': 'بريد', 'bank': 'مصرف', 'courthouse': 'قصر عدليّ',
+            'townhall': 'بلديّة', 'government': 'دائرة حكوميّة', 'public_building': 'مبنى حكوميّ', 'university': 'جامعة أو معهد', 'fuel': 'محطّة وقود', 'bus_station': 'كراج أو موقف'}
+OSM_OLD = re.compile(r'الامن السياسي|الأمن السياسي|الامن العسكري|الأمن العسكري|امن الدول[ةه]|أمن الدول[ةه]|المخابرات|شعب[ةه] التجنيد|حزب البعث|شعب[ةه] الحزب|فرع الحزب|العسكري[ةه]$|قياد[ةه] موقع')
+
+
+def km(a, b, c, d):
+    """المسافة بالكيلومتر بين نقطتين (تقريب يكفي داخل مدينة)."""
+    import math
+    x = math.radians(d - b) * math.cos(math.radians((a + c) / 2))
+    return 6371 * math.hypot(x, math.radians(c - a))
+
+
+def build_hama():
+    """مرافق مدينة حماة من الخريطة المفتوحة OpenStreetMap (ODbL): مشافٍ، عيادات، صيدليّات، شرطة، إطفاء، دوائر، مصارف…
+    لكلّ مرفق نوعه وموقعه على الخريطة وبُعده عن مسجد الحيّ، وهاتفه إن كان مسجَّلًا. ثمّ ما في data/hama_services.json
+    من أرقامٍ جُمعت من مصادر عامّة وتُحقّق من كلّ رقمٍ في صفحته."""
+    base = Path(__file__).resolve().parent
+    cfg = json.loads((base / 'config.json').read_text(encoding='utf-8'))
+    home = cfg.get('prayer') or {}
+    hlat, hlon, near = home.get('lat', cfg.get('lat')), home.get('lon', cfg.get('lon')), home.get('mosque') or 'وسط المدينة'
+    q = (f'[out:json][timeout:60];(nwr["amenity"~"^(hospital|clinic|doctors|dentist|pharmacy|police|fire_station|post_office|bank|courthouse|townhall|public_building|university|fuel|bus_station)$"]({OSM_BOX});'
+         f'nwr["office"="government"]({OSM_BOX});nwr["healthcare"="laboratory"]({OSM_BOX});nwr["emergency"="ambulance_station"]({OSM_BOX}););out center tags;')
+    els, err = [], None
+    for host in ('https://overpass-api.de/api/interpreter', 'https://overpass.kumi.systems/api/interpreter'):
+        try:
+            req = urllib.request.Request(host, urllib.parse.urlencode({'data': q}).encode(), UA)
+            with urllib.request.urlopen(req, timeout=90) as r:
+                els = json.load(r)['elements']
+            break
+        except Exception as ex:
+            err = ex
+    snap = base / 'data' / 'osm_hama.json'                  # آخر نسخةٍ قُرئت: يُرجع إليها إن لم تُجب الخريطة
+    if els:
+        snap.parent.mkdir(exist_ok=True)
+        snap.write_text(json.dumps(els, ensure_ascii=False), encoding='utf-8')
+    elif snap.exists():
+        els = json.loads(snap.read_text(encoding='utf-8'))
+    else:
+        raise RuntimeError(f'overpass: {type(err).__name__ if err else "لا عناصر"}')
+    out = []
+    for e in els:
+        t = e.get('tags') or {}
+        name = clean(t.get('name:ar') or t.get('name') or '')
+        kind = OSM_KIND.get(t.get('amenity') or t.get('office') or t.get('healthcare') or t.get('emergency'))
+        lat, lon = (e.get('lat') or (e.get('center') or {}).get('lat')), (e.get('lon') or (e.get('center') or {}).get('lon'))
+        if not name or not kind or lat is None or OSM_OLD.search(name):
+            continue
+        parts = [kind + ' في مدينة حماة']
+        addr = ' '.join(x for x in (t.get('addr:full'), t.get('addr:street'), t.get('addr:housenumber'), t.get('addr:suburb')) if x)
+        if addr:
+            parts.append('العنوان: ' + clean(addr))
+        phone = t.get('phone') or t.get('contact:phone') or t.get('contact:mobile')
+        if phone:
+            parts.append('الهاتف: ' + clean(phone))
+        if t.get('opening_hours'):
+            parts.append('الدوام: ' + clean(t['opening_hours']))
+        if t.get('healthcare:speciality') or t.get('description'):
+            parts.append(clean(t.get('healthcare:speciality') or t.get('description'))[:120])
+        if hlat is not None:
+            d = km(hlat, hlon, lat, lon)
+            parts.append(f'يبعد {d:.1f} كم عن {near}')
+        parts.append(f'الموقع على الخريطة: https://www.google.com/maps?q={lat:.6f},{lon:.6f}')
+        out.append(entry('hama', 'خريطة حماة · OpenStreetMap (قد لا تكون محدَّثة)', f"osm-{e['type'][0]}{e['id']}", f'{name} ({kind})', ' · '.join(parts),
+                         f'https://www.openstreetmap.org/{e["type"]}/{e["id"]}'))
+    extra = base / 'data' / 'hama_services.json'
+    if extra.exists():                                    # أرقامٌ من مصادر عامّة، كلٌّ برابط صفحته
+        for i, x in enumerate(json.loads(extra.read_text(encoding='utf-8'))):
+            parts = [x.get('kind') or 'خدمة عامّة', *( ['الاختصاص: ' + x['specialty']] if x.get('specialty') else []),
+                     'الهاتف: ' + ' ، '.join(x.get('phones') or []), *(['العنوان: ' + x['address']] if x.get('address') else []),
+                     *([x['note']] if x.get('note') else []), *(['بتاريخ ' + x['page_date']] if x.get('page_date') else [])]
+            out.append(entry('hama', 'دليل خدمات حماة · ' + (x.get('source_name') or 'مصدر عامّ'), f'web-{i}', x['name'], ' · '.join(parts), x['url']))
+    return out
+
+
 def build_sources():
     """المصادر التي يتابعها البوت نفسه (sources.json): لتُعرف الجهة وقناتها حين يُسأل عنها، لا عن أخبارها فقط."""
     s = json.loads((Path(__file__).resolve().parent / 'sources.json').read_text(encoding='utf-8'))
@@ -155,7 +231,7 @@ def build_sources():
 
 
 BUILDERS = {'phone': build_phonebook, 'app': build_apps, 'account': build_official, 'cv': build_cvs, 'site': build_sites,
-            'promise': build_promises, 'entity': build_entities, 'source': build_sources}
+            'promise': build_promises, 'entity': build_entities, 'source': build_sources, 'hama': build_hama}
 
 
 def build(base):

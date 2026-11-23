@@ -689,7 +689,9 @@ function answer_(q) {
   try { priv = loadPrivate_(days); } catch (e) {}                     // تعطّل Drive لا يمنع الجواب من المصادر العامّة
   var posts = rank_(q, loadNews_(days), TOP_POSTS);
   posts = posts.concat(rank_(q, priv.social, TOP_SOCIAL));            // صفحات فيسبوك وX التي يتابعها: غير رسميّة
-  posts = posts.concat(rank_(q, loadDir_(), TOP_DIR, true));          // ثمّ مداخل الأدلّة الأقرب (هواتف، جهات، سير…)
+  var dirAll = loadDir_(), near = nearest_(q, dirAll);
+  posts = posts.concat(near);                                         // «أقرب صيدليّة…»: مرافق حماة مرتّبةً بالبعد عن حيّه
+  posts = posts.concat(rank_(q, dirAll.filter(function (p) { return near.indexOf(p) < 0; }), TOP_DIR - Math.min(near.length, 6), true));   // ثمّ مداخل الأدلّة الأقرب (هواتف، جهات، سير…)
   posts = posts.concat(rank_(q, priv.hay, TOP_HAY, true));            // ثمّ دليل حيّه
   var vault = [];                                                     // أرقام هواتف دليل الحيّ: لا تُرسل إلى النموذج، وتُعاد في الجواب
   var ctx = posts.map(function (p, i) {
@@ -706,6 +708,7 @@ function answer_(q) {
   var prompt = 'أنت مساعدٌ خاصّ لمواطنٍ يسكن مدينة حماة في سوريا. الوقت الآن ' + stamp_(Date.now() / 1000) + ' بتوقيت دمشق.\n'
     + 'أجب عن سؤاله بالعربيّة الفصحى، من «البيانات» و«المنشورات والأدلّة» أدناه وحدها. لا تستعمل معرفتك العامّة في أيّ رقمٍ أو خبرٍ أو اسم.\n'
     + 'المنشورات أخبارٌ بتواريخها، ومداخل الأدلّة (دليل الهاتف، دليل الجهات، السير الذاتيّة، التطبيقات، الحسابات الرسميّة، المواقع، الوعود) معلوماتٌ ثابتة بلا تاريخ.\n'
+    + '«خريطة حماة» مرافق المدينة (مشافٍ، عيادات، صيدليّات، شرطة، إطفاء، دوائر، مصارف، محطّات وقود): لكلّ مرفقٍ موقعه على الخريطة وبُعده عن حيّ السائل. إن سأل عن الأقرب فاذكر الأقرب فالأقرب ببُعده ورابط موقعه، ونبّه مرّةً أنّ الخريطة قد لا تكون محدَّثة. وما كُتب في مصدره «دليل خدمات حماة» أرقامٌ من صفحاتٍ عامّة: اذكر الرقم وتاريخ صفحته إن وُجد.\n'
     + 'ما كُتب بجانب اسمه «غير رسميّ» منشورُ صفحةٍ إخباريّة أو محلّيّة على فيسبوك أو X يتابعها السائل: انقل منه منسوبًا إلى صفحته («بحسب صفحة…»)، ولا تقدّمه على مصدرٍ رسميّ يخالفه، ولا تأخذ منه سعرًا رسميًّا.\n'
     + '«دليل الحيّ» خلاصة مجموعات واتساب لجنة حيّ السائل (القصور، غرناطة 1، في حماة): المختار واللجنة، مراكز الغاز، الحرفيّون، مازوت التدفئة، الأعطال والشكاوى. استعمله حين يسأل عن حيّه أو عن خدمةٍ قريبة منه، واذكر أنّه من مجموعات الحيّ. الرموز التي على هيئة [هاتف-3] أرقام هواتف محجوبة عنك: حيث يلزم الرقم انسخ رمزه كما هو تمامًا.\n'
     + 'القواعد:\n'
@@ -845,7 +848,23 @@ function loadNews_(days) {
   return out;
 }
 
-var DIRS = ['phone', 'entity', 'source', 'cv', 'account', 'app', 'site', 'promise'];
+var DIRS = ['phone', 'entity', 'source', 'hama', 'cv', 'account', 'app', 'site', 'promise'];
+var NEAR = /(^| )(اقرب|الاقرب|قريب|قريبه|القريب|القريبه|جنبي|حولي|بجانبي|قربي)( |$)/;
+
+/** سؤالٌ عن «أقرب» مرفق: مرافق مدينة حماة التي تطابق كلمات السؤال، الأقرب إلى حيّ السائل أوّلًا (البعد مكتوبٌ في كلّ مدخل). */
+function nearest_(q, dir) {
+  var n = norm_(q);
+  if (!NEAR.test(n)) return [];
+  var toks = tokens_(q).filter(function (t) { return !NEAR.test(' ' + t + ' ') && t !== 'حماه' && t !== 'حيي' && t !== 'حينا'; });
+  if (!toks.length) return [];
+  var hits = [];
+  dir.forEach(function (p) {
+    if (p.kind !== 'hama') return;
+    var m = /يبعد ([\d.]+) كم/.exec(p.text), t = ' ' + norm_(p.title) + ' ';
+    if (m && toks.some(function (k) { return t.indexOf(k) >= 0; })) hits.push([Number(m[1]), p]);
+  });
+  return hits.sort(function (a, b) { return a[0] - b[0]; }).slice(0, 8).map(function (h) { return h[1]; });
+}
 
 /** مداخل الأدلّة كلّها (نحو 1200 مدخلًا صغيرًا) على هيئة المنشورات، ليجري عليها الاختيار نفسه. */
 function loadDir_() {
@@ -856,7 +875,7 @@ function loadDir_() {
       if (!l) return;
       try {
         var e = JSON.parse(l);
-        out.push({dir: true, name: e.source, title: e.title, text: e.title + ' — ' + e.text, url: e.url, ts: now, tier: 2});
+        out.push({dir: true, kind: e.kind, name: e.source, title: e.title, text: e.title + ' — ' + e.text, url: e.url, ts: now, tier: 2});
       } catch (x) {}
     });
   });
