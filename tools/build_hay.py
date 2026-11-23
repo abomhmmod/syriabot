@@ -10,6 +10,9 @@ from pathlib import Path
 
 BASE = Path(__file__).resolve().parent.parent
 EMPTY = {'', '—', '-', '–'}
+# قرار صاحب البوت: لا أرقام معلنين في الدليل. يُحذف ما كتب صاحبه إعلانه بنفسه، وما أُرسل رقمًا بلا وصف؛
+# ويبقى من أوصى به الجيران (حِرفيٌّ سُئل عنه فأُجيب برقمه) والجهات الرسميّة واللجنة.
+ADS = re.compile(r'إعلان من صاحبه|لا توصية|الخدمة: غير واضح')
 
 
 def text(parts):
@@ -103,8 +106,9 @@ def build(page):
     g.feed(Path(page).read_text(encoding='utf-8'))
     until = re.search(r'إلى (\d{4}-\d\d-\d\d)', ' '.join(e['text'] for e in g.out[:3]))
     source = 'دليل الحيّ (من مجموعات واتساب لجنة الحيّ' + (f'، حتّى {until.group(1)}' if until else '') + ')'
+    kept = [e for e in g.out if not ADS.search(e['text'])]
     return [{'id': f'hay:{i}', 'kind': 'hay', 'source': source, 'title': e['section'] or g.title, 'text': e['text'], 'url': ''}
-            for i, e in enumerate(g.out, 1)]
+            for i, e in enumerate(kept, 1)]
 
 
 if __name__ == '__main__':
