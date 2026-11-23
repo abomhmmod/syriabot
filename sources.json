@@ -1,0 +1,515 @@
+{
+ "note": "المصادر التي يقرؤها الجامع الصامت. tier: 1 الجهة نفسها، 2 إعلام رسميّ، 3 إعلام خاصّ. تُولَّد من سجلّ المصادر.",
+ "telegram": [
+  {
+   "id": "bunatmoad",
+   "name": "تطبيق بناة",
+   "kind": "تطبيق",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "hamaendowments",
+   "name": "مديرية أوقاف حماة",
+   "kind": "جهة رسميّة",
+   "tier": 1,
+   "hama": true
+  },
+  {
+   "id": "altarbia_hama",
+   "name": "مديرية التربية في حماة",
+   "kind": "جهة رسميّة",
+   "tier": 1,
+   "hama": true
+  },
+  {
+   "id": "syrararmy",
+   "name": "الجيش العربي السوري",
+   "kind": "رئاسة وجهات سياديّة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "idlibgov1",
+   "name": "محافظة إدلب",
+   "kind": "محافظة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "hasakahmd",
+   "name": "محافظة الحسكة",
+   "kind": "محافظة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "raqqaagov1",
+   "name": "محافظة الرقة",
+   "kind": "محافظة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "sweidagov1",
+   "name": "محافظة السويداء",
+   "kind": "محافظة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "quneitragov1",
+   "name": "محافظة القنيطرة",
+   "kind": "محافظة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "latakiagov1",
+   "name": "محافظة اللاذقية",
+   "kind": "محافظة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "aleppogov1",
+   "name": "محافظة حلب",
+   "kind": "محافظة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "hamagov1",
+   "name": "محافظة حماة",
+   "kind": "محافظة",
+   "tier": 1,
+   "hama": true
+  },
+  {
+   "id": "homsgov1",
+   "name": "محافظة حمص",
+   "kind": "محافظة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "free_daraa_city",
+   "name": "محافظة درعا",
+   "kind": "محافظة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "daraagov1",
+   "name": "محافظة درعا",
+   "kind": "محافظة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "damascusgov1",
+   "name": "محافظة دمشق",
+   "kind": "محافظة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "deirezzorgov1",
+   "name": "محافظة دير الزور",
+   "kind": "محافظة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "rdamascusgov1",
+   "name": "محافظة ريف دمشق",
+   "kind": "محافظة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "tartusgov1",
+   "name": "محافظة طرطوس",
+   "kind": "محافظة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "homsculture",
+   "name": "مديرية ثقافة حمص",
+   "kind": "محافظة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "mhd_alskaf",
+   "name": "محمد اسكاف",
+   "kind": "مسؤول",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "moisyriaspox",
+   "name": "نور الدين البابا",
+   "kind": "مسؤول",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "qtdmoisy",
+   "name": "إدارة التأهيل والتدريب - وزارة الداخلية",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "recruitsyri",
+   "name": "إدارة التجنيد والتعبئة - وزارة الدفاع",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "dedmoisy",
+   "name": "إدارة مكافحة المخدرات - وزارة الداخلية",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "symoiitacp",
+   "name": "الإدارة العامة للتجارة الداخلية وحماية المستهلك",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "sycaffc",
+   "name": "الجهاز المركزي للرقابة المالية",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "syrianairlinesgo",
+   "name": "السورية للطيران",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "syhioc",
+   "name": "المعهد العالي للرقابة",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "syria_hajj",
+   "name": "الهيئة السورية للحج والعمرة",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "generalcommissionfortaxesandfees",
+   "name": "الهيئة العامة للضرائب والرسوم",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "syrgaca",
+   "name": "الهيئة العامة للطيران المدني والنقل الجوي السوري",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "syrgabc",
+   "name": "الهيئة العامة للمنافذ والجمارك",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "sycofcai",
+   "name": "الهيئة المركزية للرقابة والتفتيش",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "syncftj",
+   "name": "الهيئة الوطنية للعدالة الانتقالية",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "synafmp",
+   "name": "الهيئة الوطنية للمفقودين",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "sypresidency",
+   "name": "رئاسة الجمهورية العربية السورية",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "ecleansy",
+   "name": "مؤسسة البيئة النظيفة E-Clean",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "hamahelth",
+   "name": "مديرية صحة حماة",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": true
+  },
+  {
+   "id": "sycbos",
+   "name": "مصرف سورية المركزي",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "syrianlagov",
+   "name": "هيئة الاستثمار السورية",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "gsvsbshsn",
+   "name": "هيئة المواصفات والمقاييس العربية السورية",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "mopwah",
+   "name": "وزارة الأشغال العامة والإسكان",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "symofe",
+   "name": "وزارة الأوقاف",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "symolaae",
+   "name": "وزارة الإدارة المحلية والبيئة",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "symoigov",
+   "name": "وزارة الإعلام",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "symocait",
+   "name": "وزارة الاتصالات وتقانة المعلومات",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "symoeai",
+   "name": "وزارة الاقتصاد والتجارة الخارجية",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "syrmoegov",
+   "name": "وزارة التربية والتعليم",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "symoheasr",
+   "name": "وزارة التعليم العالي والبحث العلمي",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "symoad",
+   "name": "وزارة التنمية الإدارية",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "syrsmoc",
+   "name": "وزارة الثقافة",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "syrianmofaex1",
+   "name": "وزارة الخارجية والمغتربين",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "syrianmoi",
+   "name": "وزارة الداخلية",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "sy_defense",
+   "name": "وزارة الدفاع",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "syrmoyas",
+   "name": "وزارة الرياضة والشباب",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "syrmofa",
+   "name": "وزارة الزراعة",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "sysmoft",
+   "name": "وزارة السياحة",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "symosaal",
+   "name": "وزارة الشؤون الاجتماعية والعمل",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "syrmofh",
+   "name": "وزارة الصحة",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "syrmofe",
+   "name": "وزارة الطاقة",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "symoeadm",
+   "name": "وزارة الطوارئ وإدارة الكوارث",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "syrmofj",
+   "name": "وزارة العدل",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "syrmoff",
+   "name": "وزارة المالية",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "syrsmot",
+   "name": "وزارة النقل",
+   "kind": "وزارة",
+   "tier": 1,
+   "hama": false
+  },
+  {
+   "id": "alekhbariahsy",
+   "name": "الإخبارية السورية",
+   "kind": "إعلام",
+   "tier": 2,
+   "hama": false
+  },
+  {
+   "id": "sana_gov",
+   "name": "الوكالة العربية السورية للأنباء – سانا",
+   "kind": "إعلام",
+   "tier": 2,
+   "hama": false
+  },
+  {
+   "id": "alsouriyatv",
+   "name": "قناة السورية",
+   "kind": "إعلام",
+   "tier": 2,
+   "hama": false
+  }
+ ],
+ "rss": [
+  {
+   "id": "sana",
+   "name": "سانا",
+   "kind": "إعلام",
+   "tier": 2,
+   "hama": false,
+   "url": "https://sana.sy/feed/"
+  },
+  {
+   "id": "fedaa",
+   "name": "صحيفة الفداء",
+   "kind": "إعلام",
+   "tier": 2,
+   "hama": true,
+   "url": "https://fedaa.alwehda.gov.sy/?feed=rss2"
+  },
+  {
+   "id": "alwatan",
+   "name": "صحيفة الوطن",
+   "kind": "إعلام خاصّ",
+   "tier": 3,
+   "hama": false,
+   "url": "https://alwatan.sy/feed/"
+  },
+  {
+   "id": "enab",
+   "name": "عنب بلدي",
+   "kind": "إعلام خاصّ",
+   "tier": 3,
+   "hama": false,
+   "url": "https://www.enabbaladi.net/feed/"
+  }
+ ]
+}

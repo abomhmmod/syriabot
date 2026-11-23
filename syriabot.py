@@ -20,6 +20,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 BASE = Path(__file__).resolve().parent
+sys.path.insert(0, str(BASE))                # ليُستورد news.py من مجلّد البوت أيًّا كانت طريقة التشغيل
 TZ = timezone(timedelta(hours=3))            # سوريا على +3 طوال السنة منذ 2022
 UA = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
                     'Chrome/130.0 Safari/537.36', 'Accept-Language': 'ar'}
@@ -533,7 +534,7 @@ def basket_text(basket, cfg):
     return '\n\n'.join(L)
 
 
-def bulletin_text(f, state, cfg, new_basket):
+def bulletin_text(f, state, cfg, new_basket, digest=None):
     t = now()
     y = (state.get('days') or {}).get(f'{t - timedelta(days=1):%Y-%m-%d}') or {}
     a, L = f['adopted'], [f'☀️ <b>نشرة {day_title(t)}</b>']
@@ -553,6 +554,11 @@ def bulletin_text(f, state, cfg, new_basket):
     p = prayer_line(f.get('prayer'), sunrise=True)
     if p:
         L.append(f'<b>مواقيت {cfg["city"]}</b>\n{p}')
+    # الموجز في اقتباسين مطويّين: يظهر أوّل كلٍّ منهما، ويُفتح الباقي بضغطة، فلا تطول النشرة.
+    if digest and digest.get('hama'):
+        L.append(f'📍 <b>يخصّ {cfg["city"]}</b>\n<blockquote expandable>' + '\n\n'.join(digest['hama']) + '</blockquote>')
+    if digest and digest.get('general'):
+        L.append('📰 <b>أهمّ ما صدر في سوريا</b>\n<blockquote expandable>' + '\n\n'.join(digest['general']) + '</blockquote>')
     if new_basket:
         b = basket_text(state.get('basket') or {}, cfg)
         if b:
@@ -631,6 +637,7 @@ def run(dry=None, bulletin_now=False, basket_now=False):
     state = load(state_path, None) if state_path.exists() else load(BASE / 'state.json', {}) if dry else {}
     state = state or {}
     tg = Telegram(dry)
+    root = Path(dry) if dry else BASE                   # في التجربة يُكتب الأرشيف في مجلّدها لا في المستودع
     first = not state.get('started')
     alerts, t = [], now()
     data = collect(cfg, state, alerts)
@@ -654,6 +661,24 @@ def run(dry=None, bulletin_now=False, basket_now=False):
             print(f'source wfp failed: {ex}', file=sys.stderr)
 
     ok = tg.board(state, board_text(facts, cfg))
+
+    # الجامع الصامت: يحفظ ما نشرته المصادر الرسميّة في news/، ولا يخرج منه إلى المحادثة إلّا تنبيه المراسيم.
+    # تعطّله لا يمسّ اللوحة ولا الأسعار. أوّل تشغيلٍ له يملأ الأرشيف بلا تنبيه.
+    try:
+        import news
+        srcs = load(BASE / 'sources.json', {})
+        seeding = 'tg' not in state.get('news', {})
+        got, nfail = news.collect(srcs, state.setdefault('news', {}), t.timestamp())
+        added = news.store(root, got, cfg.get('keep_days', 60), t)
+        decrees = news.decree_alerts(added, state['news'], t.year)
+        if not seeding:
+            alerts += decrees
+        total = len(srcs.get('telegram', [])) + len(srcs.get('rss', []))
+        print(f'news: {len(added)} new post(s) kept, {nfail} of {total} source(s) not read, {len(decrees)} decree alert(s)'
+              + (' (first run: none sent)' if seeding else ''))
+    except Exception as ex:
+        print(f'news collector failed: {type(ex).__name__}: {ex}', file=sys.stderr)
+
     if basket_now and not first:
         b = basket_text(basket, cfg)
         if b:
@@ -670,7 +695,13 @@ def run(dry=None, bulletin_now=False, basket_now=False):
         tg.send(a)
     today = f'{t:%Y-%m-%d}'
     if bulletin_now or (t.hour >= cfg.get('bulletin_hour', 7) and state.get('bulletin') != today and not first):
-        if tg.send(bulletin_text(facts, state, cfg, new_basket)):
+        dg = None
+        try:
+            import news
+            dg = news.digest(root, cfg, t.timestamp())           # None بلا مفتاح Gemini أو عند تعذّره
+        except Exception as ex:
+            print(f'digest failed: {type(ex).__name__}: {ex}', file=sys.stderr)
+        if tg.send(bulletin_text(facts, state, cfg, new_basket, dg)):
             state['bulletin'] = today
     elif first:
         state['bulletin'] = today                       # يوم البدء: اللوحة تكفي، والنشرة من الغد
