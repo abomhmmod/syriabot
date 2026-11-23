@@ -514,14 +514,21 @@ def basket_text(basket, cfg):
         if old and abs(price - old) / old >= cfg.get('basket_pct', 5) / 100:
             (up if price > old else down).append((abs(price - old) / old, f'• {name}: {n(old, 0)} ← <b>{n(price, 0)}</b> ({pct(price, old)})'))
     y, m, d = dates[-1].split('-')
-    L = [f'🧺 <b>سلّة {cfg["city"]} · {MONTHS[int(m) - 1]} {y}</b>\n<i>بالليرة الجديدة، والسعر للكيلو ما لم تُذكر وحدة.</i>']
+    def top(rows, cap=6):                    # أكبر التغيّرات أوّلًا، والباقي عددًا
+        rows = [s for _, s in sorted(rows, reverse=True)]
+        return '\n'.join(rows[:cap]) + (f'\n<i>و{len(rows) - cap} أخرى في القائمة.</i>' if len(rows) > cap else '')
+
+    # الرسالة قصيرة: ما تغيّر ظاهر، والأسعار كلّها في اقتباسٍ مطويّ يُفتح بضغطة (blockquote expandable).
+    L = [f'🧺 <b>سلّة {cfg["city"]} · {MONTHS[int(m) - 1]} {y}</b>']
     if up:
-        L.append('⬆️ <b>ارتفع عن الشهر السابق</b>\n' + '\n'.join(s for _, s in sorted(up, reverse=True)))
+        L.append('⬆️ <b>ارتفع عن الشهر السابق</b>\n' + top(up))
     if down:
-        L.append('⬇️ <b>انخفض</b>\n' + '\n'.join(s for _, s in sorted(down, reverse=True)))
+        L.append('⬇️ <b>انخفض</b>\n' + top(down))
     if not up and not down and prev:
         L.append('↔️ لا تغيّر يُذكر عن الشهر السابق.')
-    L += [f'{icon} <b>{ar}</b>\n' + '\n'.join(by[k]) for k, ar, icon in ((k, ar, GROUP_ICON.get(k, '▫️')) for k, ar in GROUPS) if k in by]
+    groups = [f'{icon} <b>{ar}</b>\n' + '\n'.join(by[k]) for k, ar, icon in ((k, ar, GROUP_ICON.get(k, '▫️')) for k, ar in GROUPS) if k in by]
+    L.append(f'<blockquote expandable>📋 <b>الأسعار كلّها · {len(cur)} مادّة</b>\n<i>بالليرة الجديدة، وللكيلو ما لم تُذكر وحدة.</i>\n\n'
+             + '\n\n'.join(groups) + '</blockquote>')
     L.append('<i>متوسّط ثلاثة باعة في سوق المدينة. المصدر: برنامج الأغذية العالميّ.</i>')
     return '\n\n'.join(L)
 

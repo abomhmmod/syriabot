@@ -52,7 +52,11 @@ bt = sb.basket_text({'months': months}, cfg)
 check('basket: one item a line, grouped, units, rises and falls first',
       all(x in bt for x in ('🌾 <b>حبوب ونشويّات</b>\n• رزّ: <b>132</b>', '• بيض (30 بيضة): <b>377</b>', '• سائل جلي (900 مل): <b>237</b>',
                             '⬆️ <b>ارتفع عن الشهر السابق</b>\n• رزّ: 120 ← <b>132</b> (+10.0%)', '⬇️ <b>انخفض</b>\n• سكّر: 110 ← <b>100</b> (-9.1%)',
-                            'تشرين الثاني 2026')) and bt.index('ارتفع') < bt.index('حبوب'), bt)
+                            'تشرين الثاني 2026', 'الأسعار كلّها · 4 مادّة')) and bt.index('ارتفع') < bt.index('<blockquote expandable>') < bt.index('حبوب') < bt.index('</blockquote>')
+      and bt.count('<blockquote') == bt.count('</blockquote>') == 1, bt)
+many = {'2026-10-15': {f'Item{i}': ['KG', 100.0, 'non-food'] for i in range(9)}, '2026-11-15': {f'Item{i}': ['KG', 100.0 + 10 * (i + 1), 'non-food'] for i in range(9)}}
+bm = sb.basket_text({'months': many}, cfg)
+check('basket: at most six changes shown, the rest counted, biggest first', bm.count('←') == 6 and 'و3 أخرى في القائمة' in bm and bm.index('Item8: 100 ←') < bm.index('Item3: 100 ←'), bm[:600])
 
 # ---------- القواعد
 os.environ['SYRIABOT_NOW'] = '2026-12-01T10:00:00+03:00'
