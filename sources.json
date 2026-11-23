@@ -733,6 +733,48 @@
    "tier": 2,
    "hama": false,
    "unverified": true
+  },
+  {
+   "id": "HamaEngineersSyndicate",
+   "name": "فرع نقابة المهندسين في حماة",
+   "kind": "نقابة أو غرفة",
+   "tier": 2,
+   "hama": true
+  },
+  {
+   "id": "MasyafGov1",
+   "name": "إدارة منطقة مصياف",
+   "kind": "محافظة",
+   "tier": 1,
+   "hama": true
+  },
+  {
+   "id": "agrighab",
+   "name": "الهيئة العامة لإدارة وتطوير الغاب",
+   "kind": "هيئة أو مؤسّسة",
+   "tier": 1,
+   "hama": true
+  },
+  {
+   "id": "alsiyaha_hama",
+   "name": "مديرية السياحة في حماة",
+   "kind": "مديرية",
+   "tier": 1,
+   "hama": true
+  },
+  {
+   "id": "albiya_hama",
+   "name": "مديرية البيئة في حماة",
+   "kind": "مديرية",
+   "tier": 1,
+   "hama": true
+  },
+  {
+   "id": "alsuwria_lilhubub_hama",
+   "name": "المؤسسة السورية للحبوب في حماة",
+   "kind": "مديرية",
+   "tier": 1,
+   "hama": true
   }
  ],
  "rss": [
