@@ -22,7 +22,13 @@ const ctx = {
   UrlFetchApp: {fetch, fetchAll: reqs => reqs.map(q => fetch(q.url, q))},
   PropertiesService: {getScriptProperties: () => ({getProperty: k => store[k] || null, setProperty: (k, v) => { store[k] = v; }})},
   Utilities: {computeDigest: (alg, str) => [...require('crypto').createHash('sha256').update(str, 'utf8').digest()].map(x => (x > 127 ? x - 256 : x)),
-    DigestAlgorithm: {SHA_256: 1}, Charset: {UTF_8: 1}, newBlob: t => ({getBytes: () => [...Buffer.from(t, 'utf8')]}), sleep: ms => cp.spawnSync('python', ['-I', '-c', 'import time,sys; time.sleep(' + ms / 1000 + ')']), formatDate: (d, tz, f) => { const s = new Date(d.getTime() + 3 * 3600e3).toISOString(); return f.length > 10 ? s.slice(0, 16).replace('T', ' ') : s.slice(0, 10); }},
+    DigestAlgorithm: {SHA_256: 1}, Charset: {UTF_8: 1},
+    newBlob: t => (typeof t === 'string' ? {getBytes: () => [...Buffer.from(t, 'utf8')].map(x => (x > 127 ? x - 256 : x))}
+      : {getBytes: () => t, getDataAsString: () => Buffer.from(t.map(x => x & 255)).toString('utf8')}),
+    computeHmacSha256Signature: (data, key) => [...require('crypto').createHmac('sha256', Buffer.from(key.map(x => x & 255))).update(Buffer.from(data.map(x => x & 255))).digest()].map(x => (x > 127 ? x - 256 : x)),
+    base64Encode: a => Buffer.from(a.map(x => x & 255)).toString('base64'),
+    base64Decode: s => [...Buffer.from(s, 'base64')].map(x => (x > 127 ? x - 256 : x)),
+    getUuid: () => require('crypto').randomUUID(), sleep: ms => cp.spawnSync('python', ['-I', '-c', 'import time,sys; time.sleep(' + ms / 1000 + ')']), formatDate: (d, tz, f) => { const s = new Date(d.getTime() + 3 * 3600e3).toISOString(); return f.length > 10 ? s.slice(0, 16).replace('T', ' ') : s.slice(0, 10); }},
   LockService: {getScriptLock: () => ({tryLock: () => true, releaseLock: () => {}})},
   ContentService: {createTextOutput: t => ({setMimeType: () => t}), MimeType: {JSON: 1}},
   ScriptApp: {getOAuthToken: () => 'x', getProjectTriggers: () => [], newTrigger: () => ({timeBased: () => ({everyMinutes: () => ({create: () => {}})})})},
@@ -160,6 +166,56 @@ store.TELEGRAM_TOKEN = 't'; calls.length = 0; delete store.KB;
 run('poll()'); run('poll()');
 const hello = calls.filter(c => c[0] === 'sendMessage');
 check('buttons: the keyboard is announced once, silently', hello.length === 1 && hello[0][1].reply_markup.keyboard.length === 3 && hello[0][1].disable_notification === true && store.KB === run('KB_VER'), JSON.stringify(calls.map(c => c[0])));
+// ---------- القسم الخاصّ: قيمٌ وهميّة، وملفّ Drive في الذاكرة
+const FILES = {};
+ctx.V_PUT = (name, text) => { FILES[name] = text; return 'id-' + name; };
+ctx.V_READ = names => Object.fromEntries(names.filter(n => FILES[n]).map(n => [n, FILES[n]]));
+run('privPut_ = function (name, text, idx) { return V_PUT(name, text); }; privRead_ = function (names, idx) { return V_READ(names.filter(function (n) { return idx[n]; })); }');
+let mid = 100;
+ctx.HOST_TG = (method, payload) => { calls.push([method, payload]); return method === 'getUpdates' ? {ok: true, result: []} : {ok: true, result: {message_id: ++mid}}; };
+const send = t => { calls.length = 0; ctx.T = {text: t, message_id: 5, chat: {id: 1}}; run('handle_("t", "1", T)'); return calls.filter(c => c[0] === 'sendMessage').map(c => c[1].text).join('\n'); };
+const deleted = () => calls.some(c => c[0] === 'deleteMessage' && c[1].message_id === 5);
+const askedBefore = asked2.length;
+delete store.VAULT_ID; delete store.VAULT_DEL; delete store.VAULT_FAIL;
+let out = send('خاصّ');
+check('vault: the bare word shows how to use it, and the message is removed', /رمز جديد/.test(out) && deleted() && !store.VAULT_DEL);
+check('vault: a question before creation says how to create it', /لم يُنشأ/.test(send('خاصّ 482913 بريد')) && !store.VAULT_ID);
+check('vault: a short code is refused', /ستّة رموز/.test(send('رمز جديد 123')) && !store.VAULT_ID);
+out = send('رمز جديد 482913');
+check('vault: created with a code; the file exists and the message with the code is deleted', /أُنشئ/.test(out) && store.VAULT_ID === 'id-vault.json' && deleted());
+check('vault: a second "new code" does not replace the first', /من قبل/.test(send('رمز جديد 999999')));
+out = send('احفظ 482913: بريد العمل = me@mail.example / السرّ: Ab=12==');
+check('vault: saving confirms by name only', /حُفظ: <b>بريد العمل<\/b>/.test(out) && !/me@mail/.test(out) && deleted(), out);
+out = send('احفظ ٤٨٢٩١٣ : الرقم الوطنيّ لأحمد = 01234567890');
+check('vault: the code in Arabic digits and a spaced colon are accepted', /حُفظ/.test(out) && /2 في القسم/.test(out), out);
+check('vault: the stored file shows neither names nor values', !/me@mail|Ab=12|بريد|01234567890|الوطني/.test(FILES['vault.json']) && JSON.parse(FILES['vault.json']).ct.length > 40);
+out = send('خاص 482913 بريد');
+check('vault: asking returns the value whole, covered, and queues the reply for deletion', out.includes('<tg-spoiler>me@mail.example / السرّ: Ab=12==</tg-spoiler>') && /بريد العمل/.test(out)
+  && JSON.parse(store.VAULT_DEL).length >= 1 && deleted(), out);
+check('vault: words must all match the name', /لا معلومة/.test(send('خاص 482913 بريد البيت')) && send('خاص 482913 وطني احمد').includes('01234567890'));
+out = send('خاصّ 482913');
+check('vault: the bare code lists names without values', /2 معلومة/.test(out) && /• بريد العمل/.test(out) && !/me@mail|01234567890/.test(out), out);
+check('vault: nothing of it went to the model', asked2.length === askedBefore);
+out = send('احفظ 482913: بريد العمل = new@mail.example');
+check('vault: saving the same name updates it', /حُدّث/.test(out) && /2 في القسم/.test(out) && send('خاص 482913 بريد').includes('new@mail.example'));
+let wrong = '';
+for (let k = 0; k < 5; k++) wrong = send('خاص 000000 بريد');
+check('vault: five wrong codes lock it; the right code is refused while locked', /أُقفل/.test(wrong) && /مقفل/.test(send('خاص 482913 بريد')), wrong);
+store.VAULT_FAIL = '0|0';
+check('vault: one wrong code is counted and shows nothing', /غير صحيح \(1 من 5\)/.test(send('خاص 111111 بريد')) && /new@mail/.test(send('خاص 482913 بريد')) && store.VAULT_FAIL === '0|0');
+out = send('غيّر الرمز 482913 951357');
+check('vault: changing the code: the old one stops working, the new one opens', /تغيّر الرمز/.test(out) && /غير صحيح/.test(send('خاص 482913 بريد')) && /new@mail/.test(send('خاص 951357 بريد')));
+store.VAULT_FAIL = '0|0';
+out = send('احذف 951357: بريد العمل');
+check('vault: deleting by exact name', /حُذف/.test(out) && /1 معلومة/.test(send('خاص 951357')) && /لا معلومة بهذا الاسم/.test(send('احذف 951357: شيء آخر')));
+check('vault: ordinary words that begin alike are not commands', (send('خاصية جديدة في واتساب؟'), asked2.length === askedBefore + 1) && (send('ما الخاصّ بأسعار الذهب؟'), asked2.length === askedBefore + 2));
+store.VAULT_DEL = JSON.stringify([[201, 1], [202, Math.floor(Date.now() / 1000) + 600]]);
+calls.length = 0; run('poll()');
+check('vault: due replies are deleted on the next minute, later ones wait', calls.some(c => c[0] === 'deleteMessage' && c[1].message_id === 201) && !calls.some(c => c[0] === 'deleteMessage' && c[1].message_id === 202)
+  && JSON.parse(store.VAULT_DEL).length === 1);
+ctx.B4 = {key: 'k'.repeat(40), files: [], keep: ['hay.jsonl']};
+run('receive_(B4)');
+check('vault: the PC upload and its pruning never touch the vault file', store.VAULT_ID === 'id-vault.json' && !!FILES['vault.json']);
 fs.rmSync(tmp, {recursive: true, force: true});
 
 console.log('\nfacts sheet: ' + facts.length + ' chars · archive: ' + news.length + ' posts · top for Hama: ' + r2.slice(0, 4).map(p => p.name).join('، '));
