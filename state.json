@@ -1,0 +1,802 @@
+{
+ "cache": {
+  "lirascope": {
+   "at": "2026-11-23T11:11+03:00",
+   "data": {
+    "market": {
+     "AED": {
+      "buy": 40.7,
+      "sell": 41.25,
+      "at": "2026-11-23T08:07:36.439889Z"
+     },
+     "AUD": {
+      "buy": 100.0486,
+      "sell": 101.5912,
+      "at": "2026-11-23T07:38:01.906208Z"
+     },
+     "BHD": {
+      "buy": 399.1833,
+      "sell": 405.3379,
+      "at": "2026-11-23T07:38:01.906208Z"
+     },
+     "BRL": {
+      "buy": 25.2767,
+      "sell": 25.6664,
+      "at": "2026-11-23T07:38:01.906208Z"
+     },
+     "CAD": {
+      "buy": 104.9087,
+      "sell": 106.5262,
+      "at": "2026-11-23T07:38:01.906208Z"
+     },
+     "CHF": {
+      "buy": 178.8481,
+      "sell": 181.6056,
+      "at": "2026-11-23T07:38:01.906208Z"
+     },
+     "DKK": {
+      "buy": 22.0683,
+      "sell": 22.4085,
+      "at": "2026-11-23T07:38:01.906208Z"
+     },
+     "DZD": {
+      "buy": 1.0944,
+      "sell": 1.1112,
+      "at": "2026-11-23T07:38:01.906208Z"
+     },
+     "EGP": {
+      "buy": 2.75,
+      "sell": 2.78,
+      "at": "2026-11-23T08:09:39.242774Z"
+     },
+     "EUR": {
+      "buy": 164.6,
+      "sell": 166.5,
+      "at": "2026-11-23T08:07:36.439878Z"
+     },
+     "GBP": {
+      "buy": 196.993,
+      "sell": 200.0303,
+      "at": "2026-11-23T07:38:01.906208Z"
+     },
+     "IQD": {
+      "buy": 0.0993,
+      "sell": 0.1008,
+      "at": "2026-11-23T07:38:01.906208Z"
+     },
+     "JOD": {
+      "buy": 211.6967,
+      "sell": 214.9606,
+      "at": "2026-11-23T07:38:01.906208Z"
+     },
+     "KWD": {
+      "buy": 481.6489,
+      "sell": 489.0749,
+      "at": "2026-11-23T07:38:01.906208Z"
+     },
+     "LYD": {
+      "buy": 23.2337,
+      "sell": 23.5919,
+      "at": "2026-11-23T07:38:01.906208Z"
+     },
+     "MAD": {
+      "buy": 15.0289,
+      "sell": 15.2607,
+      "at": "2026-11-23T07:38:01.906208Z"
+     },
+     "MYR": {
+      "buy": 36.4968,
+      "sell": 37.0595,
+      "at": "2026-11-23T07:38:01.906208Z"
+     },
+     "NOK": {
+      "buy": 15.3902,
+      "sell": 15.6275,
+      "at": "2026-11-23T07:38:01.906208Z"
+     },
+     "NZD": {
+      "buy": 82.6094,
+      "sell": 83.883,
+      "at": "2026-11-23T07:38:01.906208Z"
+     },
+     "OMR": {
+      "buy": 390.3587,
+      "sell": 396.3773,
+      "at": "2026-11-23T07:38:01.906208Z"
+     },
+     "QAR": {
+      "buy": 41.2343,
+      "sell": 41.8701,
+      "at": "2026-11-23T07:38:01.906208Z"
+     },
+     "RUB": {
+      "buy": 1.8417,
+      "sell": 1.8701,
+      "at": "2026-11-23T07:38:01.906208Z"
+     },
+     "SAR": {
+      "buy": 39.84,
+      "sell": 40.38,
+      "at": "2026-11-23T07:51:10.06264Z"
+     },
+     "SEK": {
+      "buy": 14.7114,
+      "sell": 14.9382,
+      "at": "2026-11-23T07:38:01.906208Z"
+     },
+     "SGD": {
+      "buy": 116.4956,
+      "sell": 118.2917,
+      "at": "2026-11-23T07:38:01.906208Z"
+     },
+     "TND": {
+      "buy": 49.0301,
+      "sell": 49.786,
+      "at": "2026-11-23T07:38:01.906208Z"
+     },
+     "TRY": {
+      "buy": 2.96,
+      "sell": 2.99,
+      "at": "2026-11-22T09:38:23.580433Z"
+     },
+     "USD": {
+      "buy": 151.0,
+      "sell": 151.5,
+      "at": "2026-11-23T07:36:47.5034Z"
+     },
+     "ZAR": {
+      "buy": 8.5919,
+      "sell": 8.7243,
+      "at": "2026-11-23T07:38:01.906208Z"
+     }
+    },
+    "cbs": {
+     "USD": 122.0
+    },
+    "gold_usd": {
+     "14K": 68.0,
+     "18K": 87.0,
+     "21K": 101.0,
+     "22K": 106.0,
+     "24K": 116.0
+    },
+    "usdt_usd": 0.99859545
+   }
+  },
+  "sptoday": {
+   "at": "2026-11-23T11:11+03:00",
+   "data": {
+    "market": {
+     "USD": {
+      "buy": 151.0,
+      "sell": 151.5
+     },
+     "EUR": {
+      "buy": 164.7,
+      "sell": 166.6
+     },
+     "TRY": {
+      "buy": 2.96,
+      "sell": 2.99
+     },
+     "SAR": {
+      "buy": 39.84,
+      "sell": 40.38
+     },
+     "AED": {
+      "buy": 40.7,
+      "sell": 41.25
+     }
+    },
+    "fuel": {
+     "gasoline_95": 195.0,
+     "gasoline_90": 185.0,
+     "diesel": 150.0,
+     "gas_home": 1600.0
+    }
+   }
+  },
+  "cbs": {
+   "at": "2026-11-23T11:11+03:00",
+   "data": {
+    "date": "2026-11-22",
+    "rates": {
+     "KWD": 391.28,
+     "USD": 122.0,
+     "SEK": 11.93,
+     "AED": 33.22,
+     "GBP": 159.66,
+     "JOD": 172.07,
+     "EUR": 133.81,
+     "SAR": 32.52
+    }
+   }
+  },
+  "sytra": {
+   "at": "2026-11-23T11:11+03:00",
+   "data": {
+    "unit": "الليرة السورية الجديدة",
+    "fuel": {
+     "bulletin_date": "2026-11-15",
+     "issuer": "اللجنة الدائمة لتحديد أسعار المواد البترولية والثروات المعدنية — وزارة الطاقة",
+     "prices": {
+      "gasoline_95": 195,
+      "gasoline_90": 185,
+      "diesel_1": 150,
+      "diesel_heating": 115,
+      "gas_home": 1600,
+      "gas_industrial": 2560
+     },
+     "source_url": "https://sana.sy/economy/syrian-economy/2635320/",
+     "page": "https://sytra.me/prices/diesel"
+    },
+    "bread": {
+     "price": 40,
+     "weight_g": 1000,
+     "loaves": 8,
+     "price_per_kg": 40,
+     "since": "2026-06-20",
+     "page": "https://sytra.me/prices/bread"
+    },
+    "gold": {
+     "date": "2026-11-22",
+     "g21_sell": 15700,
+     "g21_buy": 15400,
+     "g18_sell": 13500,
+     "g24_sell": null,
+     "page": "https://sytra.me/prices/gold"
+    },
+    "usd_official": {
+     "buy": "121.50",
+     "sell": "122.50",
+     "avg": "122.00",
+     "bulletin": 218,
+     "date": "2026-11-19",
+     "page": "https://sytra.me/prices/usd"
+    },
+    "generated_at": "2026-11-23T08:11:44+00:00"
+   }
+  },
+  "prayer": {
+   "at": "2026-11-23T11:13+03:00",
+   "data": {
+    "date": "2026-11-23",
+    "method": "Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan",
+    "iqama": {
+     "Fajr": 15,
+     "Dhuhr": 15,
+     "Asr": 15,
+     "Maghrib": 15,
+     "Isha": 15
+    },
+    "Fajr": "05:46",
+    "Sunrise": "07:15",
+    "Dhuhr": "12:19",
+    "Asr": "15:05",
+    "Maghrib": "17:28",
+    "Isha": "18:52"
+   }
+  }
+ },
+ "fail": {
+  "lirascope": 0,
+  "sptoday": 0,
+  "cbs": 0,
+  "sytra": 0,
+  "weather": 1,
+  "prayer": 0,
+  "wfp": 0
+ },
+ "adopted": {
+  "gasoline_95": {
+   "value": 195.0,
+   "date": "2026-11-15",
+   "single": false
+  },
+  "gasoline_90": {
+   "value": 185.0,
+   "date": "2026-11-15",
+   "single": false
+  },
+  "diesel": {
+   "value": 150.0,
+   "date": "2026-11-15",
+   "single": false
+  },
+  "diesel_heating": {
+   "value": 115.0,
+   "date": "2026-11-15",
+   "single": true
+  },
+  "gas_home": {
+   "value": 1600.0,
+   "date": "2026-11-15",
+   "single": false
+  },
+  "bread": {
+   "value": 40.0,
+   "date": "2026-06-20",
+   "single": true
+  }
+ },
+ "pending": {},
+ "official": {
+  "date": "2026-11-22",
+  "USD": 122.0,
+  "EUR": 133.81,
+  "src": "نشرة المصرف"
+ },
+ "ref": {
+  "market_usd": 151.5,
+  "gold21": 15700
+ },
+ "basket": {
+  "stamp": "[2011-04-15T00:00:00 TO 2026-11-15T23:59:59]|2026-11-22T09:23:50.379432",
+  "months": {
+   "2026-10-15": {
+    "Bread (bakery)": [
+     "1.1 KG",
+     45.0,
+     "cereals and tubers"
+    ],
+    "Bread (shop)": [
+     "1.1 KG",
+     128.59,
+     "cereals and tubers"
+    ],
+    "Bulgur": [
+     "KG",
+     100.26,
+     "cereals and tubers"
+    ],
+    "Noodles (instant, indomie)": [
+     "Packet",
+     45.0,
+     "cereals and tubers"
+    ],
+    "Pasta (spaghetti)": [
+     "KG",
+     129.1,
+     "cereals and tubers"
+    ],
+    "Potatoes": [
+     "KG",
+     80.13,
+     "cereals and tubers"
+    ],
+    "Rice": [
+     "KG",
+     131.92,
+     "cereals and tubers"
+    ],
+    "Wheat flour": [
+     "KG",
+     88.21,
+     "cereals and tubers"
+    ],
+    "Eggs": [
+     "30 pcs",
+     389.23,
+     "meat, fish and eggs"
+    ],
+    "Fish (tuna, canned)": [
+     "160 G",
+     162.31,
+     "meat, fish and eggs"
+    ],
+    "Livestock (sheep, two-year-old male)": [
+     "Head",
+     66974.36,
+     "meat, fish and eggs"
+    ],
+    "Meat (beef, minced)": [
+     "KG",
+     1814.1,
+     "meat, fish and eggs"
+    ],
+    "Meat (chicken, legs)": [
+     "KG",
+     254.87,
+     "meat, fish and eggs"
+    ],
+    "Meat (chicken, plucked)": [
+     "KG",
+     288.98,
+     "meat, fish and eggs"
+    ],
+    "Cheese": [
+     "KG",
+     328.71,
+     "milk and dairy"
+    ],
+    "Yogurt": [
+     "KG",
+     120.13,
+     "milk and dairy"
+    ],
+    "Salt (iodised)": [
+     "KG",
+     56.02,
+     "miscellaneous food"
+    ],
+    "Sugar": [
+     "KG",
+     107.82,
+     "miscellaneous food"
+    ],
+    "Bleach (chlorine)": [
+     "L",
+     103.33,
+     "non-food"
+    ],
+    "Diapers": [
+     "28 pcs",
+     361.54,
+     "non-food"
+    ],
+    "Dishwashing liquid": [
+     "900 ML",
+     243.85,
+     "non-food"
+    ],
+    "Fuel (diesel)": [
+     "L",
+     175.0,
+     "non-food"
+    ],
+    "Fuel (diesel, transport, parallel market)": [
+     "L",
+     195.0,
+     "non-food"
+    ],
+    "Fuel (gas)": [
+     "25 KG",
+     1800.0,
+     "non-food"
+    ],
+    "Fuel (gas, parallel market)": [
+     "25 KG",
+     2742.31,
+     "non-food"
+    ],
+    "Internet bundle": [
+     "1 GB",
+     240.0,
+     "non-food"
+    ],
+    "Multipurpose soap": [
+     "Bar",
+     33.33,
+     "non-food"
+    ],
+    "Sanitary pads": [
+     "10 pcs",
+     152.44,
+     "non-food"
+    ],
+    "Toothpaste": [
+     "100 ML",
+     156.67,
+     "non-food"
+    ],
+    "Wage (non-qualified labour)": [
+     "Day",
+     964.1,
+     "non-food"
+    ],
+    "Water (drinking)": [
+     "1.5 L",
+     54.49,
+     "non-food"
+    ],
+    "Oil": [
+     "L",
+     292.05,
+     "oil and fats"
+    ],
+    "Beans (white)": [
+     "KG",
+     210.0,
+     "pulses and nuts"
+    ],
+    "Chickpeas": [
+     "KG",
+     148.33,
+     "pulses and nuts"
+    ],
+    "Lentils": [
+     "KG",
+     153.71,
+     "pulses and nuts"
+    ],
+    "Apples": [
+     "KG",
+     93.33,
+     "vegetables and fruits"
+    ],
+    "Bananas": [
+     "KG",
+     148.21,
+     "vegetables and fruits"
+    ],
+    "Carrots": [
+     "KG",
+     73.46,
+     "vegetables and fruits"
+    ],
+    "Cucumbers": [
+     "KG",
+     61.54,
+     "vegetables and fruits"
+    ],
+    "Dates": [
+     "KG",
+     284.1,
+     "vegetables and fruits"
+    ],
+    "Eggplants": [
+     "KG",
+     39.23,
+     "vegetables and fruits"
+    ],
+    "Onions": [
+     "KG",
+     40.77,
+     "vegetables and fruits"
+    ],
+    "Parsley": [
+     "Packet",
+     11.79,
+     "vegetables and fruits"
+    ],
+    "Tomatoes": [
+     "KG",
+     30.0,
+     "vegetables and fruits"
+    ]
+   },
+   "2026-11-15": {
+    "Bread (bakery)": [
+     "1.1 KG",
+     45.0,
+     "cereals and tubers"
+    ],
+    "Bread (shop)": [
+     "1.1 KG",
+     125.0,
+     "cereals and tubers"
+    ],
+    "Bulgur": [
+     "KG",
+     96.67,
+     "cereals and tubers"
+    ],
+    "Noodles (instant, indomie)": [
+     "Packet",
+     45.0,
+     "cereals and tubers"
+    ],
+    "Pasta (spaghetti)": [
+     "KG",
+     130.0,
+     "cereals and tubers"
+    ],
+    "Potatoes": [
+     "KG",
+     78.33,
+     "cereals and tubers"
+    ],
+    "Rice": [
+     "KG",
+     128.33,
+     "cereals and tubers"
+    ],
+    "Wheat flour": [
+     "KG",
+     90.0,
+     "cereals and tubers"
+    ],
+    "Eggs": [
+     "30 pcs",
+     376.67,
+     "meat, fish and eggs"
+    ],
+    "Fish (tuna, canned)": [
+     "160 G",
+     153.33,
+     "meat, fish and eggs"
+    ],
+    "Livestock (sheep, two-year-old male)": [
+     "Head",
+     66283.33,
+     "meat, fish and eggs"
+    ],
+    "Meat (beef, minced)": [
+     "KG",
+     1733.33,
+     "meat, fish and eggs"
+    ],
+    "Meat (chicken, legs)": [
+     "KG",
+     256.67,
+     "meat, fish and eggs"
+    ],
+    "Meat (chicken, plucked)": [
+     "KG",
+     280.0,
+     "meat, fish and eggs"
+    ],
+    "Cheese": [
+     "KG",
+     323.33,
+     "milk and dairy"
+    ],
+    "Yogurt": [
+     "KG",
+     118.33,
+     "milk and dairy"
+    ],
+    "Salt (iodised)": [
+     "KG",
+     53.33,
+     "miscellaneous food"
+    ],
+    "Sugar": [
+     "KG",
+     103.33,
+     "miscellaneous food"
+    ],
+    "Bleach (chlorine)": [
+     "L",
+     103.33,
+     "non-food"
+    ],
+    "Diapers": [
+     "28 pcs",
+     363.33,
+     "non-food"
+    ],
+    "Dishwashing liquid": [
+     "900 ML",
+     236.67,
+     "non-food"
+    ],
+    "Fuel (diesel)": [
+     "L",
+     175.0,
+     "non-food"
+    ],
+    "Fuel (diesel, transport, parallel market)": [
+     "L",
+     195.0,
+     "non-food"
+    ],
+    "Fuel (gas)": [
+     "25 KG",
+     1800.0,
+     "non-food"
+    ],
+    "Fuel (gas, parallel market)": [
+     "25 KG",
+     2500.0,
+     "non-food"
+    ],
+    "Internet bundle": [
+     "1 GB",
+     240.0,
+     "non-food"
+    ],
+    "Multipurpose soap": [
+     "Bar",
+     33.33,
+     "non-food"
+    ],
+    "Sanitary pads": [
+     "10 pcs",
+     141.67,
+     "non-food"
+    ],
+    "Toothpaste": [
+     "100 ML",
+     156.67,
+     "non-food"
+    ],
+    "Wage (non-qualified labour)": [
+     "Day",
+     1000.0,
+     "non-food"
+    ],
+    "Water (drinking)": [
+     "1.5 L",
+     50.0,
+     "non-food"
+    ],
+    "Oil": [
+     "L",
+     286.67,
+     "oil and fats"
+    ],
+    "Beans (white)": [
+     "KG",
+     210.0,
+     "pulses and nuts"
+    ],
+    "Chickpeas": [
+     "KG",
+     136.67,
+     "pulses and nuts"
+    ],
+    "Lentils": [
+     "KG",
+     148.33,
+     "pulses and nuts"
+    ],
+    "Apples": [
+     "KG",
+     93.33,
+     "vegetables and fruits"
+    ],
+    "Bananas": [
+     "KG",
+     150.0,
+     "vegetables and fruits"
+    ],
+    "Carrots": [
+     "KG",
+     83.33,
+     "vegetables and fruits"
+    ],
+    "Cucumbers": [
+     "KG",
+     75.0,
+     "vegetables and fruits"
+    ],
+    "Dates": [
+     "KG",
+     273.33,
+     "vegetables and fruits"
+    ],
+    "Eggplants": [
+     "KG",
+     38.33,
+     "vegetables and fruits"
+    ],
+    "Onions": [
+     "KG",
+     41.67,
+     "vegetables and fruits"
+    ],
+    "Parsley": [
+     "Packet",
+     10.0,
+     "vegetables and fruits"
+    ],
+    "Tomatoes": [
+     "KG",
+     30.0,
+     "vegetables and fruits"
+    ]
+   }
+  },
+  "checked": "2026-11-23"
+ },
+ "board": {
+  "id": 2
+ },
+ "bulletin": "2026-11-23",
+ "days": {
+  "2026-11-23": {
+   "usd_sell": 151.5,
+   "official_usd": 122.0,
+   "gold": 15700,
+   "gasoline_95": 195.0,
+   "gasoline_90": 185.0,
+   "diesel": 150.0,
+   "diesel_heating": 115.0,
+   "gas_home": 1600.0,
+   "bread": 40.0
+  }
+ },
+ "started": true,
+ "last_run": "2026-11-23T11:11:38+03:00"
+}
