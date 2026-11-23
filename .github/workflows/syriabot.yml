@@ -11,6 +11,10 @@ on:
         description: 'أرسل سلّة المدينة الآن'
         type: boolean
         default: false
+      send_bulletin:
+        description: 'أرسل نشرة الصباح الآن'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -59,7 +63,7 @@ jobs:
 
       - name: الفحص
         if: steps.check.outputs.ready == 'true'
-        run: python3 syriabot.py ${{ inputs.send_basket == true && '--basket-now' || '' }}
+        run: python3 syriabot.py ${{ inputs.send_basket == true && '--basket-now' || '' }} ${{ inputs.send_bulletin == true && '--bulletin-now' || '' }}
 
       # إن فشل الفحص نُبّه تيليغرام مرّةً واحدة (العلامة run_failing في state.json تمنع التكرار)،
       # وأوّل تشغيلٍ ناجح بعدها يرسل «عاد بوت سوريا يعمل» ويمحوها.
