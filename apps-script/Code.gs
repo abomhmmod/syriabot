@@ -224,8 +224,13 @@ function handle_(token, chat, m) {
     try { html = quick_(q); } catch (e) { html = null; }      // زرٌّ جوابه من البيانات مباشرةً؛ وإن تعذّر فالطريق العاديّ
     if (!html) {
       tg_(token, 'sendChatAction', {chat_id: chat, action: 'typing'});
+      var pub = ASK[q] || q;
+      if (!ASK[q] && VAULT_HINT.test(norm_(q))) {             // سؤالٌ عاديّ قد يطلب شيئًا من القسم الخاصّ: يُجاب خاصُّه بالكود، ويبقى عامُّه
+        try { pub = vaultAsk_(token, chat, q); } catch (e) { pub = q; }
+        if (!pub) return;
+      }
       try {
-        html = answer_(ASK[q] || q);
+        html = answer_(pub);
       } catch (e) {
         html = 'تعذّر الجواب الآن (' + esc_(String(e && e.message || e).slice(0, 120)) + '). أعد السؤال بعد دقيقة.';
       }
@@ -344,6 +349,68 @@ function vaultImport_(items) {
   });
   if (add || upd) vaultSave_(v);
   return {added: add, updated: upd, total: v.index.length};
+}
+
+var VAULT_HINT = /(^| )(?:و|ب|ل|ف)?(?:ال)?(رقم|رقمه|رقمها|ارقام|هاتف|جوال|موبايل|تلفون|حساب|حسابي|حسابات|حساباتي|كلمه|باسورد|باسوورد|بريد|بريدي|ايميل|ايميلي|يوزر|مستخدم|وطني|جواز|password|email|account)( |$)/;
+var VAULT_PLAN = 'قسّم سؤال المستخدم إلى طلباته ولا تُجب عن شيء. لكلّ طلب:\n'
+  + '- kind: «phone» إن أراد رقم هاتف شخصٍ يعرفه (قريب، صديق، اسم علم، لقب). «account» إن أراد حسابه أو بريده أو اسم مستخدمه أو كلمة سرّه في موقعٍ أو تطبيق. '
+  + '«personal» إن أراد معلومةً شخصيّة محفوظة عنده (رقم وطنيّ، رقم حساب مصرفيّ، رقم جواز، رقم اشتراك…) له أو لأحد أهله. «public» لكلّ ما سوى ذلك: الأسعار، الطقس، المواقيت، '
+  + 'الأخبار، وأرقام الجهات العامّة (إسعاف، شرطة، مشفى، دائرة، شركة، مركز).\n'
+  + '- terms: للطلب غير العامّ فقط: كلمات البحث عنه، من الأرجح إلى الأبعد. للهاتف: صيغ الاسم كما قد يُحفظ في جهات الاتّصال (أبي ← ["أبي","ابي","والدي","الوالد","بابا"]؛ '
+  + 'أحمد ← ["أحمد","احمد"]). للحساب: اسم الموقع بالإنجليزيّة ثمّ بالعربيّة (فيسبوك ← ["facebook","فيسبوك","fb"]). للمعلومة الشخصيّة: كلمات اسمها (["وطني أحمد","الرقم الوطني"]).\n'
+  + '- text: نصّ الطلب كما كتبه، جملةً مفهومة وحدها.\n\nالسؤال: ';
+var VAULT_KIND = {phone: '📞', account: '👤', personal: '🪪'};
+
+/** هل في الاسم (موحَّدًا ومحاطًا بمسافتين) هذه الكلمة كاملةً؟ تُهمل أداة التعريف وحروف الجرّ والعطف الملتصقة («لسلمى»، «الوطني»). */
+function wordHit_(padded, tok) {
+  var t = tok.replace(/^(وال|بال|لل|ال)(?=.{2,})/, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(' (?:وال|بال|فال|كال|لل|ال|و|ب|ل|ك|ف)?' + t + ' ').test(padded);
+}
+
+/** سؤالٌ عاديّ فيه ما يُطلب من القسم الخاصّ. النموذج يقسّم نصّ السؤال فقط (لا يرى شيئًا من القسم)، ثمّ يبحث الكود في
+ *  أسماء القسم ويرسل ما وجده مغطًّى ويُحذف بعد دقيقتين. يعيد ما بقي من السؤال للجواب العاديّ ('' إن لم يبقَ شيء). */
+function vaultAsk_(token, chat, q) {
+  var P = PropertiesService.getScriptProperties();
+  if (!P.getProperty('VAULT_ID')) return q;
+  var plan = gemini_(VAULT_PLAN + q, {type: 'object', properties: {parts: {type: 'array', items: {type: 'object', properties: {
+    kind: {type: 'string', enum: ['phone', 'account', 'personal', 'public']}, terms: {type: 'array', items: {type: 'string'}}, text: {type: 'string'}},
+    required: ['kind', 'terms', 'text']}}}, required: ['parts']});
+  if (!plan || !plan.parts || !plan.parts.length) return q;                 // تعذّر التقسيم: الطريق العاديّ كما هو
+  var v = vaultOpen_(), blocks = [], rest = [];
+  var words = v.index.map(function (x) { return [x, ' ' + norm_(x[1]) + ' ']; });
+  plan.parts.forEach(function (p) {
+    if (p.kind === 'public' || !VAULT_KIND[p.kind]) { rest.push(p.text); return; }
+    var hits = [];
+    // جهات الاتّصال المستوردة أسماؤها «هاتف …»: يُبحث فيها لطلب الهاتف وفي غيرها لسواه، ثمّ في الباقي إن لم يوجد شيء
+    [true, false].some(function (first) {
+      return (p.terms || []).slice(0, 8).some(function (term) {       // أوّل صيغةٍ تجد شيئًا تكفي
+        var toks = norm_(term).split(' ').filter(function (t) { return t; });
+        if (!toks.length) return false;
+        hits = words.filter(function (w) {
+          var phone = w[1].indexOf(' هاتف ') === 0;
+          if ((p.kind === 'phone') === phone ? !first : first) return false;
+          return toks.every(function (t) { return wordHit_(w[1], t); });                        // كلماتٌ كاملة لا أجزاء كلمات
+        }).map(function (w) { return w[0]; });
+        return hits.length > 0;
+      });
+    });
+    if (!hits.length) { rest.push(p.text); return; }         // ليس في القسم الخاصّ: لعلّه عامّ (رقم الإسعاف…)
+    hits.sort(function (a, b) { return a[1].length - b[1].length; });
+    blocks.push(VAULT_KIND[p.kind] + ' <b>' + esc_(p.text) + '</b>\n' + hits.slice(0, 3).map(function (x) {
+      return esc_(x[1]) + '\n<tg-spoiler>' + esc_(unbox_(v, v.vals[x[0]])) + '</tg-spoiler>';
+    }).join('\n') + (hits.length > 3 ? '\n<i>و' + (hits.length - 3) + ' أخرى تطابق؛ اكتب «خاصّ» مع كلمةٍ أدقّ.</i>' : ''));
+  });
+  if (!blocks.length) return q;
+  var html = blocks.join('\n\n') + '\n\n<i>من القسم الخاصّ. تُحذف هذه الرسالة بعد دقيقتين.</i>';
+  var r = tg_(token, 'sendMessage', {chat_id: chat, text: html, parse_mode: 'HTML', disable_notification: true, link_preview_options: {is_disabled: true}});
+  if (!r.ok) r = tg_(token, 'sendMessage', {chat_id: chat, text: html.replace(/<[^>]+>/g, ''), disable_notification: true});
+  if (r.ok) {
+    var d = [];
+    try { d = JSON.parse(P.getProperty('VAULT_DEL') || '[]'); } catch (e) {}
+    d.push([r.result.message_id, Math.floor(Date.now() / 1000) + VAULT_TTL]);
+    P.setProperty('VAULT_DEL', JSON.stringify(d));
+  }
+  return rest.join('، و');
 }
 
 /** يحذف ما حان موعد حذفه من أجوبة القسم الخاصّ (يُستدعى كلّ دقيقة). */

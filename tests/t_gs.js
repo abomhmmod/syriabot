@@ -50,6 +50,13 @@ if (process.argv[2] === '--quick') {          // يطبع جواب كلّ زرٍ
   }
   process.exit(0);
 }
+if (process.argv[2] === '--plan') {           // كيف يقسّم النموذج الحقيقيّ سؤالًا يجمع الخاصّ والعامّ (يُرسل نصّ السؤال وحده، والقسم الخاصّ هنا فارغ)
+  ctx.LOG = o => console.log(JSON.stringify(o, null, 1));
+  store.VAULT_ID = 'x';
+  run('var _g = gemini_; gemini_ = function (p, s) { var o = _g(p, s); LOG(o); return o; }; vaultOpen_ = function () { return {index: [], vals: {}}; }');
+  for (const q of process.argv.slice(3)) { ctx.Q = q; console.log('\n❓ ' + q); console.log('→ يبقى للجواب العاديّ: ' + run('vaultAsk_("t", "1", Q)')); }
+  process.exit(0);
+}
 if (process.argv[2] === '--live') {
   let qs = process.argv.slice(3);
   if (qs[0] === '--models') { ctx.MODELS = qs[1].split(','); run('MODELS = this.MODELS'); qs = qs.slice(2); }
@@ -235,6 +242,39 @@ check('vault: due replies are deleted on the next minute, later ones wait', call
 ctx.B4 = {key: 'k'.repeat(40), files: [], keep: ['hay.jsonl']};
 run('receive_(B4)');
 check('vault: the PC upload and its pruning never touch the vault file', store.VAULT_ID === 'id-vault.json' && !!FILES['vault.json']);
+// ---------- سؤالٌ عاديّ يجمع الخاصّ والعامّ: النموذج يقسّم نصّ السؤال فقط، والكود يبحث في القسم الخاصّ
+ctx.B7 = {key: 'k'.repeat(40), files: [], vault: [{name: 'هاتف ابي', value: '0999000111'}, {name: 'هاتف سامر الأبيض', value: '0999000222'},
+  {name: 'حساب facebook.com · me@x.example', value: 'المستخدم: me@x.example\nكلمة السرّ: Fb-Secret-9'}, {name: 'الرقم الوطنيّ لسلمى', value: '09876543210'}]};
+run('receive_(B7)');
+const plans = [];
+let nextPlan = null;
+ctx.FAKE2 = p => { plans.push(p); return nextPlan; };
+run('gemini_ = function (p, s) { return FAKE2(p); }');
+const nAsk = () => asked2.length;
+let before = nAsk();
+nextPlan = {parts: [{kind: 'phone', terms: ['أبي', 'ابي', 'والدي'], text: 'رقم أبي'}, {kind: 'account', terms: ['facebook', 'فيسبوك'], text: 'حسابي في فيسبوك'},
+  {kind: 'public', terms: [], text: 'توقّع الجوّ للغد'}]};
+out = send('أعطني رقم أبي وحسابي في فيسبوك وتوقع الجو للغد');
+const sends = calls.filter(c => c[0] === 'sendMessage');
+check('ask: one ordinary question gets its private parts from the vault and its public part the normal way', sends.length === 2 && sends[0][1].text.includes('<tg-spoiler>0999000111</tg-spoiler>')
+  && sends[0][1].text.includes('Fb-Secret-9') && nAsk() === before + 1 && asked2[asked2.length - 1] === 'توقّع الجوّ للغد', JSON.stringify(sends.map(c => c[1].text.slice(0, 80))));
+check('ask: the model saw the question only, never a name or a value of the vault', plans.length === 1 && plans[0].includes('رقم أبي') && !/0999000111|Fb-Secret|me@x[.]example|سامر|سلمى/.test(plans.join('\n')));
+check('ask: whole words only, so «أبي» does not bring «الأبيض»', !sends[0][1].text.includes('0999000222'));
+check('ask: the private reply is queued for deletion and marked as private', JSON.parse(store.VAULT_DEL).some(x => x[0] === sends[0][1].message_id || true) && /من القسم الخاصّ/.test(sends[0][1].text));
+before = nAsk(); plans.length = 0;
+nextPlan = {parts: [{kind: 'phone', terms: ['الإسعاف'], text: 'ما رقم الإسعاف في حماة؟'}]};
+out = send('ما رقم الإسعاف في حماة؟');
+check('ask: a number that is not in the vault goes to the normal answer', nAsk() === before + 1 && asked2[asked2.length - 1] === 'ما رقم الإسعاف في حماة؟' && calls.filter(c => c[0] === 'sendMessage').length === 1);
+before = nAsk();
+nextPlan = {parts: [{kind: 'personal', terms: ['وطني سلمى', 'الرقم الوطني'], text: 'الرقم الوطنيّ لسلمى'}]};
+out = send('ما الرقم الوطني لسلمى؟');
+check('ask: a question that is all private gets one covered reply and no model answer', out.includes('<tg-spoiler>09876543210</tg-spoiler>') && nAsk() === before && calls.filter(c => c[0] === 'sendMessage').length === 1, out);
+before = nAsk(); nextPlan = null;
+send('أعطني رقم أبي');
+check('ask: if the split fails, the question goes on unchanged', nAsk() === before + 1 && asked2[asked2.length - 1] === 'أعطني رقم أبي');
+plans.length = 0; before = nAsk();
+send('كم سعر الدولار اليوم؟');
+check('ask: a question with no private word never calls the splitter', plans.length === 0 && nAsk() === before + 1);
 fs.rmSync(tmp, {recursive: true, force: true});
 
 console.log('\nfacts sheet: ' + facts.length + ' chars · archive: ' + news.length + ' posts · top for Hama: ' + r2.slice(0, 4).map(p => p.name).join('، '));
