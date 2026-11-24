@@ -23,6 +23,7 @@ var RAW = 'https://raw.githubusercontent.com/abomhmmod/syriabot/main/';
 var MODELS = ['gemini-3.6-flash', 'gemini-flash-lite-latest', 'gemini-2.5-flash', 'gemini-3-flash-preview'];
 var WEB_MODEL = 'gemini-2.5-flash';          // الوحيد الذي يبحث في النت على الحصّة المجّانيّة
 var AI_DAY_MAX = 150, WEB_DAY_MAX = 15;
+var SLOW_MS = 30000;        // نموذجٌ أجاب أو أخفق بعد أكثر من هذا: مزدحم، فيستريح ربع ساعة ويذهب ما بعده إلى التالي
 var TOP_POSTS = 28, TOP_DIR = 14, TOP_SOCIAL = 14, TOP_HAY = 16, POST_CUT = 700;
 var DRIVE = 'https://www.googleapis.com/drive/v3/files', PRIV_NAME = /^(social-\d{4}-\d\d-\d\d|hay)\.jsonl$/;
 var PHONE = /(?:\+|00)?[0-9٠-٩](?: ?[0-9٠-٩]){5,14}(?![0-9٠-٩\-:])/g;      // ستّة أرقام متتالية فأكثر: هاتف، لا تاريخ ولا مبلغ قصير
@@ -955,7 +956,8 @@ function gemini_(prompt, schema) {
         if (code === 200) {
           var parts = JSON.parse(r.getContentText()).candidates[0].content.parts;
           var out = JSON.parse(parts.map(function (x) { return x.text || ''; }).join(''));
-          delete rest[m];
+          // جوابٌ بطيء (في 2026-11-24 أجاب 3.6 بعد 85 ث مرّتين، فوصل الجواب بعد 172 ث): يبقى مستريحًا ربع ساعة
+          if (Date.now() - now > SLOW_MS) rest[m] = Date.now() + 15 * 60000; else delete rest[m];
           P.setProperty('AI_REST', JSON.stringify(rest));
           P.setProperty('AI_LAST', m);
           return out;
@@ -965,12 +967,13 @@ function gemini_(prompt, schema) {
         body = String(e && e.message || e).slice(0, 240);       // جوابٌ بلا نصٍّ صالح، أو تعذّر الاتّصال
       }
       errs.push(m.replace('gemini-', '') + ' ' + (code || 'خطأ'));
-      if ((code >= 500 || code === 0) && attempt === 0) {       // ازدحامٌ عابر أو جوابٌ ناقص: محاولةٌ ثانية للنموذج نفسه بعد قليل
+      var slow = Date.now() - now > SLOW_MS;                    // علّق ثمّ أخفق: لا محاولة ثانية له، فالثانية تعلّق مثلها
+      if ((code >= 500 || code === 0) && attempt === 0 && !slow) {   // ازدحامٌ عابر أو جوابٌ ناقص: محاولةٌ ثانية للنموذج نفسه بعد قليل
         Utilities.sleep(2500);
         continue;
       }
-      // حدّ الدقيقة أو اليوم: خمس دقائق. ازدحام: دقيقة ونصف. خطأ في الطلب نفسه: عشر.
-      rest[m] = now + (code === 429 ? 300000 : (code >= 500 || code === 0) ? 90000 : 600000);
+      // حدّ الدقيقة أو اليوم: خمس دقائق. علّق: ربع ساعة. ازدحامٌ ردّ سريعًا: دقيقة ونصف. خطأ في الطلب نفسه: عشر.
+      rest[m] = Date.now() + (code === 429 ? 300000 : slow ? 15 * 60000 : (code >= 500 || code === 0) ? 90000 : 600000);
       P.setProperty('AI_REST', JSON.stringify(rest));
       break;
     }

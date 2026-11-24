@@ -320,6 +320,29 @@ const off = run('offline_("موعد أذان الظهر ورقم شرطة الن
 check('model down: prayer times and the nearest directory entries are given straight from the data, with the reason', /النموذج لا يردّ الآن/.test(off) && /503/.test(off) && /مواقيت حماة/.test(off) && /الرقم: 112/.test(off)
   && /↗ دليل الهاتف/.test(off) && !/خبر لا علاقة له/.test(off) && off.length < 4096, off.slice(0, 300));
 check('model down: with nothing to show, a plain note with the reason', /تعذّر الوصول إلى النموذج الآن \(/.test(run('offline_("كيف حالك", S, [])')));
+// ---------- النموذج البطيء: يستريح ربع ساعة، فلا ينتظره السؤال التالي
+const realNow = Date.now; let clock = 0;
+run('var _now0 = Date.now; Date.now = function () { return _now0() + CLOCK(); }'); ctx.CLOCK = () => clock;
+const slowFetch = ctx.UrlFetchApp.fetch;
+ctx.UrlFetchApp.fetch = (url, o) => {
+  if (/generativelanguage/.test(url) && script.length && script[0][2]) clock += script[0][2];     // [رمز، نصّ، ما استغرقه الطلب]
+  return slowFetch(url, o);
+};
+const vnow = () => realNow() + clock;
+store.AI_REST = '{}'; script = [[200, '', 85000], [200, '', 2000]]; fetched = [];
+g1 = ask1();
+const rest3 = JSON.parse(store.AI_REST);
+check('model: an answer that took 85 s still counts, and that model rests a quarter of an hour', g1 && g1.a === 'نعم' && fetched.join() === 'gemini-3.6-flash:200'
+  && rest3['gemini-3.6-flash'] > vnow() + 800000 && rest3['gemini-3.6-flash'] < vnow() + 1000000, fetched.join() + ' ' + store.AI_REST);
+g1 = ask1();
+check('model: the next question goes straight to the next model, and a quick answer leaves no rest', g1 && fetched.join() === 'gemini-3.6-flash:200,gemini-flash-lite-latest:200'
+  && !JSON.parse(store.AI_REST)['gemini-flash-lite-latest'], fetched.join() + ' ' + store.AI_REST);
+store.AI_REST = '{}'; script = [[503, 'x', 90000], [200, '', 1500]]; fetched = []; slept = 0;
+g1 = ask1();
+const rest4 = JSON.parse(store.AI_REST);
+check('model: one that hung and then failed is not tried a second time, and rests a quarter of an hour', g1 && fetched.join() === 'gemini-3.6-flash:503,gemini-flash-lite-latest:200' && slept === 0
+  && rest4['gemini-3.6-flash'] > vnow() + 800000, fetched.join() + ' ' + store.AI_REST);
+clock = 0; ctx.UrlFetchApp.fetch = slowFetch; run('Date.now = _now0');
 ctx.UrlFetchApp.fetch = realFetch; ctx.Utilities.sleep = realSleep; store.AI_REST = '{}';
 fs.rmSync(tmp, {recursive: true, force: true});
 
