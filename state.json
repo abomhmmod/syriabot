@@ -1,7 +1,7 @@
 {
  "cache": {
   "lirascope": {
-   "at": "2026-11-24T20:48+03:00",
+   "at": "2026-11-24T21:49+03:00",
    "data": {
     "market": {
      "AED": {
@@ -158,13 +158,13 @@
      "18K": 86.0,
      "21K": 100.0,
      "22K": 105.0,
-     "24K": 115.0
+     "24K": 114.0
     },
-    "usdt_usd": 0.99885026
+    "usdt_usd": 0.99937537
    }
   },
   "sptoday": {
-   "at": "2026-11-24T20:48+03:00",
+   "at": "2026-11-24T21:49+03:00",
    "data": {
     "market": {
      "USD": {
@@ -197,7 +197,7 @@
    }
   },
   "cbs": {
-   "at": "2026-11-24T20:49+03:00",
+   "at": "2026-11-24T21:49+03:00",
    "data": {
     "date": "2026-11-24",
     "rates": {
@@ -213,7 +213,7 @@
    }
   },
   "sytra": {
-   "at": "2026-11-24T20:49+03:00",
+   "at": "2026-11-24T21:49+03:00",
    "data": {
     "unit": "الليرة السورية الجديدة",
     "fuel": {
@@ -254,11 +254,11 @@
      "date": "2026-11-24",
      "page": "https://sytra.me/prices/usd"
     },
-    "generated_at": "2026-11-24T17:49:00+00:00"
+    "generated_at": "2026-11-24T18:49:44+00:00"
    }
   },
   "prayer": {
-   "at": "2026-11-24T20:49+03:00",
+   "at": "2026-11-24T21:49+03:00",
    "data": {
     "date": "2026-11-24",
     "method": "Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan",
@@ -278,9 +278,9 @@
    }
   },
   "weather": {
-   "at": "2026-11-24T20:49+03:00",
+   "at": "2026-11-24T21:49+03:00",
    "data": {
-    "now": 16.0,
+    "now": 15.3,
     "days": [
      {
       "date": "2026-11-24",
@@ -292,8 +292,8 @@
      },
      {
       "date": "2026-11-25",
-      "max": 22.3,
-      "min": 8.4,
+      "max": 22.5,
+      "min": 8.7,
       "rain": 0.0,
       "prob": 15,
       "code": 3
@@ -833,24 +833,24 @@
   }
  },
  "started": true,
- "last_run": "2026-11-24T20:48:57+03:00",
+ "last_run": "2026-11-24T21:49:40+03:00",
  "news": {
   "tg": {
    "bunatmoad": 518,
-   "hamaendowments": 2141,
+   "hamaendowments": 2146,
    "syrararmy": 683,
-   "idlibgov1": 33977,
+   "idlibgov1": 33991,
    "hasakahmd": 16819,
    "raqqaagov1": 3670,
    "sweidagov1": 12781,
    "quneitragov1": 5997,
    "latakiagov1": 21179,
-   "aleppogov1": 15277,
+   "aleppogov1": 15278,
    "hamagov1": 25317,
    "homsgov1": 8920,
    "daraagov1": 10791,
-   "damascusgov1": 16244,
-   "deirezzorgov1": 15705,
+   "damascusgov1": 16245,
+   "deirezzorgov1": 15707,
    "rdamascusgov1": 18782,
    "tartusgov1": 25994,
    "homsculture": 905,
@@ -862,7 +862,7 @@
    "syrianairlinesgo": 516,
    "syhioc": 30,
    "syrgaca": 4152,
-   "syrgabc": 5650,
+   "syrgabc": 5651,
    "sycofcai": 2204,
    "ecleansy": 9931,
    "hamahelth": 8034,
@@ -870,45 +870,45 @@
    "syrianlagov": 6889,
    "gsvsbshsn": 372,
    "mopwah": 2109,
-   "symofe": 11417,
+   "symofe": 11423,
    "symolaae": 15741,
    "symoigov": 71126,
    "symoeai": 8559,
    "syrmoegov": 2265,
-   "symoheasr": 14028,
+   "symoheasr": 14029,
    "symoad": 10064,
    "syrsmoc": 5209,
    "syrianmoi": 31891,
    "syrmofa": 6452,
    "sysmoft": 1983,
    "symosaal": 9245,
-   "syrmofh": 17418,
+   "syrmofh": 17423,
    "syrmofe": 12925,
    "symoeadm": 9816,
    "syrmofj": 3852,
    "syrmoff": 10288,
    "syrsmot": 11824,
-   "alekhbariahsy": 241922,
-   "sana_gov": 192462,
-   "alsouriyatv": 12715,
+   "alekhbariahsy": 241933,
+   "sana_gov": 192467,
+   "alsouriyatv": 12716,
    "sypresidency": 2875,
    "sy_defense": 2229,
    "z_hama_z": 4290,
    "shouon2024": 2277,
    "HamaEmergency": 1128,
    "alriyada_hama": 190,
-   "makhabiz_hama": 142,
+   "makhabiz_hama": 147,
    "HamaUniversity2014": 1056,
    "hamah_medical_association": 2150,
    "HamaChamberOfIndustry": 2132,
    "jewelers2021": 1885,
    "Syredcrescent": 10663,
    "damascus122021": 4554,
-   "syriapam": 9545,
+   "syriapam": 9550,
    "syrianGASP": 278,
    "SecSyria": 1001,
    "gdca_sy": 830,
-   "fedaa7": 99788,
+   "fedaa7": 99792,
    "mashf_alwatani_hama": 1739,
    "CivilAffairsSy": 512,
    "SyrianVirtualUniversity": 1269,
@@ -922,7 +922,8 @@
    "sycaffc": 612,
    "syrianmofaex1": 4102,
    "altarbia_hama": 2150,
-   "generalcommissionfortaxesandfees": 319
+   "generalcommissionfortaxesandfees": 319,
+   "alsiyaha_hama": 682
   },
   "rss": {
    "sana": [
@@ -1298,7 +1299,23 @@
     "https://sana.sy/?p=2644013",
     "https://sana.sy/?p=2643987",
     "https://sana.sy/?p=2643982",
-    "https://sana.sy/?p=2643988"
+    "https://sana.sy/?p=2643988",
+    "https://sana.sy/?p=2644107",
+    "https://sana.sy/?p=2644088",
+    "https://sana.sy/?p=2644102",
+    "https://sana.sy/?p=2644068",
+    "https://sana.sy/?p=2644040",
+    "https://sana.sy/?p=2644086",
+    "https://sana.sy/?p=2644093",
+    "https://sana.sy/?p=2644081",
+    "https://sana.sy/?p=2644085",
+    "https://sana.sy/?p=2644062",
+    "https://sana.sy/?p=2644053",
+    "https://sana.sy/?p=2644048",
+    "https://sana.sy/?p=2644058",
+    "https://sana.sy/?p=2644015",
+    "https://sana.sy/?p=2644042",
+    "https://sana.sy/?p=2644038"
    ],
    "fedaa": [
     "https://fedaa.alwehda.gov.sy/?p=132104",
@@ -1328,7 +1345,8 @@
     "https://fedaa.alwehda.gov.sy/?p=132184",
     "https://fedaa.alwehda.gov.sy/?p=132181",
     "https://fedaa.alwehda.gov.sy/?p=132177",
-    "https://fedaa.alwehda.gov.sy/?p=132191"
+    "https://fedaa.alwehda.gov.sy/?p=132191",
+    "https://fedaa.alwehda.gov.sy/?p=132194"
    ],
    "alwatan": [
     "https://alwatan.sy/?p=2490030",
@@ -1436,7 +1454,10 @@
     "https://alwatan.sy/?p=2490313",
     "https://alwatan.sy/?p=2490335",
     "https://alwatan.sy/?p=2490332",
-    "https://alwatan.sy/?p=2490320"
+    "https://alwatan.sy/?p=2490320",
+    "https://alwatan.sy/?p=2490346",
+    "https://alwatan.sy/?p=2490342",
+    "https://alwatan.sy/?p=2490339"
    ],
    "enab": [
     "https://www.enabbaladi.net/?p=834640",
