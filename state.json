@@ -1,13 +1,13 @@
 {
  "cache": {
   "lirascope": {
-   "at": "2026-11-24T16:56+03:00",
+   "at": "2026-11-24T17:57+03:00",
    "data": {
     "market": {
      "AED": {
       "buy": 40.83,
       "sell": 41.38,
-      "at": "2026-11-24T13:47:25.387009Z"
+      "at": "2026-11-24T14:26:34.77631Z"
      },
      "AUD": {
       "buy": 99.6421,
@@ -46,13 +46,13 @@
      },
      "EGP": {
       "buy": 2.77,
-      "sell": 2.8,
-      "at": "2026-11-24T13:43:19.656723Z"
+      "sell": 2.81,
+      "at": "2026-11-24T14:41:02.703294Z"
      },
      "EUR": {
-      "buy": 164.8,
-      "sell": 166.6,
-      "at": "2026-11-24T13:55:36.992198Z"
+      "buy": 164.9,
+      "sell": 166.8,
+      "at": "2026-11-24T14:57:33.297615Z"
      },
      "GBP": {
       "buy": 196.8717,
@@ -116,8 +116,8 @@
      },
      "SAR": {
       "buy": 39.97,
-      "sell": 40.5,
-      "at": "2026-11-24T13:43:19.656709Z"
+      "sell": 40.51,
+      "at": "2026-11-24T14:57:33.297626Z"
      },
      "SEK": {
       "buy": 14.6589,
@@ -160,11 +160,11 @@
      "22K": 107.0,
      "24K": 116.0
     },
-    "usdt_usd": 0.99884076
+    "usdt_usd": 0.99894542
    }
   },
   "sptoday": {
-   "at": "2026-11-24T16:56+03:00",
+   "at": "2026-11-24T17:57+03:00",
    "data": {
     "market": {
      "USD": {
@@ -172,8 +172,8 @@
       "sell": 152.0
      },
      "EUR": {
-      "buy": 164.8,
-      "sell": 166.6
+      "buy": 164.9,
+      "sell": 166.8
      },
      "TRY": {
       "buy": 2.97,
@@ -181,7 +181,7 @@
      },
      "SAR": {
       "buy": 39.97,
-      "sell": 40.5
+      "sell": 40.51
      },
      "AED": {
       "buy": 40.83,
@@ -197,7 +197,7 @@
    }
   },
   "cbs": {
-   "at": "2026-11-24T16:56+03:00",
+   "at": "2026-11-24T17:57+03:00",
    "data": {
     "date": "2026-11-24",
     "rates": {
@@ -213,7 +213,7 @@
    }
   },
   "sytra": {
-   "at": "2026-11-24T16:56+03:00",
+   "at": "2026-11-24T17:57+03:00",
    "data": {
     "unit": "الليرة السورية الجديدة",
     "fuel": {
@@ -254,11 +254,11 @@
      "date": "2026-11-24",
      "page": "https://sytra.me/prices/usd"
     },
-    "generated_at": "2026-11-24T13:56:49+00:00"
+    "generated_at": "2026-11-24T14:57:50+00:00"
    }
   },
   "prayer": {
-   "at": "2026-11-24T16:56+03:00",
+   "at": "2026-11-24T17:57+03:00",
    "data": {
     "date": "2026-11-24",
     "method": "Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan",
@@ -278,9 +278,9 @@
    }
   },
   "weather": {
-   "at": "2026-11-24T16:56+03:00",
+   "at": "2026-11-24T17:57+03:00",
    "data": {
-    "now": 21.6,
+    "now": 19.3,
     "days": [
      {
       "date": "2026-11-24",
@@ -833,27 +833,27 @@
   }
  },
  "started": true,
- "last_run": "2026-11-24T16:56:45+03:00",
+ "last_run": "2026-11-24T17:57:46+03:00",
  "news": {
   "tg": {
    "bunatmoad": 517,
-   "hamaendowments": 2140,
+   "hamaendowments": 2141,
    "syrararmy": 683,
-   "idlibgov1": 33941,
+   "idlibgov1": 33956,
    "hasakahmd": 16805,
    "raqqaagov1": 3670,
-   "sweidagov1": 12772,
-   "quneitragov1": 5993,
+   "sweidagov1": 12773,
+   "quneitragov1": 5996,
    "latakiagov1": 21177,
    "aleppogov1": 15275,
    "hamagov1": 25317,
-   "homsgov1": 8910,
+   "homsgov1": 8911,
    "daraagov1": 10791,
-   "damascusgov1": 16239,
-   "deirezzorgov1": 15690,
+   "damascusgov1": 16241,
+   "deirezzorgov1": 15696,
    "rdamascusgov1": 18782,
    "tartusgov1": 25993,
-   "homsculture": 903,
+   "homsculture": 904,
    "mhd_alskaf": 163,
    "moisyriaspox": 1124,
    "qtdmoisy": 940,
@@ -882,15 +882,15 @@
    "syrmofa": 6442,
    "sysmoft": 1983,
    "symosaal": 9244,
-   "syrmofh": 17409,
+   "syrmofh": 17417,
    "syrmofe": 12923,
    "symoeadm": 9807,
    "syrmofj": 3852,
    "syrmoff": 10288,
    "syrsmot": 11824,
-   "alekhbariahsy": 241896,
-   "sana_gov": 192440,
-   "alsouriyatv": 12709,
+   "alekhbariahsy": 241901,
+   "sana_gov": 192441,
+   "alsouriyatv": 12711,
    "sypresidency": 2875,
    "sy_defense": 2229,
    "z_hama_z": 4290,
@@ -902,15 +902,15 @@
    "hamah_medical_association": 2150,
    "HamaChamberOfIndustry": 2132,
    "jewelers2021": 1884,
-   "Syredcrescent": 10660,
+   "Syredcrescent": 10661,
    "damascus122021": 4553,
    "syriapam": 9540,
    "syrianGASP": 278,
    "SecSyria": 1001,
    "gdca_sy": 830,
-   "fedaa7": 99772,
+   "fedaa7": 99776,
    "mashf_alwatani_hama": 1733,
-   "CivilAffairsSy": 511,
+   "CivilAffairsSy": 512,
    "SyrianVirtualUniversity": 1269,
    "syriatel": 9399,
    "syncftj": 1284,
@@ -1263,7 +1263,17 @@
     "https://sana.sy/?p=2643782",
     "https://sana.sy/?p=2643773",
     "https://sana.sy/?p=2643764",
-    "https://sana.sy/?p=2643753"
+    "https://sana.sy/?p=2643753",
+    "https://sana.sy/?p=2643878",
+    "https://sana.sy/?p=2643877",
+    "https://sana.sy/?p=2643852",
+    "https://sana.sy/?p=2643848",
+    "https://sana.sy/?p=2643830",
+    "https://sana.sy/?p=2643846",
+    "https://sana.sy/?p=2643803",
+    "https://sana.sy/?p=2643795",
+    "https://sana.sy/?p=2643829",
+    "https://sana.sy/?p=2643821"
    ],
    "fedaa": [
     "https://fedaa.alwehda.gov.sy/?p=132104",
@@ -1386,7 +1396,13 @@
     "https://alwatan.sy/?p=2490255",
     "https://alwatan.sy/?p=2490252",
     "https://alwatan.sy/?p=2490250",
-    "https://alwatan.sy/?p=2490244"
+    "https://alwatan.sy/?p=2490244",
+    "https://alwatan.sy/?p=2490294",
+    "https://alwatan.sy/?p=2490292",
+    "https://alwatan.sy/?p=2490286",
+    "https://alwatan.sy/?p=2490283",
+    "https://alwatan.sy/?p=2490280",
+    "https://alwatan.sy/?p=2490278"
    ],
    "enab": [
     "https://www.enabbaladi.net/?p=834640",
@@ -1425,7 +1441,15 @@
     "https://www.enabbaladi.net/?p=834674",
     "https://www.enabbaladi.net/?p=834658",
     "https://www.enabbaladi.net/?p=834782",
-    "https://www.enabbaladi.net/?p=834789"
+    "https://www.enabbaladi.net/?p=834789",
+    "https://www.enabbaladi.net/?p=834855",
+    "https://www.enabbaladi.net/?p=834840",
+    "https://www.enabbaladi.net/?p=834831",
+    "https://www.enabbaladi.net/?p=834812",
+    "https://www.enabbaladi.net/?p=834799",
+    "https://www.enabbaladi.net/?p=834827",
+    "https://www.enabbaladi.net/?p=834714",
+    "https://www.enabbaladi.net/?p=834804"
    ]
   },
   "fail": {},
