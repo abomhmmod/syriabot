@@ -1,7 +1,7 @@
 {
  "cache": {
   "lirascope": {
-   "at": "2026-11-24T07:46+03:00",
+   "at": "2026-11-24T08:46+03:00",
    "data": {
     "market": {
      "AED": {
@@ -160,11 +160,11 @@
      "22K": 107.0,
      "24K": 117.0
     },
-    "usdt_usd": 0.9989283
+    "usdt_usd": 0.99879449
    }
   },
   "sptoday": {
-   "at": "2026-11-24T07:46+03:00",
+   "at": "2026-11-24T08:46+03:00",
    "data": {
     "market": {
      "USD": {
@@ -197,7 +197,7 @@
    }
   },
   "cbs": {
-   "at": "2026-11-24T07:46+03:00",
+   "at": "2026-11-24T08:46+03:00",
    "data": {
     "date": "2026-11-23",
     "rates": {
@@ -213,7 +213,7 @@
    }
   },
   "sytra": {
-   "at": "2026-11-24T07:46+03:00",
+   "at": "2026-11-24T08:46+03:00",
    "data": {
     "unit": "الليرة السورية الجديدة",
     "fuel": {
@@ -254,11 +254,11 @@
      "date": "2026-11-22",
      "page": "https://sytra.me/prices/usd"
     },
-    "generated_at": "2026-11-24T04:46:14+00:00"
+    "generated_at": "2026-11-24T05:46:54+00:00"
    }
   },
   "prayer": {
-   "at": "2026-11-24T07:46+03:00",
+   "at": "2026-11-24T08:46+03:00",
    "data": {
     "date": "2026-11-24",
     "method": "Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan",
@@ -278,9 +278,9 @@
    }
   },
   "weather": {
-   "at": "2026-11-24T07:46+03:00",
+   "at": "2026-11-24T08:46+03:00",
    "data": {
-    "now": 8.5,
+    "now": 10.3,
     "days": [
      {
       "date": "2026-11-24",
@@ -295,7 +295,7 @@
       "max": 21.8,
       "min": 9.7,
       "rain": 0.0,
-      "prob": 10,
+      "prob": 15,
       "code": 3
      }
     ]
@@ -833,7 +833,7 @@
   }
  },
  "started": true,
- "last_run": "2026-11-24T07:46:09+03:00",
+ "last_run": "2026-11-24T08:46:50+03:00",
  "news": {
   "tg": {
    "bunatmoad": 516,
@@ -849,7 +849,7 @@
    "hamagov1": 25303,
    "homsgov1": 8910,
    "daraagov1": 10789,
-   "damascusgov1": 16213,
+   "damascusgov1": 16214,
    "deirezzorgov1": 15669,
    "rdamascusgov1": 18759,
    "tartusgov1": 25992,
@@ -1201,7 +1201,9 @@
     "https://sana.sy/?p=2643370",
     "https://sana.sy/?p=2643510",
     "https://sana.sy/?p=2643507",
-    "https://sana.sy/?p=2643504"
+    "https://sana.sy/?p=2643504",
+    "https://sana.sy/?p=2643513",
+    "https://sana.sy/?p=2643461"
    ],
    "fedaa": [
     "https://fedaa.alwehda.gov.sy/?p=132104",
