@@ -1,7 +1,7 @@
 {
  "cache": {
   "lirascope": {
-   "at": "2026-11-25T22:53+03:00",
+   "at": "2026-11-25T23:54+03:00",
    "data": {
     "market": {
      "AED": {
@@ -154,17 +154,17 @@
      "USD": 134.5
     },
     "gold_usd": {
-     "14K": 66.0,
-     "18K": 85.0,
-     "21K": 100.0,
-     "22K": 104.0,
-     "24K": 114.0
+     "14K": 67.0,
+     "18K": 87.0,
+     "21K": 101.5,
+     "22K": 105.0,
+     "24K": 116.5
     },
-    "usdt_usd": 0.99891582
+    "usdt_usd": 0.99884149
    }
   },
   "sptoday": {
-   "at": "2026-11-25T22:53+03:00",
+   "at": "2026-11-25T23:54+03:00",
    "data": {
     "market": {
      "USD": {
@@ -197,7 +197,7 @@
    }
   },
   "cbs": {
-   "at": "2026-11-25T22:53+03:00",
+   "at": "2026-11-25T23:54+03:00",
    "data": {
     "date": "2026-11-25",
     "rates": {
@@ -213,7 +213,7 @@
    }
   },
   "sytra": {
-   "at": "2026-11-25T22:53+03:00",
+   "at": "2026-11-25T23:54+03:00",
    "data": {
     "unit": "الليرة السورية الجديدة",
     "fuel": {
@@ -240,10 +240,10 @@
     },
     "gold": {
      "date": "2026-11-25",
-     "g21_sell": 15600,
-     "g21_buy": 15300,
-     "g18_sell": 13350,
-     "g24_sell": null,
+     "g21_sell": 15500,
+     "g21_buy": 15200,
+     "g18_sell": 13300,
+     "g24_sell": 17800,
      "page": "https://sytra.me/prices/gold"
     },
     "usd_official": {
@@ -254,11 +254,11 @@
      "date": "2026-11-24",
      "page": "https://sytra.me/prices/usd"
     },
-    "generated_at": "2026-11-25T19:53:30+00:00"
+    "generated_at": "2026-11-25T20:54:17+00:00"
    }
   },
   "prayer": {
-   "at": "2026-11-25T22:53+03:00",
+   "at": "2026-11-25T23:54+03:00",
    "data": {
     "date": "2026-11-25",
     "method": "Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan",
@@ -278,9 +278,9 @@
    }
   },
   "weather": {
-   "at": "2026-11-25T22:53+03:00",
+   "at": "2026-11-25T23:54+03:00",
    "data": {
-    "now": 11.5,
+    "now": 9.9,
     "days": [
      {
       "date": "2026-11-25",
@@ -834,7 +834,7 @@
   "2026-11-25": {
    "usd_sell": 152.75,
    "official_usd": 134.5,
-   "gold": 15600,
+   "gold": 15500,
    "gasoline_95": 195.0,
    "gasoline_90": 185.0,
    "diesel": 150.0,
@@ -844,20 +844,20 @@
   }
  },
  "started": true,
- "last_run": "2026-11-25T22:53:23+03:00",
+ "last_run": "2026-11-25T23:54:14+03:00",
  "news": {
   "tg": {
    "bunatmoad": 519,
    "hamaendowments": 2147,
    "syrararmy": 683,
    "idlibgov1": 34025,
-   "hasakahmd": 16853,
-   "raqqaagov1": 3676,
+   "hasakahmd": 16855,
+   "raqqaagov1": 3681,
    "sweidagov1": 12819,
    "quneitragov1": 6005,
    "latakiagov1": 21189,
    "aleppogov1": 15279,
-   "hamagov1": 25337,
+   "hamagov1": 25338,
    "homsgov1": 8934,
    "daraagov1": 10800,
    "damascusgov1": 16316,
@@ -873,7 +873,7 @@
    "syrianairlinesgo": 518,
    "syhioc": 34,
    "syrgaca": 4173,
-   "syrgabc": 5677,
+   "syrgabc": 5678,
    "sycofcai": 2204,
    "ecleansy": 9931,
    "hamahelth": 8049,
@@ -899,9 +899,9 @@
    "syrmofj": 3853,
    "syrmoff": 10299,
    "syrsmot": 11834,
-   "alekhbariahsy": 242085,
-   "sana_gov": 192573,
-   "alsouriyatv": 12779,
+   "alekhbariahsy": 242096,
+   "sana_gov": 192578,
+   "alsouriyatv": 12786,
    "sypresidency": 2875,
    "sy_defense": 2240,
    "z_hama_z": 4305,
@@ -909,7 +909,7 @@
    "HamaEmergency": 1128,
    "alriyada_hama": 190,
    "makhabiz_hama": 147,
-   "HamaUniversity2014": 1079,
+   "HamaUniversity2014": 1096,
    "hamah_medical_association": 2150,
    "HamaChamberOfIndustry": 2134,
    "jewelers2021": 1891,
@@ -919,7 +919,7 @@
    "syrianGASP": 281,
    "SecSyria": 1007,
    "gdca_sy": 830,
-   "fedaa7": 99879,
+   "fedaa7": 99882,
    "mashf_alwatani_hama": 1745,
    "CivilAffairsSy": 518,
    "SyrianVirtualUniversity": 1270,
@@ -940,17 +940,6 @@
   },
   "rss": {
    "sana": [
-    "https://sana.sy/?p=2642805",
-    "https://sana.sy/?p=2642801",
-    "https://sana.sy/?p=2642804",
-    "https://sana.sy/?p=2642797",
-    "https://sana.sy/?p=2642793",
-    "https://sana.sy/?p=2642791",
-    "https://sana.sy/?p=2642764",
-    "https://sana.sy/?p=2642751",
-    "https://sana.sy/?p=2642781",
-    "https://sana.sy/?p=2642756",
-    "https://sana.sy/?p=2642750",
     "https://sana.sy/?p=2642700",
     "https://sana.sy/?p=2642642",
     "https://sana.sy/?p=2642644",
@@ -1539,7 +1528,18 @@
     "https://sana.sy/?p=2644997",
     "https://sana.sy/?p=2645128",
     "https://sana.sy/?p=2645125",
-    "https://sana.sy/?p=2645130"
+    "https://sana.sy/?p=2645130",
+    "https://sana.sy/?p=2645248",
+    "https://sana.sy/?p=2645242",
+    "https://sana.sy/?p=2645222",
+    "https://sana.sy/?p=2645232",
+    "https://sana.sy/?p=2645217",
+    "https://sana.sy/?p=2645211",
+    "https://sana.sy/?p=2645209",
+    "https://sana.sy/?p=2645205",
+    "https://sana.sy/?p=2645200",
+    "https://sana.sy/?p=2645202",
+    "https://sana.sy/?p=2645190"
    ],
    "fedaa": [
     "https://fedaa.alwehda.gov.sy/?p=132104",
@@ -1751,7 +1751,8 @@
     "https://alwatan.sy/?p=2490544",
     "https://alwatan.sy/?p=2490564",
     "https://alwatan.sy/?p=2490561",
-    "https://alwatan.sy/?p=2490566"
+    "https://alwatan.sy/?p=2490566",
+    "https://alwatan.sy/?p=2490569"
    ],
    "enab": [
     "https://www.enabbaladi.net/?p=834640",
@@ -1830,13 +1831,13 @@
   "decrees": []
  },
  "sytra_gold": {
-  "sig": "2026-11-25|15600|15300",
-  "at": 1795625858.440646
+  "sig": "2026-11-25|15500|15200",
+  "at": 1795640074.440291
  },
  "gold": {
-  "g21_sell": 15600,
-  "g21_buy": 15300,
-  "g18_sell": 13350,
+  "g21_sell": 15500,
+  "g21_buy": 15200,
+  "g18_sell": 13300,
   "g18_buy": null,
   "date": "2026-11-25",
   "src": "سيترا"
