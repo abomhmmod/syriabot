@@ -1,7 +1,7 @@
 {
  "cache": {
   "lirascope": {
-   "at": "2026-11-25T19:57+03:00",
+   "at": "2026-11-25T20:58+03:00",
    "data": {
     "market": {
      "AED": {
@@ -154,17 +154,17 @@
      "USD": 134.5
     },
     "gold_usd": {
-     "14K": 67.0,
-     "18K": 86.0,
-     "21K": 100.0,
-     "22K": 105.0,
-     "24K": 114.0
+     "14K": 66.0,
+     "18K": 85.0,
+     "21K": 99.0,
+     "22K": 104.0,
+     "24K": 113.0
     },
-    "usdt_usd": 0.99887524
+    "usdt_usd": 0.99890472
    }
   },
   "sptoday": {
-   "at": "2026-11-25T19:57+03:00",
+   "at": "2026-11-25T20:58+03:00",
    "data": {
     "market": {
      "USD": {
@@ -197,7 +197,7 @@
    }
   },
   "cbs": {
-   "at": "2026-11-25T19:57+03:00",
+   "at": "2026-11-25T20:58+03:00",
    "data": {
     "date": "2026-11-25",
     "rates": {
@@ -213,7 +213,7 @@
    }
   },
   "sytra": {
-   "at": "2026-11-25T19:57+03:00",
+   "at": "2026-11-25T20:58+03:00",
    "data": {
     "unit": "الليرة السورية الجديدة",
     "fuel": {
@@ -254,11 +254,11 @@
      "date": "2026-11-24",
      "page": "https://sytra.me/prices/usd"
     },
-    "generated_at": "2026-11-25T16:57:22+00:00"
+    "generated_at": "2026-11-25T17:58:07+00:00"
    }
   },
   "prayer": {
-   "at": "2026-11-25T19:57+03:00",
+   "at": "2026-11-25T20:58+03:00",
    "data": {
     "date": "2026-11-25",
     "method": "Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan",
@@ -278,14 +278,14 @@
    }
   },
   "weather": {
-   "at": "2026-11-25T19:57+03:00",
+   "at": "2026-11-25T20:58+03:00",
    "data": {
-    "now": 15.7,
+    "now": 13.9,
     "days": [
      {
       "date": "2026-11-25",
       "max": 22.3,
-      "min": 10.0,
+      "min": 9.5,
       "rain": 0.0,
       "prob": 13,
       "code": 3
@@ -293,7 +293,7 @@
      {
       "date": "2026-11-26",
       "max": 19.1,
-      "min": 4.8,
+      "min": 5.5,
       "rain": 0.0,
       "prob": 0,
       "code": 45
@@ -844,23 +844,23 @@
   }
  },
  "started": true,
- "last_run": "2026-11-25T19:57:18+03:00",
+ "last_run": "2026-11-25T20:58:02+03:00",
  "news": {
   "tg": {
    "bunatmoad": 519,
    "hamaendowments": 2147,
    "syrararmy": 683,
-   "idlibgov1": 34011,
-   "hasakahmd": 16843,
+   "idlibgov1": 34025,
+   "hasakahmd": 16848,
    "raqqaagov1": 3676,
-   "sweidagov1": 12801,
-   "quneitragov1": 6004,
+   "sweidagov1": 12805,
+   "quneitragov1": 6005,
    "latakiagov1": 21189,
    "aleppogov1": 15279,
    "hamagov1": 25337,
-   "homsgov1": 8932,
+   "homsgov1": 8934,
    "daraagov1": 10800,
-   "damascusgov1": 16314,
+   "damascusgov1": 16315,
    "deirezzorgov1": 15730,
    "rdamascusgov1": 18786,
    "tartusgov1": 26011,
@@ -869,7 +869,7 @@
    "moisyriaspox": 1125,
    "qtdmoisy": 940,
    "dedmoisy": 823,
-   "symoiitacp": 604,
+   "symoiitacp": 618,
    "syrianairlinesgo": 518,
    "syhioc": 34,
    "syrgaca": 4155,
@@ -879,7 +879,7 @@
    "hamahelth": 8048,
    "sycbos": 5743,
    "syrianlagov": 6890,
-   "gsvsbshsn": 374,
+   "gsvsbshsn": 379,
    "mopwah": 2109,
    "symofe": 11427,
    "symolaae": 15741,
@@ -893,15 +893,15 @@
    "syrmofa": 6458,
    "sysmoft": 1983,
    "symosaal": 9248,
-   "syrmofh": 17425,
-   "syrmofe": 12945,
+   "syrmofh": 17426,
+   "syrmofe": 12946,
    "symoeadm": 9863,
    "syrmofj": 3852,
-   "syrmoff": 10297,
+   "syrmoff": 10299,
    "syrsmot": 11834,
-   "alekhbariahsy": 242055,
-   "sana_gov": 192560,
-   "alsouriyatv": 12768,
+   "alekhbariahsy": 242067,
+   "sana_gov": 192565,
+   "alsouriyatv": 12769,
    "sypresidency": 2875,
    "sy_defense": 2240,
    "z_hama_z": 4305,
@@ -919,12 +919,12 @@
    "syrianGASP": 281,
    "SecSyria": 1007,
    "gdca_sy": 830,
-   "fedaa7": 99872,
+   "fedaa7": 99874,
    "mashf_alwatani_hama": 1745,
    "CivilAffairsSy": 518,
-   "SyrianVirtualUniversity": 1269,
+   "SyrianVirtualUniversity": 1270,
    "syriatel": 9399,
-   "syncftj": 1302,
+   "syncftj": 1304,
    "MasyafGov1": 3662,
    "alsuwria_lilhubub_hama": 184,
    "symocait": 8252,
@@ -935,7 +935,7 @@
    "altarbia_hama": 2150,
    "generalcommissionfortaxesandfees": 326,
    "alsiyaha_hama": 682,
-   "syrmoyas": 4793,
+   "syrmoyas": 4802,
    "almawarid_almayiya_hama": 385
   },
   "rss": {
@@ -1503,7 +1503,18 @@
     "https://sana.sy/?p=2644914",
     "https://sana.sy/?p=2644936",
     "https://sana.sy/?p=2644934",
-    "https://sana.sy/?p=2644939"
+    "https://sana.sy/?p=2644939",
+    "https://sana.sy/?p=2645010",
+    "https://sana.sy/?p=2645066",
+    "https://sana.sy/?p=2645058",
+    "https://sana.sy/?p=2645008",
+    "https://sana.sy/?p=2645035",
+    "https://sana.sy/?p=2645016",
+    "https://sana.sy/?p=2644993",
+    "https://sana.sy/?p=2645015",
+    "https://sana.sy/?p=2644998",
+    "https://sana.sy/?p=2645018",
+    "https://sana.sy/?p=2645000"
    ],
    "fedaa": [
     "https://fedaa.alwehda.gov.sy/?p=132104",
@@ -1545,7 +1556,8 @@
     "https://fedaa.alwehda.gov.sy/?p=132228",
     "https://fedaa.alwehda.gov.sy/?p=132224",
     "https://fedaa.alwehda.gov.sy/?p=132234",
-    "https://fedaa.alwehda.gov.sy/?p=132231"
+    "https://fedaa.alwehda.gov.sy/?p=132231",
+    "https://fedaa.alwehda.gov.sy/?p=132237"
    ],
    "alwatan": [
     "https://alwatan.sy/?p=2490030",
@@ -1705,7 +1717,12 @@
     "https://alwatan.sy/?p=2490523",
     "https://alwatan.sy/?p=2490520",
     "https://alwatan.sy/?p=2490517",
-    "https://alwatan.sy/?p=2490538"
+    "https://alwatan.sy/?p=2490538",
+    "https://alwatan.sy/?p=2490558",
+    "https://alwatan.sy/?p=2490553",
+    "https://alwatan.sy/?p=2490550",
+    "https://alwatan.sy/?p=2490547",
+    "https://alwatan.sy/?p=2490544"
    ],
    "enab": [
     "https://www.enabbaladi.net/?p=834640",
@@ -1776,7 +1793,8 @@
     "https://www.enabbaladi.net/?p=834985",
     "https://www.enabbaladi.net/?p=834972",
     "https://www.enabbaladi.net/?p=835074",
-    "https://www.enabbaladi.net/?p=835080"
+    "https://www.enabbaladi.net/?p=835080",
+    "https://www.enabbaladi.net/?p=835085"
    ]
   },
   "fail": {},
@@ -1795,9 +1813,7 @@
   "src": "سيترا"
  },
  "extract": {
-  "queue": [
-   "rss:sana:f8a4a805578a"
-  ],
+  "queue": [],
   "seeded": true
  },
  "extracted": {
