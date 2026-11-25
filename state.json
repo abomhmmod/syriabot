@@ -1,7 +1,7 @@
 {
  "cache": {
   "lirascope": {
-   "at": "2026-11-25T07:38+03:00",
+   "at": "2026-11-25T08:41+03:00",
    "data": {
     "market": {
      "AED": {
@@ -160,11 +160,11 @@
      "22K": 105.0,
      "24K": 114.0
     },
-    "usdt_usd": 0.99872347
+    "usdt_usd": 0.99866332
    }
   },
   "sptoday": {
-   "at": "2026-11-25T07:38+03:00",
+   "at": "2026-11-25T08:41+03:00",
    "data": {
     "market": {
      "USD": {
@@ -197,7 +197,7 @@
    }
   },
   "cbs": {
-   "at": "2026-11-25T07:38+03:00",
+   "at": "2026-11-25T08:41+03:00",
    "data": {
     "date": "2026-11-24",
     "rates": {
@@ -213,7 +213,7 @@
    }
   },
   "sytra": {
-   "at": "2026-11-25T07:38+03:00",
+   "at": "2026-11-25T08:41+03:00",
    "data": {
     "unit": "الليرة السورية الجديدة",
     "fuel": {
@@ -254,11 +254,11 @@
      "date": "2026-11-24",
      "page": "https://sytra.me/prices/usd"
     },
-    "generated_at": "2026-11-25T04:38:42+00:00"
+    "generated_at": "2026-11-25T05:41:35+00:00"
    }
   },
   "prayer": {
-   "at": "2026-11-25T07:38+03:00",
+   "at": "2026-11-25T08:41+03:00",
    "data": {
     "date": "2026-11-25",
     "method": "Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan",
@@ -278,16 +278,16 @@
    }
   },
   "weather": {
-   "at": "2026-11-25T07:38+03:00",
+   "at": "2026-11-25T08:41+03:00",
    "data": {
-    "now": 16.0,
+    "now": 16.6,
     "days": [
      {
       "date": "2026-11-25",
       "max": 22.1,
       "min": 9.3,
       "rain": 0.0,
-      "prob": 20,
+      "prob": 13,
       "code": 3
      },
      {
@@ -844,7 +844,7 @@
   }
  },
  "started": true,
- "last_run": "2026-11-25T07:38:38+03:00",
+ "last_run": "2026-11-25T08:41:30+03:00",
  "news": {
   "tg": {
    "bunatmoad": 518,
@@ -860,7 +860,7 @@
    "hamagov1": 25317,
    "homsgov1": 8921,
    "daraagov1": 10791,
-   "damascusgov1": 16245,
+   "damascusgov1": 16246,
    "deirezzorgov1": 15711,
    "rdamascusgov1": 18786,
    "tartusgov1": 25994,
@@ -885,7 +885,7 @@
    "symolaae": 15741,
    "symoigov": 71126,
    "symoeai": 8559,
-   "syrmoegov": 2265,
+   "syrmoegov": 2266,
    "symoheasr": 14029,
    "symoad": 10064,
    "syrsmoc": 5209,
@@ -899,7 +899,7 @@
    "syrmofj": 3852,
    "syrmoff": 10288,
    "syrsmot": 11824,
-   "alekhbariahsy": 241959,
+   "alekhbariahsy": 241960,
    "sana_gov": 192480,
    "alsouriyatv": 12735,
    "sypresidency": 2875,
@@ -1392,7 +1392,11 @@
     "https://sana.sy/?p=2644410",
     "https://sana.sy/?p=2644407",
     "https://sana.sy/?p=2644404",
-    "https://sana.sy/?p=2644396"
+    "https://sana.sy/?p=2644396",
+    "https://sana.sy/?p=2644419",
+    "https://sana.sy/?p=2644426",
+    "https://sana.sy/?p=2644416",
+    "https://sana.sy/?p=2644413"
    ],
    "fedaa": [
     "https://fedaa.alwehda.gov.sy/?p=132104",
