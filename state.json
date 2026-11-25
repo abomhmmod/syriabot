@@ -1,7 +1,7 @@
 {
  "cache": {
   "lirascope": {
-   "at": "2026-11-25T18:56+03:00",
+   "at": "2026-11-25T19:57+03:00",
    "data": {
     "market": {
      "AED": {
@@ -10,9 +10,9 @@
       "at": "2026-11-25T14:31:22.78059Z"
      },
      "AUD": {
-      "buy": 100.507,
-      "sell": 102.0566,
-      "at": "2026-11-25T14:32:16.842348Z"
+      "buy": 99.4241,
+      "sell": 100.957,
+      "at": "2026-11-25T15:57:19.882675Z"
      },
      "BHD": {
       "buy": 402.4824,
@@ -20,24 +20,24 @@
       "at": "2026-11-25T14:32:16.842348Z"
      },
      "BRL": {
-      "buy": 25.7821,
-      "sell": 26.1796,
-      "at": "2026-11-25T14:32:16.842348Z"
+      "buy": 25.6441,
+      "sell": 26.0395,
+      "at": "2026-11-25T15:57:19.882675Z"
      },
      "CAD": {
-      "buy": 105.6281,
-      "sell": 107.2567,
-      "at": "2026-11-25T14:32:16.842348Z"
+      "buy": 106.1393,
+      "sell": 107.7757,
+      "at": "2026-11-25T15:57:19.882675Z"
      },
      "CHF": {
-      "buy": 180.6664,
-      "sell": 183.4519,
-      "at": "2026-11-25T14:32:16.842348Z"
+      "buy": 182.1494,
+      "sell": 184.9578,
+      "at": "2026-11-25T15:57:19.882675Z"
      },
      "DKK": {
-      "buy": 22.1968,
-      "sell": 22.539,
-      "at": "2026-11-25T14:32:16.842348Z"
+      "buy": 22.1403,
+      "sell": 22.4817,
+      "at": "2026-11-25T15:57:19.882675Z"
      },
      "DZD": {
       "buy": 1.101,
@@ -55,9 +55,9 @@
       "at": "2026-11-25T14:31:22.780564Z"
      },
      "GBP": {
-      "buy": 198.2152,
-      "sell": 201.2713,
-      "at": "2026-11-25T14:32:16.842348Z"
+      "buy": 197.638,
+      "sell": 200.6851,
+      "at": "2026-11-25T15:57:19.882675Z"
      },
      "IQD": {
       "buy": 0.0994,
@@ -85,19 +85,19 @@
       "at": "2026-11-25T14:32:16.842348Z"
      },
      "MYR": {
-      "buy": 36.7716,
-      "sell": 37.3385,
-      "at": "2026-11-25T14:32:16.842348Z"
+      "buy": 36.7359,
+      "sell": 37.3023,
+      "at": "2026-11-25T15:57:19.882675Z"
      },
      "NOK": {
-      "buy": 15.4548,
-      "sell": 15.6931,
-      "at": "2026-11-25T14:32:16.842348Z"
+      "buy": 15.3541,
+      "sell": 15.5909,
+      "at": "2026-11-25T15:57:19.882675Z"
      },
      "NZD": {
-      "buy": 82.7954,
-      "sell": 84.0719,
-      "at": "2026-11-25T14:32:16.842348Z"
+      "buy": 82.5515,
+      "sell": 83.8243,
+      "at": "2026-11-25T15:57:19.882675Z"
      },
      "OMR": {
       "buy": 393.5849,
@@ -120,14 +120,14 @@
       "at": "2026-11-25T14:31:22.780574Z"
      },
      "SEK": {
-      "buy": 14.7854,
-      "sell": 15.0134,
-      "at": "2026-11-25T14:32:16.842348Z"
+      "buy": 14.7247,
+      "sell": 14.9518,
+      "at": "2026-11-25T15:57:19.882675Z"
      },
      "SGD": {
-      "buy": 117.3218,
-      "sell": 119.1306,
-      "at": "2026-11-25T14:32:16.842348Z"
+      "buy": 117.122,
+      "sell": 118.9278,
+      "at": "2026-11-25T15:57:19.882675Z"
      },
      "TND": {
       "buy": 49.2515,
@@ -145,9 +145,9 @@
       "at": "2026-11-25T14:31:22.780529Z"
      },
      "ZAR": {
-      "buy": 8.626,
-      "sell": 8.759,
-      "at": "2026-11-25T14:32:16.842348Z"
+      "buy": 8.5515,
+      "sell": 8.6833,
+      "at": "2026-11-25T15:57:19.882675Z"
      }
     },
     "cbs": {
@@ -160,11 +160,11 @@
      "22K": 105.0,
      "24K": 114.0
     },
-    "usdt_usd": 0.99878757
+    "usdt_usd": 0.99887524
    }
   },
   "sptoday": {
-   "at": "2026-11-25T18:56+03:00",
+   "at": "2026-11-25T19:57+03:00",
    "data": {
     "market": {
      "USD": {
@@ -197,7 +197,7 @@
    }
   },
   "cbs": {
-   "at": "2026-11-25T18:56+03:00",
+   "at": "2026-11-25T19:57+03:00",
    "data": {
     "date": "2026-11-25",
     "rates": {
@@ -213,7 +213,7 @@
    }
   },
   "sytra": {
-   "at": "2026-11-25T18:56+03:00",
+   "at": "2026-11-25T19:57+03:00",
    "data": {
     "unit": "الليرة السورية الجديدة",
     "fuel": {
@@ -239,10 +239,10 @@
      "page": "https://sytra.me/prices/bread"
     },
     "gold": {
-     "date": "2026-11-24",
-     "g21_sell": 15800,
-     "g21_buy": 15500,
-     "g18_sell": 13500,
+     "date": "2026-11-25",
+     "g21_sell": 15600,
+     "g21_buy": 15300,
+     "g18_sell": 13350,
      "g24_sell": null,
      "page": "https://sytra.me/prices/gold"
     },
@@ -254,11 +254,11 @@
      "date": "2026-11-24",
      "page": "https://sytra.me/prices/usd"
     },
-    "generated_at": "2026-11-25T15:56:35+00:00"
+    "generated_at": "2026-11-25T16:57:22+00:00"
    }
   },
   "prayer": {
-   "at": "2026-11-25T18:56+03:00",
+   "at": "2026-11-25T19:57+03:00",
    "data": {
     "date": "2026-11-25",
     "method": "Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan",
@@ -278,9 +278,9 @@
    }
   },
   "weather": {
-   "at": "2026-11-25T18:56+03:00",
+   "at": "2026-11-25T19:57+03:00",
    "data": {
-    "now": 16.9,
+    "now": 15.7,
     "days": [
      {
       "date": "2026-11-25",
@@ -834,7 +834,7 @@
   "2026-11-25": {
    "usd_sell": 152.75,
    "official_usd": 134.5,
-   "gold": 15750.0,
+   "gold": 15600,
    "gasoline_95": 195.0,
    "gasoline_90": 185.0,
    "diesel": 150.0,
@@ -844,34 +844,34 @@
   }
  },
  "started": true,
- "last_run": "2026-11-25T18:56:30+03:00",
+ "last_run": "2026-11-25T19:57:18+03:00",
  "news": {
   "tg": {
    "bunatmoad": 519,
    "hamaendowments": 2147,
    "syrararmy": 683,
-   "idlibgov1": 34008,
+   "idlibgov1": 34011,
    "hasakahmd": 16843,
    "raqqaagov1": 3676,
-   "sweidagov1": 12782,
+   "sweidagov1": 12801,
    "quneitragov1": 6004,
    "latakiagov1": 21189,
    "aleppogov1": 15279,
-   "hamagov1": 25333,
+   "hamagov1": 25337,
    "homsgov1": 8932,
    "daraagov1": 10800,
-   "damascusgov1": 16307,
-   "deirezzorgov1": 15724,
+   "damascusgov1": 16314,
+   "deirezzorgov1": 15730,
    "rdamascusgov1": 18786,
    "tartusgov1": 26011,
-   "homsculture": 907,
+   "homsculture": 908,
    "mhd_alskaf": 163,
    "moisyriaspox": 1125,
    "qtdmoisy": 940,
    "dedmoisy": 823,
-   "symoiitacp": 603,
+   "symoiitacp": 604,
    "syrianairlinesgo": 518,
-   "syhioc": 30,
+   "syhioc": 34,
    "syrgaca": 4155,
    "syrgabc": 5667,
    "sycofcai": 2204,
@@ -884,24 +884,24 @@
    "symofe": 11427,
    "symolaae": 15741,
    "symoigov": 71126,
-   "symoeai": 8559,
+   "symoeai": 8563,
    "syrmoegov": 2272,
    "symoheasr": 14032,
    "symoad": 10064,
-   "syrsmoc": 5223,
+   "syrsmoc": 5224,
    "syrianmoi": 31892,
    "syrmofa": 6458,
    "sysmoft": 1983,
    "symosaal": 9248,
-   "syrmofh": 17424,
+   "syrmofh": 17425,
    "syrmofe": 12945,
    "symoeadm": 9863,
    "syrmofj": 3852,
    "syrmoff": 10297,
    "syrsmot": 11834,
-   "alekhbariahsy": 242042,
-   "sana_gov": 192558,
-   "alsouriyatv": 12766,
+   "alekhbariahsy": 242055,
+   "sana_gov": 192560,
+   "alsouriyatv": 12768,
    "sypresidency": 2875,
    "sy_defense": 2240,
    "z_hama_z": 4305,
@@ -913,19 +913,19 @@
    "hamah_medical_association": 2150,
    "HamaChamberOfIndustry": 2134,
    "jewelers2021": 1888,
-   "Syredcrescent": 10673,
+   "Syredcrescent": 10676,
    "damascus122021": 4554,
    "syriapam": 9555,
    "syrianGASP": 281,
    "SecSyria": 1007,
    "gdca_sy": 830,
-   "fedaa7": 99869,
+   "fedaa7": 99872,
    "mashf_alwatani_hama": 1745,
    "CivilAffairsSy": 518,
    "SyrianVirtualUniversity": 1269,
    "syriatel": 9399,
-   "syncftj": 1296,
-   "MasyafGov1": 3655,
+   "syncftj": 1302,
+   "MasyafGov1": 3662,
    "alsuwria_lilhubub_hama": 184,
    "symocait": 8252,
    "syria_hajj": 3760,
@@ -1492,7 +1492,18 @@
     "https://sana.sy/?p=2644915",
     "https://sana.sy/?p=2644907",
     "https://sana.sy/?p=2644903",
-    "https://sana.sy/?p=2644893"
+    "https://sana.sy/?p=2644893",
+    "https://sana.sy/?p=2644994",
+    "https://sana.sy/?p=2644991",
+    "https://sana.sy/?p=2644937",
+    "https://sana.sy/?p=2644977",
+    "https://sana.sy/?p=2644966",
+    "https://sana.sy/?p=2644905",
+    "https://sana.sy/?p=2644940",
+    "https://sana.sy/?p=2644914",
+    "https://sana.sy/?p=2644936",
+    "https://sana.sy/?p=2644934",
+    "https://sana.sy/?p=2644939"
    ],
    "fedaa": [
     "https://fedaa.alwehda.gov.sy/?p=132104",
@@ -1532,7 +1543,9 @@
     "https://fedaa.alwehda.gov.sy/?p=132208",
     "https://fedaa.alwehda.gov.sy/?p=132205",
     "https://fedaa.alwehda.gov.sy/?p=132228",
-    "https://fedaa.alwehda.gov.sy/?p=132224"
+    "https://fedaa.alwehda.gov.sy/?p=132224",
+    "https://fedaa.alwehda.gov.sy/?p=132234",
+    "https://fedaa.alwehda.gov.sy/?p=132231"
    ],
    "alwatan": [
     "https://alwatan.sy/?p=2490030",
@@ -1691,7 +1704,8 @@
     "https://alwatan.sy/?p=2490525",
     "https://alwatan.sy/?p=2490523",
     "https://alwatan.sy/?p=2490520",
-    "https://alwatan.sy/?p=2490517"
+    "https://alwatan.sy/?p=2490517",
+    "https://alwatan.sy/?p=2490538"
    ],
    "enab": [
     "https://www.enabbaladi.net/?p=834640",
@@ -1761,28 +1775,29 @@
     "https://www.enabbaladi.net/?p=835010",
     "https://www.enabbaladi.net/?p=834985",
     "https://www.enabbaladi.net/?p=834972",
-    "https://www.enabbaladi.net/?p=835074"
+    "https://www.enabbaladi.net/?p=835074",
+    "https://www.enabbaladi.net/?p=835080"
    ]
   },
   "fail": {},
   "decrees": []
  },
  "sytra_gold": {
-  "sig": "2026-11-24|15800|15500",
-  "at": 1795581541.137817
+  "sig": "2026-11-25|15600|15300",
+  "at": 1795625858.440646
  },
  "gold": {
-  "g21_sell": 15750.0,
-  "g21_buy": 15450.0,
-  "g18_sell": 13450.0,
-  "g18_buy": 13150.0,
+  "g21_sell": 15600,
+  "g21_buy": 15300,
+  "g18_sell": 13350,
+  "g18_buy": null,
   "date": "2026-11-25",
-  "src": "سانا",
-  "url": "https://sana.sy/economy/syrian-economy/2644495/",
-  "quote": "ووفق النشرة الصادرة عن الهيئة العامة لادارة المعادن الثمينة، بلغ سعر غرام الذهب عيار 21 قيراطا 15750 ليرة سورية للمبيع، و15450 ليرة للشراء، فيما سجل غرام الذهب عيار 18 قيراطا 13450 ليرة للمبيع، و13150 ليرة للشراء."
+  "src": "سيترا"
  },
  "extract": {
-  "queue": [],
+  "queue": [
+   "rss:sana:f8a4a805578a"
+  ],
   "seeded": true
  },
  "extracted": {
