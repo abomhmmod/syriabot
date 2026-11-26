@@ -1,7 +1,7 @@
 {
  "cache": {
   "lirascope": {
-   "at": "2026-11-26T19:19+03:00",
+   "at": "2026-11-26T20:22+03:00",
    "data": {
     "market": {
      "AED": {
@@ -160,11 +160,11 @@
      "22K": 105.0,
      "24K": 119.5
     },
-    "usdt_usd": 0.99873378
+    "usdt_usd": 0.99872651
    }
   },
   "sptoday": {
-   "at": "2026-11-26T19:19+03:00",
+   "at": "2026-11-26T20:22+03:00",
    "data": {
     "market": {
      "USD": {
@@ -197,7 +197,7 @@
    }
   },
   "cbs": {
-   "at": "2026-11-26T19:20+03:00",
+   "at": "2026-11-26T20:22+03:00",
    "data": {
     "date": "2026-11-26",
     "rates": {
@@ -213,7 +213,7 @@
    }
   },
   "sytra": {
-   "at": "2026-11-26T19:20+03:00",
+   "at": "2026-11-26T20:22+03:00",
    "data": {
     "unit": "الليرة السورية الجديدة",
     "fuel": {
@@ -228,7 +228,7 @@
       "gas_industrial": 2560
      },
      "source_url": "https://sana.sy/economy/syrian-economy/2635320/",
-     "page": "https://sytra.me/prices/diesel"
+     "page": "https://jihat.org/prices/diesel"
     },
     "bread": {
      "price": 40,
@@ -236,7 +236,7 @@
      "loaves": 8,
      "price_per_kg": 40,
      "since": "2026-06-20",
-     "page": "https://sytra.me/prices/bread"
+     "page": "https://jihat.org/prices/bread"
     },
     "gold": {
      "date": "2026-11-26",
@@ -244,7 +244,7 @@
      "g21_buy": 15550,
      "g18_sell": 13550,
      "g24_sell": 18250,
-     "page": "https://sytra.me/prices/gold"
+     "page": "https://jihat.org/prices/gold"
     },
     "usd_official": {
      "buy": "134.00",
@@ -252,13 +252,13 @@
      "avg": "134.50",
      "bulletin": 223,
      "date": "2026-11-26",
-     "page": "https://sytra.me/prices/usd"
+     "page": "https://jihat.org/prices/usd"
     },
-    "generated_at": "2026-11-26T16:20:00+00:00"
+    "generated_at": "2026-11-26T17:22:21+00:00"
    }
   },
   "prayer": {
-   "at": "2026-11-26T19:21+03:00",
+   "at": "2026-11-26T20:22+03:00",
    "data": {
     "date": "2026-11-26",
     "method": "Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan",
@@ -278,9 +278,9 @@
    }
   },
   "weather": {
-   "at": "2026-11-26T19:21+03:00",
+   "at": "2026-11-26T20:22+03:00",
    "data": {
-    "now": 14.4,
+    "now": 13.2,
     "days": [
      {
       "date": "2026-11-26",
@@ -855,15 +855,15 @@
   }
  },
  "started": true,
- "last_run": "2026-11-26T19:19:54+03:00",
+ "last_run": "2026-11-26T20:22:16+03:00",
  "news": {
   "tg": {
    "bunatmoad": 519,
    "hamaendowments": 2156,
-   "syrararmy": 693,
+   "syrararmy": 694,
    "idlibgov1": 34026,
    "hasakahmd": 16878,
-   "raqqaagov1": 3681,
+   "raqqaagov1": 3686,
    "sweidagov1": 12844,
    "quneitragov1": 6017,
    "latakiagov1": 21189,
@@ -871,9 +871,9 @@
    "hamagov1": 25355,
    "homsgov1": 8937,
    "daraagov1": 10810,
-   "damascusgov1": 16374,
-   "deirezzorgov1": 15744,
-   "rdamascusgov1": 18814,
+   "damascusgov1": 16376,
+   "deirezzorgov1": 15745,
+   "rdamascusgov1": 18815,
    "tartusgov1": 26017,
    "homsculture": 913,
    "mhd_alskaf": 163,
@@ -882,13 +882,13 @@
    "dedmoisy": 824,
    "symoiitacp": 635,
    "syrianairlinesgo": 518,
-   "syhioc": 34,
+   "syhioc": 39,
    "syrgaca": 4173,
    "syrgabc": 5686,
    "sycofcai": 2210,
    "ecleansy": 9943,
    "hamahelth": 8062,
-   "sycbos": 5744,
+   "sycbos": 5745,
    "syrianlagov": 6901,
    "gsvsbshsn": 379,
    "mopwah": 2109,
@@ -896,23 +896,23 @@
    "symolaae": 15748,
    "symoigov": 71126,
    "symoeai": 8572,
-   "syrmoegov": 2272,
-   "symoheasr": 14043,
+   "syrmoegov": 2273,
+   "symoheasr": 14048,
    "symoad": 10069,
    "syrsmoc": 5226,
    "syrianmoi": 31892,
-   "syrmofa": 6466,
+   "syrmofa": 6470,
    "sysmoft": 1984,
-   "symosaal": 9260,
+   "symosaal": 9262,
    "syrmofh": 17445,
-   "syrmofe": 12983,
-   "symoeadm": 9881,
+   "syrmofe": 12997,
+   "symoeadm": 9891,
    "syrmofj": 3853,
    "syrmoff": 10304,
    "syrsmot": 11838,
-   "alekhbariahsy": 242215,
-   "sana_gov": 192647,
-   "alsouriyatv": 12816,
+   "alekhbariahsy": 242220,
+   "sana_gov": 192663,
+   "alsouriyatv": 12818,
    "sypresidency": 2875,
    "sy_defense": 2240,
    "z_hama_z": 4320,
@@ -920,7 +920,7 @@
    "HamaEmergency": 1128,
    "alriyada_hama": 190,
    "makhabiz_hama": 147,
-   "HamaUniversity2014": 1096,
+   "HamaUniversity2014": 1107,
    "hamah_medical_association": 2150,
    "HamaChamberOfIndustry": 2136,
    "jewelers2021": 1894,
@@ -929,9 +929,9 @@
    "syriapam": 9560,
    "syrianGASP": 283,
    "SecSyria": 1019,
-   "gdca_sy": 831,
-   "fedaa7": 99946,
-   "mashf_alwatani_hama": 1758,
+   "gdca_sy": 832,
+   "fedaa7": 99953,
+   "mashf_alwatani_hama": 1763,
    "CivilAffairsSy": 522,
    "SyrianVirtualUniversity": 1270,
    "syriatel": 9399,
@@ -955,19 +955,6 @@
   },
   "rss": {
    "sana": [
-    "https://sana.sy/?p=2642853",
-    "https://sana.sy/?p=2642706",
-    "https://sana.sy/?p=2642905",
-    "https://sana.sy/?p=2642882",
-    "https://sana.sy/?p=2642907",
-    "https://sana.sy/?p=2642952",
-    "https://sana.sy/?p=2642953",
-    "https://sana.sy/?p=2642938",
-    "https://sana.sy/?p=2642940",
-    "https://sana.sy/?p=2642939",
-    "https://sana.sy/?p=2642927",
-    "https://sana.sy/?p=2642887",
-    "https://sana.sy/?p=2642928",
     "https://sana.sy/?p=2642920",
     "https://sana.sy/?p=2642918",
     "https://sana.sy/?p=2642906",
@@ -1554,7 +1541,20 @@
     "https://sana.sy/?p=2645888",
     "https://sana.sy/?p=2645849",
     "https://sana.sy/?p=2645871",
-    "https://sana.sy/?p=2645860"
+    "https://sana.sy/?p=2645860",
+    "https://sana.sy/?p=2645983",
+    "https://sana.sy/?p=2645967",
+    "https://sana.sy/?p=2645979",
+    "https://sana.sy/?p=2645973",
+    "https://sana.sy/?p=2645977",
+    "https://sana.sy/?p=2645966",
+    "https://sana.sy/?p=2645965",
+    "https://sana.sy/?p=2645953",
+    "https://sana.sy/?p=2645956",
+    "https://sana.sy/?p=2645958",
+    "https://sana.sy/?p=2645957",
+    "https://sana.sy/?p=2645950",
+    "https://sana.sy/?p=2645913"
    ],
    "fedaa": [
     "https://fedaa.alwehda.gov.sy/?p=132104",
@@ -1812,7 +1812,8 @@
     "https://alwatan.sy/?p=2490693",
     "https://alwatan.sy/?p=2490691",
     "https://alwatan.sy/?p=2490687",
-    "https://alwatan.sy/?p=2490683"
+    "https://alwatan.sy/?p=2490683",
+    "https://alwatan.sy/?p=2490697"
    ],
    "enab": [
     "https://www.enabbaladi.net/?p=834640",
@@ -1891,7 +1892,18 @@
     "https://www.enabbaladi.net/?p=835138",
     "https://www.enabbaladi.net/?p=835129",
     "https://www.enabbaladi.net/?p=835114",
-    "https://www.enabbaladi.net/?p=835108"
+    "https://www.enabbaladi.net/?p=835108",
+    "https://www.enabbaladi.net/?p=835066",
+    "https://www.enabbaladi.net/?p=835100",
+    "https://www.enabbaladi.net/?p=835207",
+    "https://www.enabbaladi.net/?p=835193",
+    "https://www.enabbaladi.net/?p=835185",
+    "https://www.enabbaladi.net/?p=835157",
+    "https://www.enabbaladi.net/?p=834728",
+    "https://www.enabbaladi.net/?p=835171",
+    "https://www.enabbaladi.net/?p=835167",
+    "https://www.enabbaladi.net/?p=835159",
+    "https://www.enabbaladi.net/?p=835151"
    ]
   },
   "fail": {},
