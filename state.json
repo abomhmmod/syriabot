@@ -1,7 +1,7 @@
 {
  "cache": {
   "lirascope": {
-   "at": "2026-11-26T18:19+03:00",
+   "at": "2026-11-26T19:19+03:00",
    "data": {
     "market": {
      "AED": {
@@ -10,9 +10,9 @@
       "at": "2026-11-26T11:18:42.825138Z"
      },
      "AUD": {
-      "buy": 99.913,
-      "sell": 101.4535,
-      "at": "2026-11-26T11:22:55.537047Z"
+      "buy": 100.9075,
+      "sell": 102.4632,
+      "at": "2026-11-26T15:58:03.493289Z"
      },
      "BHD": {
       "buy": 404.4618,
@@ -20,29 +20,29 @@
       "at": "2026-11-26T11:22:55.537047Z"
      },
      "BRL": {
-      "buy": 25.7702,
-      "sell": 26.1675,
-      "at": "2026-11-26T11:22:55.537047Z"
+      "buy": 26.379,
+      "sell": 26.7857,
+      "at": "2026-11-26T15:58:03.493289Z"
      },
      "CAD": {
-      "buy": 106.6613,
-      "sell": 108.3058,
-      "at": "2026-11-26T11:22:55.537047Z"
+      "buy": 106.8711,
+      "sell": 108.5189,
+      "at": "2026-11-26T15:58:03.493289Z"
      },
      "CHF": {
-      "buy": 183.0452,
-      "sell": 185.8674,
-      "at": "2026-11-26T11:22:55.537047Z"
+      "buy": 182.3495,
+      "sell": 185.1609,
+      "at": "2026-11-26T15:58:03.493289Z"
      },
      "DKK": {
-      "buy": 22.2492,
-      "sell": 22.5922,
-      "at": "2026-11-26T11:22:55.537047Z"
+      "buy": 22.3325,
+      "sell": 22.6768,
+      "at": "2026-11-26T15:58:03.493289Z"
      },
      "DZD": {
-      "buy": 1.1078,
-      "sell": 1.1248,
-      "at": "2026-11-26T11:22:55.537047Z"
+      "buy": 1.1089,
+      "sell": 1.126,
+      "at": "2026-11-26T15:58:03.493289Z"
      },
      "EGP": {
       "buy": 2.79,
@@ -55,14 +55,14 @@
       "at": "2026-11-26T11:18:42.825127Z"
      },
      "GBP": {
-      "buy": 198.61,
-      "sell": 201.6721,
-      "at": "2026-11-26T11:22:55.537047Z"
+      "buy": 199.2788,
+      "sell": 202.3513,
+      "at": "2026-11-26T15:58:03.493289Z"
      },
      "IQD": {
-      "buy": 0.1003,
-      "sell": 0.1019,
-      "at": "2026-11-26T11:22:55.537047Z"
+      "buy": 0.1005,
+      "sell": 0.1021,
+      "at": "2026-11-26T15:58:03.493289Z"
      },
      "JOD": {
       "buy": 214.496,
@@ -70,34 +70,34 @@
       "at": "2026-11-26T11:22:55.537047Z"
      },
      "KWD": {
-      "buy": 487.9054,
-      "sell": 495.4279,
-      "at": "2026-11-26T11:22:55.537047Z"
+      "buy": 486.2541,
+      "sell": 493.7511,
+      "at": "2026-11-26T15:58:03.493289Z"
      },
      "LYD": {
-      "buy": 23.4696,
-      "sell": 23.8315,
-      "at": "2026-11-26T11:22:55.537047Z"
+      "buy": 23.5118,
+      "sell": 23.8743,
+      "at": "2026-11-26T15:58:03.493289Z"
      },
      "MAD": {
-      "buy": 15.2146,
-      "sell": 15.4492,
-      "at": "2026-11-26T11:22:55.537047Z"
+      "buy": 15.2125,
+      "sell": 15.447,
+      "at": "2026-11-26T15:58:03.493289Z"
      },
      "MYR": {
-      "buy": 36.9165,
-      "sell": 37.4857,
-      "at": "2026-11-26T11:22:55.537047Z"
+      "buy": 36.9345,
+      "sell": 37.5039,
+      "at": "2026-11-26T15:58:03.493289Z"
      },
      "NOK": {
-      "buy": 15.4296,
-      "sell": 15.6675,
-      "at": "2026-11-26T11:22:55.537047Z"
+      "buy": 15.5725,
+      "sell": 15.8126,
+      "at": "2026-11-26T15:58:03.493289Z"
      },
      "NZD": {
-      "buy": 82.9575,
-      "sell": 84.2365,
-      "at": "2026-11-26T11:22:55.537047Z"
+      "buy": 83.3165,
+      "sell": 84.6011,
+      "at": "2026-11-26T15:58:03.493289Z"
      },
      "OMR": {
       "buy": 395.5205,
@@ -110,9 +110,9 @@
       "at": "2026-11-26T11:22:55.537047Z"
      },
      "RUB": {
-      "buy": 1.8547,
-      "sell": 1.8833,
-      "at": "2026-11-26T11:22:55.537047Z"
+      "buy": 1.8451,
+      "sell": 1.8735,
+      "at": "2026-11-26T15:58:03.493289Z"
      },
      "SAR": {
       "buy": 40.36,
@@ -120,19 +120,19 @@
       "at": "2026-11-26T11:18:42.825135Z"
      },
      "SEK": {
-      "buy": 14.7971,
-      "sell": 15.0253,
-      "at": "2026-11-26T11:22:55.537047Z"
+      "buy": 14.8989,
+      "sell": 15.1286,
+      "at": "2026-11-26T15:58:03.493289Z"
      },
      "SGD": {
-      "buy": 117.698,
-      "sell": 119.5127,
-      "at": "2026-11-26T11:22:55.537047Z"
+      "buy": 117.844,
+      "sell": 119.6609,
+      "at": "2026-11-26T15:58:03.493289Z"
      },
      "TND": {
-      "buy": 49.7832,
-      "sell": 50.5508,
-      "at": "2026-11-26T11:22:55.537047Z"
+      "buy": 49.9158,
+      "sell": 50.6854,
+      "at": "2026-11-26T15:58:03.493289Z"
      },
      "TRY": {
       "buy": 3.0,
@@ -145,9 +145,9 @@
       "at": "2026-11-26T11:18:42.82508Z"
      },
      "ZAR": {
-      "buy": 8.5935,
-      "sell": 8.726,
-      "at": "2026-11-26T11:22:55.537047Z"
+      "buy": 8.6638,
+      "sell": 8.7974,
+      "at": "2026-11-26T15:58:03.493289Z"
      }
     },
     "cbs": {
@@ -160,11 +160,11 @@
      "22K": 105.0,
      "24K": 119.5
     },
-    "usdt_usd": 0.99886364
+    "usdt_usd": 0.99873378
    }
   },
   "sptoday": {
-   "at": "2026-11-26T18:19+03:00",
+   "at": "2026-11-26T19:19+03:00",
    "data": {
     "market": {
      "USD": {
@@ -197,7 +197,7 @@
    }
   },
   "cbs": {
-   "at": "2026-11-26T18:19+03:00",
+   "at": "2026-11-26T19:20+03:00",
    "data": {
     "date": "2026-11-26",
     "rates": {
@@ -213,7 +213,7 @@
    }
   },
   "sytra": {
-   "at": "2026-11-26T18:19+03:00",
+   "at": "2026-11-26T19:20+03:00",
    "data": {
     "unit": "الليرة السورية الجديدة",
     "fuel": {
@@ -254,11 +254,11 @@
      "date": "2026-11-26",
      "page": "https://sytra.me/prices/usd"
     },
-    "generated_at": "2026-11-26T15:19:16+00:00"
+    "generated_at": "2026-11-26T16:20:00+00:00"
    }
   },
   "prayer": {
-   "at": "2026-11-26T18:19+03:00",
+   "at": "2026-11-26T19:21+03:00",
    "data": {
     "date": "2026-11-26",
     "method": "Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan",
@@ -278,13 +278,13 @@
    }
   },
   "weather": {
-   "at": "2026-11-26T18:19+03:00",
+   "at": "2026-11-26T19:21+03:00",
    "data": {
-    "now": 15.5,
+    "now": 14.4,
     "days": [
      {
       "date": "2026-11-26",
-      "max": 19.1,
+      "max": 19.2,
       "min": 4.8,
       "rain": 0.0,
       "prob": 0,
@@ -293,7 +293,7 @@
      {
       "date": "2026-11-27",
       "max": 18.0,
-      "min": 6.8,
+      "min": 7.3,
       "rain": 0.0,
       "prob": 0,
       "code": 3
@@ -855,39 +855,39 @@
   }
  },
  "started": true,
- "last_run": "2026-11-26T18:19:11+03:00",
+ "last_run": "2026-11-26T19:19:54+03:00",
  "news": {
   "tg": {
    "bunatmoad": 519,
-   "hamaendowments": 2154,
+   "hamaendowments": 2156,
    "syrararmy": 693,
    "idlibgov1": 34026,
-   "hasakahmd": 16877,
+   "hasakahmd": 16878,
    "raqqaagov1": 3681,
-   "sweidagov1": 12843,
+   "sweidagov1": 12844,
    "quneitragov1": 6017,
    "latakiagov1": 21189,
    "aleppogov1": 15279,
-   "hamagov1": 25348,
+   "hamagov1": 25355,
    "homsgov1": 8937,
    "daraagov1": 10810,
-   "damascusgov1": 16373,
+   "damascusgov1": 16374,
    "deirezzorgov1": 15744,
-   "rdamascusgov1": 18809,
+   "rdamascusgov1": 18814,
    "tartusgov1": 26017,
-   "homsculture": 909,
+   "homsculture": 913,
    "mhd_alskaf": 163,
    "moisyriaspox": 1125,
    "qtdmoisy": 947,
-   "dedmoisy": 823,
+   "dedmoisy": 824,
    "symoiitacp": 635,
    "syrianairlinesgo": 518,
    "syhioc": 34,
    "syrgaca": 4173,
    "syrgabc": 5686,
-   "sycofcai": 2204,
-   "ecleansy": 9937,
-   "hamahelth": 8061,
+   "sycofcai": 2210,
+   "ecleansy": 9943,
+   "hamahelth": 8062,
    "sycbos": 5744,
    "syrianlagov": 6901,
    "gsvsbshsn": 379,
@@ -899,20 +899,20 @@
    "syrmoegov": 2272,
    "symoheasr": 14043,
    "symoad": 10069,
-   "syrsmoc": 5225,
+   "syrsmoc": 5226,
    "syrianmoi": 31892,
-   "syrmofa": 6462,
+   "syrmofa": 6466,
    "sysmoft": 1984,
    "symosaal": 9260,
-   "syrmofh": 17436,
-   "syrmofe": 12976,
+   "syrmofh": 17445,
+   "syrmofe": 12983,
    "symoeadm": 9881,
    "syrmofj": 3853,
-   "syrmoff": 10300,
+   "syrmoff": 10304,
    "syrsmot": 11838,
-   "alekhbariahsy": 242207,
-   "sana_gov": 192639,
-   "alsouriyatv": 12810,
+   "alekhbariahsy": 242215,
+   "sana_gov": 192647,
+   "alsouriyatv": 12816,
    "sypresidency": 2875,
    "sy_defense": 2240,
    "z_hama_z": 4320,
@@ -930,7 +930,7 @@
    "syrianGASP": 283,
    "SecSyria": 1019,
    "gdca_sy": 831,
-   "fedaa7": 99938,
+   "fedaa7": 99946,
    "mashf_alwatani_hama": 1758,
    "CivilAffairsSy": 522,
    "SyrianVirtualUniversity": 1270,
@@ -945,7 +945,7 @@
    "syrianmofaex1": 4106,
    "altarbia_hama": 2150,
    "generalcommissionfortaxesandfees": 329,
-   "alsiyaha_hama": 682,
+   "alsiyaha_hama": 688,
    "syrmoyas": 4805,
    "almawarid_almayiya_hama": 385,
    "HaamaMD": 2472,
@@ -955,12 +955,6 @@
   },
   "rss": {
    "sana": [
-    "https://sana.sy/?p=2642877",
-    "https://sana.sy/?p=2642878",
-    "https://sana.sy/?p=2642852",
-    "https://sana.sy/?p=2642865",
-    "https://sana.sy/?p=2642859",
-    "https://sana.sy/?p=2642839",
     "https://sana.sy/?p=2642853",
     "https://sana.sy/?p=2642706",
     "https://sana.sy/?p=2642905",
@@ -1554,7 +1548,13 @@
     "https://sana.sy/?p=2645842",
     "https://sana.sy/?p=2645832",
     "https://sana.sy/?p=2645834",
-    "https://sana.sy/?p=2645829"
+    "https://sana.sy/?p=2645829",
+    "https://sana.sy/?p=2645900",
+    "https://sana.sy/?p=2645870",
+    "https://sana.sy/?p=2645888",
+    "https://sana.sy/?p=2645849",
+    "https://sana.sy/?p=2645871",
+    "https://sana.sy/?p=2645860"
    ],
    "fedaa": [
     "https://fedaa.alwehda.gov.sy/?p=132104",
@@ -1612,7 +1612,8 @@
     "https://fedaa.alwehda.gov.sy/?p=132274",
     "https://fedaa.alwehda.gov.sy/?p=132297",
     "https://fedaa.alwehda.gov.sy/?p=132294",
-    "https://fedaa.alwehda.gov.sy/?p=132291"
+    "https://fedaa.alwehda.gov.sy/?p=132291",
+    "https://fedaa.alwehda.gov.sy/?p=132303"
    ],
    "alwatan": [
     "https://alwatan.sy/?p=2490030",
@@ -1807,7 +1808,11 @@
     "https://alwatan.sy/?p=2490671",
     "https://alwatan.sy/?p=2490669",
     "https://alwatan.sy/?p=2490680",
-    "https://alwatan.sy/?p=2490678"
+    "https://alwatan.sy/?p=2490678",
+    "https://alwatan.sy/?p=2490693",
+    "https://alwatan.sy/?p=2490691",
+    "https://alwatan.sy/?p=2490687",
+    "https://alwatan.sy/?p=2490683"
    ],
    "enab": [
     "https://www.enabbaladi.net/?p=834640",
