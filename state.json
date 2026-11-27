@@ -1,7 +1,7 @@
 {
  "cache": {
   "lirascope": {
-   "at": "2026-11-27T09:06+03:00",
+   "at": "2026-11-27T10:11+03:00",
    "data": {
     "market": {
      "AED": {
@@ -154,17 +154,17 @@
      "USD": 134.5
     },
     "gold_usd": {
-     "14K": 68.0,
+     "14K": 69.0,
      "18K": 89.0,
      "21K": 104.0,
-     "22K": 107.0,
+     "22K": 108.0,
      "24K": 119.5
     },
-    "usdt_usd": 0.99859474
+    "usdt_usd": 0.99851552
    }
   },
   "sptoday": {
-   "at": "2026-11-27T09:06+03:00",
+   "at": "2026-11-27T10:11+03:00",
    "data": {
     "market": {
      "USD": {
@@ -197,7 +197,7 @@
    }
   },
   "cbs": {
-   "at": "2026-11-27T09:06+03:00",
+   "at": "2026-11-27T10:11+03:00",
    "data": {
     "date": "2026-11-26",
     "rates": {
@@ -213,7 +213,7 @@
    }
   },
   "sytra": {
-   "at": "2026-11-27T09:06+03:00",
+   "at": "2026-11-27T10:11+03:00",
    "data": {
     "unit": "الليرة السورية الجديدة",
     "fuel": {
@@ -254,11 +254,11 @@
      "date": "2026-11-26",
      "page": "https://jihat.org/prices/usd"
     },
-    "generated_at": "2026-11-27T06:06:51+00:00"
+    "generated_at": "2026-11-27T07:11:34+00:00"
    }
   },
   "prayer": {
-   "at": "2026-11-27T09:09+03:00",
+   "at": "2026-11-27T10:11+03:00",
    "data": {
     "date": "2026-11-27",
     "method": "Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan",
@@ -278,14 +278,14 @@
    }
   },
   "weather": {
-   "at": "2026-11-27T08:23+03:00",
+   "at": "2026-11-27T10:11+03:00",
    "data": {
-    "now": 6.8,
+    "now": 11.2,
     "days": [
      {
       "date": "2026-11-27",
-      "max": 19.4,
-      "min": 6.4,
+      "max": 19.1,
+      "min": 6.1,
       "rain": 0.0,
       "prob": 0,
       "code": 3
@@ -293,16 +293,16 @@
      {
       "date": "2026-11-28",
       "max": 18.2,
-      "min": 5.2,
+      "min": 5.6,
       "rain": 0.0,
-      "prob": 2,
+      "prob": 8,
       "code": 3
      }
     ]
    }
   },
   "pma": {
-   "at": "2026-11-27T09:06+03:00",
+   "at": "2026-11-27T10:11+03:00",
    "data": {
     "at": "2026-11-26 07:17:16",
     "g24": {
@@ -375,7 +375,7 @@
       "sell_old": 42.0
      }
     },
-    "ounce": 3646.5
+    "ounce": 3661.399902
    }
   }
  },
@@ -384,7 +384,7 @@
   "sptoday": 0,
   "cbs": 0,
   "sytra": 0,
-  "weather": 1,
+  "weather": 0,
   "prayer": 0,
   "wfp": 0,
   "pma": 0
@@ -945,7 +945,7 @@
   }
  },
  "started": true,
- "last_run": "2026-11-27T09:06:39+03:00",
+ "last_run": "2026-11-27T10:11:22+03:00",
  "news": {
   "tg": {
    "bunatmoad": 519,
@@ -999,10 +999,10 @@
    "symoeadm": 9901,
    "syrmofj": 3853,
    "syrmoff": 10304,
-   "syrsmot": 11838,
-   "alekhbariahsy": 242279,
-   "sana_gov": 192684,
-   "alsouriyatv": 12832,
+   "syrsmot": 11849,
+   "alekhbariahsy": 242286,
+   "sana_gov": 192692,
+   "alsouriyatv": 12833,
    "sypresidency": 2875,
    "sy_defense": 2240,
    "z_hama_z": 4320,
@@ -1020,7 +1020,7 @@
    "syrianGASP": 283,
    "SecSyria": 1020,
    "gdca_sy": 832,
-   "fedaa7": 99970,
+   "fedaa7": 99977,
    "mashf_alwatani_hama": 1763,
    "CivilAffairsSy": 522,
    "SyrianVirtualUniversity": 1270,
@@ -1036,18 +1036,15 @@
    "altarbia_hama": 2150,
    "generalcommissionfortaxesandfees": 329,
    "alsiyaha_hama": 688,
-   "syrmoyas": 4827,
+   "syrmoyas": 4836,
    "almawarid_almayiya_hama": 385,
-   "HaamaMD": 2472,
+   "HaamaMD": 2481,
    "dgam_sy": 717,
    "synafmp": 546,
    "agrighab": 1594
   },
   "rss": {
    "sana": [
-    "https://sana.sy/?p=2643387",
-    "https://sana.sy/?p=2643385",
-    "https://sana.sy/?p=2643372",
     "https://sana.sy/?p=2643371",
     "https://sana.sy/?p=2643439",
     "https://sana.sy/?p=2643277",
@@ -1644,7 +1641,10 @@
     "https://sana.sy/?p=2646373",
     "https://sana.sy/?p=2646362",
     "https://sana.sy/?p=2646354",
-    "https://sana.sy/?p=2646341"
+    "https://sana.sy/?p=2646341",
+    "https://sana.sy/?p=2646391",
+    "https://sana.sy/?p=2646377",
+    "https://sana.sy/?p=2646386"
    ],
    "fedaa": [
     "https://fedaa.alwehda.gov.sy/?p=132104",
@@ -1706,7 +1706,8 @@
     "https://fedaa.alwehda.gov.sy/?p=132303",
     "https://fedaa.alwehda.gov.sy/?p=132313",
     "https://fedaa.alwehda.gov.sy/?p=132310",
-    "https://fedaa.alwehda.gov.sy/?p=132316"
+    "https://fedaa.alwehda.gov.sy/?p=132316",
+    "https://fedaa.alwehda.gov.sy/?p=132319"
    ],
    "alwatan": [
     "https://alwatan.sy/?p=2490030",
@@ -2074,7 +2075,7 @@
   "silver_buy": 210.0,
   "platinum_sell": 6700.0,
   "platinum_buy": 6200.0,
-  "ounce_usd": 3646.5
+  "ounce_usd": 3661.399902
  },
  "extract": {
   "queue": [],
