@@ -1,7 +1,7 @@
 {
  "cache": {
   "lirascope": {
-   "at": "2026-11-28T00:06+03:00",
+   "at": "2026-11-28T01:07+03:00",
    "data": {
     "market": {
      "AED": {
@@ -160,11 +160,11 @@
      "22K": 108.0,
      "24K": 119.5
     },
-    "usdt_usd": 0.99896364
+    "usdt_usd": 0.99900191
    }
   },
   "sptoday": {
-   "at": "2026-11-28T00:06+03:00",
+   "at": "2026-11-28T01:07+03:00",
    "data": {
     "market": {
      "USD": {
@@ -213,7 +213,7 @@
    }
   },
   "sytra": {
-   "at": "2026-11-28T00:06+03:00",
+   "at": "2026-11-28T01:09+03:00",
    "data": {
     "unit": "الليرة السورية الجديدة",
     "fuel": {
@@ -254,21 +254,15 @@
      "date": "2026-11-26",
      "page": "https://jihat.org/prices/usd"
     },
-    "generated_at": "2026-11-27T21:06:16+00:00"
+    "generated_at": "2026-11-27T22:09:32+00:00"
    }
   },
   "prayer": {
-   "at": "2026-11-28T00:06+03:00",
+   "at": "2026-11-28T01:14+03:00",
    "data": {
     "date": "2026-11-28",
     "method": "Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan",
-    "iqama": {
-     "Fajr": 15,
-     "Dhuhr": 15,
-     "Asr": 15,
-     "Maghrib": 15,
-     "Isha": 15
-    },
+    "iqama": null,
     "Fajr": "05:51",
     "Sunrise": "07:20",
     "Dhuhr": "12:21",
@@ -278,25 +272,25 @@
    }
   },
   "weather": {
-   "at": "2026-11-28T00:06+03:00",
+   "at": "2026-11-28T01:12+03:00",
    "data": {
-    "now": 8.5,
+    "now": 8.2,
     "days": [
      {
       "date": "2026-11-28",
-      "max": 18.8,
+      "max": 18.7,
       "min": 5.4,
       "rain": 0.0,
-      "prob": 0,
+      "prob": 8,
       "code": 3
      },
      {
       "date": "2026-11-29",
-      "max": 15.2,
-      "min": 10.4,
-      "rain": 0.5,
-      "prob": 38,
-      "code": 80
+      "max": 15.9,
+      "min": 10.2,
+      "rain": 0.0,
+      "prob": 40,
+      "code": 3
      }
     ]
    }
@@ -382,12 +376,12 @@
  "fail": {
   "lirascope": 0,
   "sptoday": 0,
-  "cbs": 0,
+  "cbs": 1,
   "sytra": 0,
   "weather": 0,
   "prayer": 0,
   "wfp": 0,
-  "pma": 0
+  "pma": 1
  },
  "adopted": {
   "gasoline_95": {
@@ -957,18 +951,18 @@
   }
  },
  "started": true,
- "last_run": "2026-11-28T00:06:09+03:00",
+ "last_run": "2026-11-28T01:06:59+03:00",
  "news": {
   "tg": {
    "bunatmoad": 519,
-   "hamaendowments": 2176,
+   "hamaendowments": 2177,
    "syrararmy": 695,
    "idlibgov1": 34060,
-   "hasakahmd": 16909,
-   "raqqaagov1": 3691,
+   "hasakahmd": 16910,
+   "raqqaagov1": 3692,
    "sweidagov1": 12856,
    "quneitragov1": 6028,
-   "latakiagov1": 21196,
+   "latakiagov1": 21197,
    "aleppogov1": 15291,
    "hamagov1": 25378,
    "homsgov1": 8937,
@@ -980,7 +974,7 @@
    "homsculture": 921,
    "mhd_alskaf": 167,
    "moisyriaspox": 1125,
-   "qtdmoisy": 981,
+   "qtdmoisy": 991,
    "dedmoisy": 824,
    "symoiitacp": 643,
    "syrianairlinesgo": 518,
@@ -1004,17 +998,17 @@
    "syrsmoc": 5247,
    "syrianmoi": 31913,
    "syrmofa": 6473,
-   "sysmoft": 1985,
+   "sysmoft": 1988,
    "symosaal": 9272,
    "syrmofh": 17451,
    "syrmofe": 13003,
    "symoeadm": 9921,
-   "syrmofj": 3853,
+   "syrmofj": 3854,
    "syrmoff": 10304,
    "syrsmot": 11849,
-   "alekhbariahsy": 242428,
-   "sana_gov": 192813,
-   "alsouriyatv": 12896,
+   "alekhbariahsy": 242435,
+   "sana_gov": 192815,
+   "alsouriyatv": 12898,
    "sypresidency": 2875,
    "sy_defense": 2240,
    "z_hama_z": 4320,
@@ -1057,11 +1051,6 @@
   },
   "rss": {
    "sana": [
-    "https://sana.sy/?p=2644058",
-    "https://sana.sy/?p=2644015",
-    "https://sana.sy/?p=2644042",
-    "https://sana.sy/?p=2644038",
-    "https://sana.sy/?p=2644162",
     "https://sana.sy/?p=2644155",
     "https://sana.sy/?p=2644141",
     "https://sana.sy/?p=2644159",
@@ -1656,7 +1645,12 @@
     "https://sana.sy/?p=2647103",
     "https://sana.sy/?p=2647095",
     "https://sana.sy/?p=2647089",
-    "https://sana.sy/?p=2647085"
+    "https://sana.sy/?p=2647085",
+    "https://sana.sy/?p=2647057",
+    "https://sana.sy/?p=2647136",
+    "https://sana.sy/?p=2647131",
+    "https://sana.sy/?p=2647125",
+    "https://sana.sy/?p=2647121"
    ],
    "fedaa": [
     "https://fedaa.alwehda.gov.sy/?p=132104",
