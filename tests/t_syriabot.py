@@ -23,6 +23,7 @@ if '--save' in sys.argv:
     (FX / 'sp_currencies.html').write_text(sb.fetch('https://sp-today.com/currencies'), encoding='utf-8')
     (FX / 'sp_energy.html').write_text(sb.fetch('https://sp-today.com/energy'), encoding='utf-8')
     (FX / 'cbs.html').write_text(sb.fetch('https://cb.gov.sy/'), encoding='utf-8')
+    (FX / 'pma_bulletin.json').write_text(sb.fetch(sb.PMA_JSON), encoding='utf-8')
     print('saved'); sys.exit(0)
 
 # ---------- القارئات على الصفحات المحفوظة
@@ -58,6 +59,34 @@ many = {'2026-10-15': {f'Item{i}': ['KG', 100.0, 'non-food'] for i in range(9)},
 bm = sb.basket_text({'months': many}, cfg)
 check('basket: at most six changes shown, the rest counted, biggest first', bm.count('←') == 6 and 'و3 أخرى في القائمة' in bm and bm.index('Item8: 100 ←') < bm.index('Item3: 100 ←'), bm[:600])
 
+# ---------- نشرة هيئة المعادن الثمينة (bulletin.json)
+def pma_json(at, g21=(15550, 15850), g18=(13250, 13550)):
+    pr = lambda syp, usd: [{'currency_id': 1, 'buy': syp[0], 'sale': syp[1], 'buy_old': syp[0] - 300, 'sale_old': syp[1] - 300},
+                           {'currency_id': 5, 'buy': usd[0], 'sale': usd[1]}]
+    return {'updated_at': at, 'currencies': [{'id': 1, 'code': 'syp'}, {'id': 5, 'code': 'usd'}],
+            'items': [{'name': 'ذهب عيار 24', 'prices': pr((17950, 18250), (117.5, 119.5))},
+                      {'name': 'ذهب عيار 21', 'prices': pr(g21, (102, 104))},
+                      {'name': 'ذهب عيار 18', 'prices': pr(g18, (87, 89))},
+                      {'name': 'فضة', 'prices': pr((210, 220), (1.35, 1.45))},
+                      {'name': 'بلاتين', 'prices': pr((6200, 6700), (39, 43))}],
+            'global': {'gold': {'price': 3632.5}}}
+
+
+pm = sb.parse_pma(pma_json('2026-11-26 07:17:16'))
+check('pma: carats, silver, platinum in SYP and USD, time, ounce',
+      pm['at'] == '2026-11-26 07:17:16' and pm['g21']['syp'] == {'buy': 15550.0, 'sell': 15850.0, 'buy_old': 15250.0, 'sell_old': 15550.0}
+      and pm['g24']['usd']['sell'] == 119.5 and pm['silver']['syp']['sell'] == 220.0 and pm['platinum']['syp']['buy'] == 6200.0 and pm['ounce'] == 3632.5, pm)
+for name, bad in (('no carat 21', dict(pma_json('2026-11-26 07:17:16'), items=[])), ('no date', pma_json('')),
+                  ('buy above sell', pma_json('2026-11-26 07:17:16', g21=(16000, 15850))),
+                  ('carat 18 off its ratio to 21', pma_json('2026-11-26 07:17:16', g18=(9000, 9300)))):
+    try:
+        sb.parse_pma(bad); check(f'pma: refuses {name}', False)
+    except RuntimeError:
+        check(f'pma: refuses {name}', True)
+if (FX / 'pma_bulletin.json').exists():
+    live = sb.parse_pma(json.loads((FX / 'pma_bulletin.json').read_text(encoding='utf-8')))
+    check('pma: the saved live answer parses', live['g21']['syp']['sell'] > 1000 and 'g18' in live and 'silver' in live, live)
+
 # ---------- القواعد
 os.environ['SYRIABOT_NOW'] = '2026-12-01T10:00:00+03:00'
 
@@ -69,6 +98,7 @@ def data(**kw):
          'cbs': {'date': '2026-11-30', 'rates': {'USD': 122.0, 'EUR': 134.0}},
          'sytra': {'fuel': {'bulletin_date': '2026-11-15', 'prices': {'gasoline_95': 195, 'gasoline_90': 185, 'diesel_1': 150, 'diesel_heating': 115, 'gas_home': 1600}},
                    'bread': {'price': 40, 'since': '2026-06-20'}, 'gold': {'g21_sell': 15700, 'g21_buy': 15400, 'date': '2026-11-30'}},
+         'pma': sb.parse_pma(pma_json('2026-11-29 07:15:00')),
          'weather': {'now': 20, 'days': [{'date': '2026-12-01', 'max': 18, 'min': 7, 'rain': 3.2, 'prob': 80, 'code': 61}, {'date': '2026-12-02', 'max': 16, 'min': 6, 'rain': 0, 'prob': 10, 'code': 2}]},
          'prayer': {'date': '2026-12-01', 'Fajr': '05:52', 'Sunrise': '07:20', 'Dhuhr': '12:22', 'Asr': '15:03', 'Maghrib': '17:20', 'Isha': '18:45'}}
     d = copy.deepcopy(d)
@@ -148,8 +178,32 @@ check('LiraScope down: market comes from sp-today, labelled', f['market_src'] ==
 
 a, f = step(st, d7)
 bt = sb.board_text(f, cfg)
-check('board has every section', all(x in bt for x in ('سوريا الآن · حماة', 'آخر تحديث 10:00 · الثلاثاء 1 كانون الأوّل', 'السوق', 'الرسميّ', 'الفجوة', 'الصاغة 15,400 / 15,700', 'بنزين 95: 195', 'تدفئة: 115*', 'طقس حماة', 'مطر 3.2 مم', 'الفجر 05:52')), bt)
+check('board has every section', all(x in bt for x in ('سوريا الآن · حماة', 'آخر تحديث 10:00 · الثلاثاء 1 كانون الأوّل', 'السوق', 'الرسميّ', 'الفجوة', '🥇 عيار 21: 15,400 / 15,700', 'بنزين 95: 195', 'تدفئة: 115*', 'طقس حماة', 'مطر 3.2 مم', 'الفجر 05:52')), bt)
 check('board fits one Telegram message', len(bt) < 3500, len(bt))
+
+# الذهب: الهيئة أوّلًا متى كانت نشرتها من يوم الأخرى أو أحدث
+gs = {}
+dp = data(pma=sb.parse_pma(pma_json('2026-11-30 07:16:00')))
+g = sb.rule_gold(dp, gs)
+check('gold: the issuer wins over sytra on the same day', g['src'] == 'هيئة المعادن الثمينة' and g['g21_sell'] == 15850 and g['g24_buy'] == 17950
+      and g['silver_sell'] == 220 and g['usd']['g21']['sell'] == 104 and g['date'] == '2026-11-30' and g['time'] == '07:16' and g['issuer'], g)
+gs2 = {'extracted': {'gold21_sell': {'value': 16100.0, 'day': '2026-11-30', 'ts': 0, 'id': 'x', 'name': 'سانا', 'url': 'u', 'quote': 'q'}}}
+check('gold: the issuer wins over a news report of the same day', sb.rule_gold(dp, gs2)['src'] == 'هيئة المعادن الثمينة')
+gs3 = {'extracted': {'gold21_sell': dict(gs2['extracted']['gold21_sell'], day='2026-12-01')}}
+check('gold: a newer news report wins over a stale issuer site', sb.rule_gold(dp, gs3)['src'] == 'سانا')
+check('gold: an older issuer bulletin does not beat a newer sytra one', sb.rule_gold(data(), {})['src'] == 'سيترا')
+st_p = copy.deepcopy(st)
+a, f = step(st_p, dp)
+bt = sb.board_text(f, cfg)
+check('board: gold from the issuer, line by line, linked, with silver',
+      all(x in bt for x in ('<b>الذهب</b> (للغرام · شراء / مبيع · 30-11 · <a href="https://pma.gov.sy/prices">هيئة المعادن الثمينة</a>)',
+                            '\n🥇 عيار 21: 15,550 / 15,850\n', 'عيار 24: 17,950 / 18,250 · عيار 18: 13,250 / 13,550', '🥈 الفضّة: 210 / 220',
+                            '↔️ عيار 21 محسوبًا من السوق')), bt)
+check('gold: the issuer under 2% from the last alerted value: no gold alert', not any('ذهب' in x for x in a), a)
+a, f = step(st_p, data(pma=sb.parse_pma(pma_json('2026-12-01 07:16:00', g21=(16100, 16300), g18=(13600, 13900)))))
+check('gold: the issuer 2% or more above it: one gold alert', sum('ذهب 21 ارتفع 3.8%' in x for x in a) == 1, a)
+a, f = step(st_p, data(pma=sb.parse_pma(pma_json('2026-12-01 07:16:00', g21=(16100, 16300), g18=(13600, 13900)))))
+check('gold: same issuer bulletin next hour: no repeat', not any('ذهب' in x for x in a), a)
 
 # ---------- التشغيل كلّه بتيليغرام وهميّ ومصادر وهميّة
 tmp = Path(tempfile.mkdtemp())

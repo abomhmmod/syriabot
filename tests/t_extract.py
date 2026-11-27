@@ -165,7 +165,8 @@ st['extracted'] = {'gold21_sell': nf('gold21_sell', 15900), 'gold21_buy': nf('go
 a, f = step(st, D)
 bt = sb.board_text(dict(f, weather=None, prayer=None), cfg)
 check('news of a newer day: gold from the news with date and linked source, no alert under 2%', a == [] and f['gold_assoc_sell'] == 15900 and f['gold_assoc_buy'] == 15600
-      and 'الصاغة 15,600 / 15,900 (1-12 · <a href="https://sana.sy/1">سانا</a>)' in bt and st['gold']['g18_sell'] is None, bt)
+      and '(للغرام · شراء / مبيع · 1-12 · <a href="https://sana.sy/1">سانا</a>)
+🥇 عيار 21: 15,600 / 15,900' in bt and st['gold']['g18_sell'] is None, bt)
 d2 = copy.deepcopy(D); d2['sytra']['gold'] = {'g21_sell': 15900, 'g21_buy': 15600, 'date': '2026-12-01'}
 os.environ['SYRIABOT_NOW'] = '2026-12-01T13:00:00+03:00'
 a, f = step(st, d2)

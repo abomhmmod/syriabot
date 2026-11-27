@@ -81,6 +81,7 @@ def unit_ar(unit, item=''):
     m = re.fullmatch(r'([\d.]+)\s*([A-Za-z]+)', unit or '')
     return f'{m.group(1)} {UNIT_WORD.get(m.group(2).upper(), m.group(2))}' if m else (unit or '')
 SRC_NAMES = {'lirascope': 'ليراسكوب', 'sptoday': 'الليرة اليوم', 'cbs': 'مصرف سورية المركزيّ', 'sytra': 'سيترا',
+             'pma': 'هيئة المعادن الثمينة',
              'weather': 'الطقس', 'prayer': 'مواقيت الصلاة', 'wfp': 'برنامج الأغذية العالميّ'}
 
 
@@ -194,6 +195,39 @@ def src_sytra(cfg):
     return d
 
 
+# نشرة الذهب من مُصدِرها: الهيئة العامّة لإدارة المعادن الثمينة (موقعها الرسميّ أُطلق 2026-11-26).
+PMA_JSON, PMA_PAGE = 'https://pma.gov.sy/prices/bulletin.json', 'https://pma.gov.sy/prices'
+PMA_KEYS = ((r'24', 'g24'), (r'21', 'g21'), (r'18', 'g18'), (r'فض', 'silver'), (r'بلات', 'platinum'))
+
+
+def parse_pma(j):
+    """{'at': 'YYYY-MM-DD HH:MM:SS', 'g21': {'syp': {buy, sell, buy_old, sell_old}, 'usd': {…}}, 'g24', 'g18', 'silver', 'platinum', 'ounce'}.
+    يرفض الجواب إن غاب عيار 21 أو التاريخ، أو زاد شراءٌ على مبيع، أو لم يوافق عيار 18 نسبتَه من 21؛ فيُستعمل آخر ما حُفظ."""
+    cur = {c.get('id'): c.get('code') for c in j.get('currencies') or []}
+    out = {'at': str(j.get('updated_at') or '')}
+    for it in j.get('items') or []:
+        key = next((k for pat, k in PMA_KEYS if re.search(pat, str(it.get('name', '')))), None)
+        for p in (it.get('prices') or []) if key else ():
+            c = cur.get(p.get('currency_id'))
+            if c in ('syp', 'usd') and p.get('sale') and p.get('buy'):
+                out.setdefault(key, {})[c] = {'buy': float(p['buy']), 'sell': float(p['sale']),
+                                              'buy_old': float(p['buy_old']) if p.get('buy_old') else None,
+                                              'sell_old': float(p['sale_old']) if p.get('sale_old') else None}
+    g21, g18 = (out.get('g21') or {}).get('syp'), (out.get('g18') or {}).get('syp')
+    if not g21 or not re.match(r'\d{4}-\d\d-\d\d', out['at']):
+        raise RuntimeError('pma: لا سعر لعيار 21 أو لا تاريخ')
+    if any(v['buy'] > v['sell'] for x in out.values() if isinstance(x, dict) for v in x.values()):
+        raise RuntimeError('pma: شراءٌ أعلى من المبيع')
+    if g18 and abs(g18['sell'] / g21['sell'] - 18 / 21) > 0.03:
+        raise RuntimeError('pma: عيار 18 لا يوافق عيار 21')
+    out['ounce'] = ((j.get('global') or {}).get('gold') or {}).get('price')
+    return out
+
+
+def src_pma(cfg):
+    return parse_pma(jget(PMA_JSON))
+
+
 def src_weather(cfg):
     q = urllib.parse.urlencode({'latitude': cfg['lat'], 'longitude': cfg['lon'], 'timezone': 'Asia/Damascus',
                                 'forecast_days': 2, 'current': 'temperature_2m',
@@ -269,7 +303,7 @@ def src_wfp(cfg, known=''):
     return {'stamp': stamp, 'months': months}
 
 
-SOURCES = {'lirascope': src_lirascope, 'sptoday': src_sptoday, 'cbs': src_cbs, 'sytra': src_sytra,
+SOURCES = {'lirascope': src_lirascope, 'sptoday': src_sptoday, 'cbs': src_cbs, 'sytra': src_sytra, 'pma': src_pma,
            'weather': src_weather, 'prayer': src_prayer}
 
 
@@ -376,8 +410,9 @@ def rule_fuel(data, state, alerts, first):
 
 
 def rule_gold(data, state):
-    """نشرة الذهب: من الخبر الرسميّ الذي نقلها (رقمٌ مستخرج ومتحقَّق من نصّه) أو من سيترا، أيّهما أحدث. في اليوم
-    الواحد يُقدَّم الخبر، إلّا إن تغيّر رقم سيترا بعد نشره (نشرةٌ ثانية في اليوم نفسه)."""
+    """نشرة الذهب: من الهيئة التي تصدرها أوّلًا. وإن تأخّر موقعها أو تعطّل فمن الخبر الرسميّ الذي نقلها (رقمٌ مستخرج
+    ومتحقَّق من نصّه) أو من سيترا، أيّهما أحدث؛ ولا يتقدّم أحدهما على الهيئة إلّا بنشرةٍ أحدث يومًا. وبين الخبر وسيترا
+    في اليوم الواحد يُقدَّم الخبر، إلّا إن تغيّر رقم سيترا بعد نشره (نشرةٌ ثانية في اليوم نفسه)."""
     sy, ex = (data.get('sytra') or {}).get('gold') or {}, state.get('extracted') or {}
     seen = state.setdefault('sytra_gold', {})
     g = None
@@ -392,6 +427,15 @@ def rule_gold(data, state):
         same = lambda k: ex[k]['value'] if k in ex and ex[k]['id'] == nw['id'] else None
         g = {'g21_sell': nw['value'], 'g21_buy': same('gold21_buy'), 'g18_sell': same('gold18_sell'), 'g18_buy': same('gold18_buy'),
              'date': nw['day'], 'src': nw['name'], 'url': nw['url'], 'quote': nw['quote']}
+    pm = data.get('pma') or {}
+    if (pm.get('g21') or {}).get('syp') and (g is None or pm['at'][:10] >= g['date']):
+        g = {'date': pm['at'][:10], 'time': pm['at'][11:16], 'src': 'هيئة المعادن الثمينة', 'url': PMA_PAGE, 'issuer': True,
+             'usd': {k: pm[k]['usd'] for k in ('g24', 'g21', 'g18', 'silver', 'platinum') if 'usd' in (pm.get(k) or {})}}
+        for k in ('g24', 'g21', 'g18', 'silver', 'platinum'):
+            v = (pm.get(k) or {}).get('syp') or {}
+            g[f'{k}_sell'], g[f'{k}_buy'] = v.get('sell'), v.get('buy')
+        if pm.get('ounce'):
+            g['ounce_usd'] = pm['ounce']
     state['gold'] = g
     return g or {}
 
@@ -425,7 +469,7 @@ def rule_moves(facts, state, alerts, first, cfg):
     """قفزة 2% أو أكثر في دولار السوق أو ذهب الصاغة، قياسًا بآخر قيمةٍ نُبّه عليها (أو بأوّل قيمة)."""
     ref = state.setdefault('ref', {})
     for key, label, val in (('market_usd', 'الدولار في السوق', facts.get('usd_sell')),
-                            ('gold21', 'ذهب 21 (نشرة الصاغة)', facts.get('gold_assoc_sell'))):
+                            ('gold21', 'ذهب 21', facts.get('gold_assoc_sell'))):
         if not val:
             continue
         if key not in ref or first:
@@ -446,7 +490,7 @@ def build_facts(data, state):
     f = {'market': main, 'market_src': msrc, 'market_alt': alt, 'usd_sell': usd.get('sell'),
          'official': state.get('official'), 'adopted': state.get('adopted', {}),
          'gold_assoc_sell': gold.get('g21_sell'), 'gold_assoc_buy': gold.get('g21_buy'), 'gold_date': gold.get('date'),
-         'gold_src': gold.get('src') if gold.get('url') else None, 'gold_url': gold.get('url'),
+         'gold_src': gold.get('src') if gold.get('url') else None, 'gold_url': gold.get('url'), 'gold': gold,
          'gold_market': (ls.get('gold_usd') or {}).get('21K') and usd.get('sell') and ls['gold_usd']['21K'] * usd['sell'],
          'usdt': ls.get('usdt_usd') and usd.get('sell') and ls['usdt_usd'] * usd['sell'],
          'weather': data.get('weather'), 'prayer': data.get('prayer'),
@@ -456,7 +500,7 @@ def build_facts(data, state):
 
 def snapshot(f):
     s = {'usd_sell': f.get('usd_sell'), 'official_usd': (f.get('official') or {}).get('USD'),
-         'gold': f.get('gold_assoc_sell')}
+         'gold': f.get('gold_assoc_sell'), 'silver': (f.get('gold') or {}).get('silver_sell')}
     s.update({k: v['value'] for k, v in (f.get('adopted') or {}).items()})
     return s
 
@@ -499,14 +543,21 @@ def board_text(f, cfg):
         if f.get('usd_sell'):
             row += f' · الفجوة {pct(f["usd_sell"], o["USD"])}'
         L.append(f'<b>الرسميّ</b> ({o["src"]} {short(o["date"])})\n{row}')
-    g = []
+    g, gd = [], f.get('gold') or {}
+    pair = lambda k: f'{n(gd.get(k + "_buy"))} / {n(gd[k + "_sell"])}'
+    tag = ''
     if f.get('gold_assoc_sell'):
-        tag = ' · '.join(x for x in (short(f['gold_date']) if f.get('gold_date') else '', f'<a href="{html.escape(f["gold_url"])}">{html.escape(f["gold_src"])}</a>' if f.get('gold_src') else '') if x)
-        g.append(f'الصاغة {n(f.get("gold_assoc_buy"))} / {n(f["gold_assoc_sell"])}' + (f' ({tag})' if tag else ''))
+        g.append(f'🥇 عيار 21: {pair("g21")}')
+        g.append(' · '.join(f'عيار {c}: {pair("g" + c)}' for c in ('24', '18') if gd.get(f'g{c}_sell')))
+        if gd.get('silver_sell'):
+            g.append(f'🥈 الفضّة: {pair("silver")}')
+        tag = ' · '.join(x for x in (short(f['gold_date']) if f.get('gold_date') else '',
+                                     f'<a href="{html.escape(f["gold_url"])}">{html.escape(f["gold_src"])}</a>' if f.get('gold_src') else '') if x)
     if f.get('gold_market'):
-        g.append(f'محسوبًا من السوق {n(f["gold_market"], 0)}')
+        g.append(f'↔️ عيار 21 محسوبًا من السوق: {n(f["gold_market"], 0)}')
+    g = [x for x in g if x]
     if g:
-        L.append('<b>الذهب</b> (غرام عيار 21)\n🥇 ' + ' · '.join(g))
+        L.append('<b>الذهب</b> (للغرام · شراء / مبيع' + (f' · {tag}' if tag else '') + ')\n' + '\n'.join(g))
     a = f['adopted']
     if a:
         v = lambda k: (n(a[k]['value']) + ('*' if a[k].get('single') else '')) if k in a else '—'
@@ -584,6 +635,8 @@ def bulletin_text(f, state, cfg, new_basket, digest=None):
         rows.append(f'🏛 الدولار الرسميّ: {delta(f["official"]["USD"], y.get("official_usd"), 2)}')
     if f.get('gold_assoc_sell'):
         rows.append(f'🥇 ذهب 21: {delta(f["gold_assoc_sell"], y.get("gold"))}')
+    if (f.get('gold') or {}).get('silver_sell'):
+        rows.append(f'🥈 الفضّة: {delta(f["gold"]["silver_sell"], y.get("silver"))}')
     changed = [f'{ITEMS[k][0]} {n(y[k])} ← {n(v["value"])}' for k, v in a.items() if k in y and abs(v['value'] - y[k]) >= 0.005]
     rows.append('⛽ ' + ('تغيّر: ' + '، '.join(changed) if changed else 'لا تغيّر في المحروقات ولا الخبز.'))
     L.append('<b>الأسعار</b>\n' + '\n'.join(rows))

@@ -554,8 +554,12 @@ function qRates_(s) {
 function qGold_(s) {
   var c = s.cache || {}, ls = (c.lirascope || {}).data || {}, g = s.gold || ((c.sytra || {}).data || {}).gold || {}, L = ['🥇 <b>الذهب</b> (ليرة جديدة للغرام)'];
   var pair = function (b, v) { return (b ? num_(b) + ' / ' : '') + '<b>' + num_(v) + '</b>'; };
-  if (g.g21_sell) L.push('<b>نشرة الصاغة</b> ' + dm_(g.date) + (g.url ? ' · <a href="' + esc_(g.url) + '">' + esc_(g.src) + '</a>' : ' · سيترا')
-    + '\nعيار 21: ' + pair(g.g21_buy, g.g21_sell) + (g.g18_sell ? '\nعيار 18: ' + pair(g.g18_buy, g.g18_sell) : '') + '\n<i>شراء / مبيع.</i>');
+  if (g.g21_sell) L.push('<b>' + (g.issuer ? 'نشرة الهيئة' : 'نشرة الصاغة') + '</b> ' + dm_(g.date) + (g.time ? ' ' + g.time : '')
+    + (g.url ? ' · <a href="' + esc_(g.url) + '">' + esc_(g.src) + '</a>' : ' · سيترا')
+    + (g.g24_sell ? '\nعيار 24: ' + pair(g.g24_buy, g.g24_sell) : '') + '\nعيار 21: ' + pair(g.g21_buy, g.g21_sell)
+    + (g.g18_sell ? '\nعيار 18: ' + pair(g.g18_buy, g.g18_sell) : '')
+    + (g.silver_sell ? '\n🥈 الفضّة: ' + pair(g.silver_buy, g.silver_sell) : '') + (g.platinum_sell ? '\nالبلاتين: ' + pair(g.platinum_buy, g.platinum_sell) : '')
+    + '\n<i>شراء / مبيع.' + (g.usd && g.usd.g21 ? ' وبالدولار عيار 21: ' + num_(g.usd.g21.buy) + ' / ' + num_(g.usd.g21.sell) + '.' : '') + '</i>');
   var usd = ((ls.market || {}).USD || {}).sell, w = ls.gold_usd || {};
   if (usd && Object.keys(w).length) L.push('<b>محسوبًا من السعر العالميّ ودولار السوق</b>\n' + Object.keys(w).sort().reverse().map(function (k) {
     return 'عيار ' + k.replace('K', '') + ': ' + num_(w[k] * usd, 0);
@@ -788,9 +792,15 @@ function facts_(s) {
     if (m.USD) L.push('- الفجوة بين السوق والرسميّ للدولار: ' + ((m.USD.sell - o.USD) / o.USD * 100).toFixed(1) + '%');
   }
   var g = s.gold || sy.gold || {};            // s.gold: ما اختارته القواعد بين خبرٍ رسميّ نقل النشرة وبين سيترا
-  if (g.g21_sell) L.push('الذهب، نشرة الصاغة بتاريخ ' + g.date + ' (' + (g.url ? 'عن ' + g.src + '، ' + g.url : 'عبر سيترا') + '): عيار 21 '
-    + (g.g21_buy ? 'شراء ' + num_(g.g21_buy) + ' / ' : '') + 'مبيع ' + num_(g.g21_sell)
-    + (g.g18_sell ? '، عيار 18 ' + (g.g18_buy ? 'شراء ' + num_(g.g18_buy) + ' / ' : '') + 'مبيع ' + num_(g.g18_sell) : '') + ' للغرام.');
+  var bs = function (b, v) { return (b ? 'شراء ' + num_(b) + ' / ' : '') + 'مبيع ' + num_(v); };
+  if (g.g21_sell) L.push('الذهب، ' + (g.issuer ? 'النشرة الرسميّة للهيئة العامّة لإدارة المعادن الثمينة (مُصدِر النشرة)' : 'نشرة الصاغة')
+    + ' بتاريخ ' + g.date + (g.time ? ' ' + g.time : '') + ' (' + (g.url ? (g.issuer ? '' : 'عن ' + g.src + '، ') + g.url : 'عبر سيترا') + '): '
+    + (g.g24_sell ? 'عيار 24 ' + bs(g.g24_buy, g.g24_sell) + '، ' : '') + 'عيار 21 ' + bs(g.g21_buy, g.g21_sell)
+    + (g.g18_sell ? '، عيار 18 ' + bs(g.g18_buy, g.g18_sell) : '') + ' ليرة للغرام'
+    + (g.silver_sell ? '؛ الفضّة ' + bs(g.silver_buy, g.silver_sell) : '') + (g.platinum_sell ? '؛ البلاتين ' + bs(g.platinum_buy, g.platinum_sell) : '')
+    + (g.usd && g.usd.g21 ? '؛ وبالدولار للغرام: ' + ['g24', 'g21', 'g18', 'silver'].filter(function (k) { return g.usd[k]; }).map(function (k) {
+      return ({g24: 'عيار 24', g21: 'عيار 21', g18: 'عيار 18', silver: 'الفضّة'})[k] + ' ' + num_(g.usd[k].buy) + ' / ' + num_(g.usd[k].sell);
+    }).join('، ') : '') + (g.ounce_usd ? '؛ الأونصة عالميًّا ' + num_(g.ounce_usd) + ' دولار' : '') + '.');
   if (ls.gold_usd && m.USD) L.push('الذهب محسوبًا من السعر العالميّ وسعر السوق (ليراسكوب): '
     + Object.keys(ls.gold_usd).sort().map(function (k) { return 'عيار ' + k.replace('K', '') + ': ' + num_(ls.gold_usd[k] * m.USD.sell, 0); }).join('، ') + ' للغرام.');
   var a = s.adopted || {}, fd = (sy.fuel || {}).bulletin_date;
