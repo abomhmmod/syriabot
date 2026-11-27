@@ -36,6 +36,9 @@ jobs:
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       # لموجز نشرة الصباح. إن غاب خرجت النشرة بلا موجز.
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      # رادار المصادر: عنوان تطبيق الويب في مشروع Apps Script ومفتاح الرفع، ليسحب ردود «أضف/تجاهل». إن غابا عمل الرادار بلا موافقات.
+      SYRIA_PUSH_URL: ${{ secrets.SYRIA_PUSH_URL }}
+      SYRIA_PUSH_KEY: ${{ secrets.SYRIA_PUSH_KEY }}
     steps:
       # آخر نسخة من الفرع لا نسخة لحظة الطلب، حتّى يرى التشغيل state.json الذي حفظه التشغيل السابق.
       - uses: actions/checkout@v7
@@ -100,7 +103,7 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           # data/osm_hama.json تكتبه directory.py حين تُجيب الخريطة؛ وإن بقي خارج الإيداع منع الملفُّ المعدَّل
           # «git pull --rebase» فلم تُحفظ الحالة، فأُعيدت نشرة الصباح في النبضة التالية (2026-11-27).
-          git add state.json news directory data
+          git add state.json news directory data sources.json          # sources.json: ما أضافه رادار المصادر
           if git diff --cached --quiet; then echo 'لا تغيير في الحالة'; exit 0; fi
           git commit -q -m "state: $(date '+%Y-%m-%d %H:%M')"
           for i in 1 2 3; do git pull -q --rebase --autostash origin "$GITHUB_REF_NAME" && git push -q origin "HEAD:$GITHUB_REF_NAME" && exit 0; sleep 5; done

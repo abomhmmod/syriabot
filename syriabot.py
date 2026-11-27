@@ -657,6 +657,9 @@ def bulletin_text(f, state, cfg, new_basket, digest=None):
             L.append(b)
     if state.get('pending'):
         L.append('⚠️ <b>لم يُحسم بعد:</b> ' + '، '.join(ITEMS[k][0] for k in state['pending']))
+    for u in (state.get('radar') or {}).get('urgent') or []:      # رادار المصادر: مُصدِرٌ رسميّ جديد لشيءٍ في اللوحة
+        L.append(f'🛰 <b>مصدرٌ رسميّ جديد:</b> <a href="{html.escape(u["link"])}">{html.escape(u["name"])}</a>'
+                 '\nأضفتُه إلى المصادر؛ وليدخل أرقام اللوحة يحتاج قارئًا يكتبه Claude.')
     return '\n\n'.join(L)
 
 
@@ -723,6 +726,52 @@ class Telegram:
 
 
 # ------------------------------------------------------------------ التشغيل
+def run_radar(state, cfg, root, tg, t, dry=None):
+    """رادار المصادر (radar.py): كلّ تشغيلٍ يسحب ردود «أضف/تجاهل» من تطبيق الويب ويطبّقها؛ ومرّةً في اليوم بعد الأدلّة
+    يرصد الجهات الرسميّة الجديدة ويضيف الواضح منها إلى sources.json بلا سؤال (قراره 2026-11-27). تعطّله لا يمسّ شيئًا."""
+    try:
+        import radar
+        src_path = root / 'sources.json'
+        srcs = load(src_path if src_path.exists() else BASE / 'sources.json', {})
+        if not srcs.get('telegram'):
+            return
+        changed, ack = False, []
+        url, key = os.environ.get('SYRIA_PUSH_URL'), os.environ.get('SYRIA_PUSH_KEY')
+        if url and key and not dry:
+            dec = radar.pull(url, key)
+            if dec:
+                msg, ch = radar.apply(state, srcs, dec, root)
+                changed |= ch
+                if msg:
+                    tg.send(msg, silent=True)
+                ack = [d['id'] for d in dec if 'id' in d]
+        if t.hour >= cfg.get('bulletin_hour', 7) and (state.get('radar') or {}).get('day') != f'{t:%Y-%m-%d}':
+            res = radar.daily(root, state, srcs, t)
+            changed |= res['sources']
+            print('radar:', res['log'])
+        if changed:
+            radar.save_sources(src_path, srcs, eol_from=BASE / 'sources.json')
+        if ack:
+            radar.pull(url, key, ack)
+    except Exception as ex:
+        print(f'radar failed: {type(ex).__name__}: {ex}', file=sys.stderr)
+
+
+def run_radar_weekly(state, cfg, root, tg, t):
+    """الرسالة الأسبوعيّة للرادار (يومها radar.weekday في config.json، الجمعة إن غاب). لا تُفرَّغ قوائمه إلّا إن وصلت."""
+    try:
+        import copy, radar
+        if 'radar' not in state:
+            return
+        trial = {'radar': copy.deepcopy(state['radar'])}
+        src_path = root / 'sources.json'
+        text = radar.weekly(trial, load(src_path if src_path.exists() else BASE / 'sources.json', {}), root, cfg, t)
+        if text and tg.send(text, silent=True):
+            state['radar'] = trial['radar']
+    except Exception as ex:
+        print(f'radar weekly failed: {type(ex).__name__}: {ex}', file=sys.stderr)
+
+
 def run(dry=None, bulletin_now=False, basket_now=False):
     cfg = load(BASE / 'config.json', {})
     state_path = (Path(dry) / 'state.json') if dry else BASE / 'state.json'
@@ -787,6 +836,9 @@ def run(dry=None, bulletin_now=False, basket_now=False):
         except Exception as ex:
             print(f'directory failed: {type(ex).__name__}: {ex}', file=sys.stderr)
 
+    if not first:
+        run_radar(state, cfg, root, tg, t, dry)
+
     if basket_now and not first:
         b = basket_text(basket, cfg)
         if b:
@@ -811,8 +863,11 @@ def run(dry=None, bulletin_now=False, basket_now=False):
             print(f'digest failed: {type(ex).__name__}: {ex}', file=sys.stderr)
         if tg.send(bulletin_text(facts, state, cfg, new_basket, dg)):
             state['bulletin'] = today
+            (state.get('radar') or {}).pop('urgent', None)
     elif first:
         state['bulletin'] = today                       # يوم البدء: اللوحة تكفي، والنشرة من الغد
+    if not first:
+        run_radar_weekly(state, cfg, root, tg, t)
     days = state.setdefault('days', {})
     days[today] = snapshot(facts)
     for d in sorted(days)[:-45]:

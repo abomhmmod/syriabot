@@ -105,6 +105,14 @@ function receive_(b) {
   var known = P.getProperty('PUSH_KEY_SHA');
   if (!known) P.setProperty('PUSH_KEY_SHA', sum);            // أوّل رفعٍ يسجّل بصمة المفتاح، ثمّ لا يُقبل غيره
   else if (known !== sum) return {ok: false, error: 'مفتاح مرفوض'};
+  if (b.radar_pull) {                                        // تشغيل البوت الساعيّ يسحب ردود الرادار، ثمّ يؤكّد ما طبّقه فيُحذف
+    var dec = radarDec_();
+    if (b.radar_ack && b.radar_ack.length) {
+      dec = dec.filter(function (d) { return b.radar_ack.indexOf(d.id) < 0; });
+      P.setProperty('RADAR_DEC', JSON.stringify(dec));
+    }
+    return {ok: true, radar: dec};
+  }
   var idx = privIndex_(), saved = [];
   (b.files || []).forEach(function (f) {
     if (!f || !PRIV_NAME.test(f.name) || typeof f.text !== 'string' || f.text.length > 4000000) return;
@@ -121,6 +129,28 @@ function receive_(b) {
   var out = {ok: true, saved: saved, files: Object.keys(idx).length};
   if (b.vault && b.vault.length) out.vault = vaultImport_(b.vault);        // استيراد القسم الخاصّ بالجملة: يُكتب ولا يُقرأ من هنا
   return out;
+}
+
+/* ------------------------------------------------------------------ رادار المصادر */
+// يرسل البوت كلّ جمعة الجهات الرسميّة الجديدة، ومنها ما يحتاج موافقته مرقّمًا. ردّه «أضف 2 و5» أو «تجاهل 3» يُحفظ هنا
+// (RADAR_DEC)، ويسحبه تشغيل البوت التالي على GitHub عبر doPost فيطبّقه ويرسل ما تمّ. لا يمرّ بأيّ نموذج.
+var RADAR_RE = /^(اضف|تجاهل|اهمل) ?((?:و? ?\d+ ?)+)$/;
+
+function radarDec_() {
+  try { return JSON.parse(PropertiesService.getScriptProperties().getProperty('RADAR_DEC') || '[]'); } catch (e) { return []; }
+}
+
+function radarCmd_(token, chat, m, q) {
+  var t = norm_(String(q).replace(/[٠-٩]/g, function (d) { return String(d.charCodeAt(0) - 0x660); })
+    .replace(/[۰-۹]/g, function (d) { return String(d.charCodeAt(0) - 0x6F0); }));
+  var mm = t.match(RADAR_RE);
+  if (!mm) return false;
+  var nums = (mm[2].match(/\d+/g) || []).map(Number), add = mm[1] === 'اضف', list = radarDec_();
+  list.push({id: Date.now() + '-' + Math.floor(Math.random() * 1e6), op: add ? 'add' : 'skip', n: nums});
+  PropertiesService.getScriptProperties().setProperty('RADAR_DEC', JSON.stringify(list.slice(-50)));
+  tg_(token, 'sendMessage', {chat_id: chat, reply_parameters: {message_id: m.message_id},
+    text: '🛰 سُجّل: ' + (add ? 'يُضاف ' : 'لن يُعرض ثانيةً ') + nums.join(' و') + '.\nيطبّقه تشغيل البوت القادم (خلال ساعة)، وتصلك رسالةٌ بما تمّ.'});
+  return true;
 }
 
 function privIndex_() {
@@ -218,6 +248,7 @@ function poll() {
 function handle_(token, chat, m) {
   var q = m.text.trim(), html = null, extra = {};
   if (vault_(token, chat, m, q)) return;                      // القسم الخاصّ: يُجاب بالكود وحده، ولا يصل إلى أيّ نموذج
+  if (radarCmd_(token, chat, m, q)) return;                   // ردٌّ على رسالة رادار المصادر: «أضف 2 و5» أو «تجاهل 3»
   if (/^\/(start|help)\b/.test(q)) {
     html = HELP;
     extra = {reply_markup: keyboard_()};
@@ -684,6 +715,7 @@ var HELP = '👋 <b>اسألني عن سوريا وحماة.</b>\n\nأجيب م�
   + '• ماذا تقول صفحات حماة عن الكهرباء؟\n\n'
   + '<b>الأزرار</b> أسفل المحادثة للأسئلة المتكرّرة: الأسعار والمواقيت والطقس والسلّة وأرقام الحيّ من البيانات مباشرةً، والأخبار ملخّصة.\n\n'
   + '🔐 <b>القسم الخاصّ</b> لمعلوماتك السرّيّة: أرسل «خاصّ» لتعرف طريقته.\n\n'
+  + '🛰 <b>رادار المصادر</b>: كلّ جمعة رسالةٌ بالجهات الرسميّة الجديدة. ردّ على المرقّم منها «أضف 2 و5» أو «تجاهل 3».\n\n'
   + '<i>أذكر مصدر كلّ جواب وتاريخه. وما لا أجده أبحث عنه في النت وأقول إنّه من النت.</i>';
 
 /* ------------------------------------------------------------------ الجواب */
@@ -859,7 +891,7 @@ function loadNews_(days) {
   return out;
 }
 
-var DIRS = ['phone', 'entity', 'source', 'hama', 'cv', 'account', 'app', 'site', 'promise'];
+var DIRS = ['phone', 'entity', 'source', 'hama', 'radar', 'cv', 'account', 'app', 'site', 'promise'];
 var NEAR = /(^| )(اقرب|الاقرب|قريب|قريبه|القريب|القريبه|جنبي|حولي|بجانبي|قربي)( |$)/;
 
 /** سؤالٌ عن «أقرب» مرفق: مرافق مدينة حماة التي تطابق كلمات السؤال، الأقرب إلى حيّ السائل أوّلًا (البعد مكتوبٌ في كلّ مدخل). */

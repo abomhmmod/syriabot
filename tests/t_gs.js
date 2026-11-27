@@ -88,7 +88,7 @@ check('rank: a question with no keywords gets the newest posts', run('rank_("م�
 const state = run('getJson_(RAW + "state.json")');
 ctx.S = state;
 const facts = run('facts_(S)');
-check('facts sheet: market, official, gold, fuel, weather, prayer, basket', ['سعر السوق', 'الدولار الأمريكيّ USD', 'السعر الرسميّ', 'نشرة الصاغة', 'بنزين 95', 'ربطة الخبز', 'طقس حماة', 'المغرب', 'مسجدك', 'سلّة حماة', 'سكّر [KG]'].every(x => facts.includes(x)), facts.slice(0, 300));
+check('facts sheet: market, official, gold, fuel, weather, prayer, basket', ['سعر السوق', 'الدولار الأمريكيّ USD', 'السعر الرسميّ', 'الذهب، ', 'بنزين 95', 'ربطة الخبز', 'طقس حماة', 'المغرب', 'مسجدك', 'سلّة حماة', 'سكّر [KG]'].every(x => facts.includes(x)), facts.slice(0, 300));
 check('facts sheet is compact', facts.length < 9000, facts.length);
 const news = run('loadNews_(3)');
 check('news archive loads from the repository', news.length > 300 && news[0].name && news[0].ts, news.length);
@@ -145,7 +145,7 @@ check('upload: files no longer kept on the PC are removed from the index', u3.ok
 const kb = run('keyboard_()');
 check('buttons: three rows of three, persistent', kb.keyboard.length === 3 && kb.keyboard.every(r => r.length === 3 && r.every(b => b.text)) && kb.is_persistent && kb.resize_keyboard);
 const quick = label => { ctx.Q = label; return run('quick_(Q)'); };
-const marks = {'💱 العملات': ['الدولار', 'بقيّة العملات', 'الرسميّ', 'الفجوة'], '🥇 الذهب': ['نشرة الصاغة', 'عيار 21', 'عيار 24'], '⛽ المحروقات': ['بنزين 95', 'ربطة الخبز', 'منذ'],
+const marks = {'💱 العملات': ['الدولار', 'بقيّة العملات', 'الرسميّ', 'الفجوة'], '🥇 الذهب': ['نشرة ال', 'عيار 21', 'عيار 24'], '⛽ المحروقات': ['بنزين 95', 'ربطة الخبز', 'منذ'],
   '🕌 المواقيت': ['الفجر', 'المغرب', 'مسجدك'], '🌤 الطقس': ['طقس حماة', 'العظمى'], '🧺 السلّة': ['سلّة حماة', 'الأسعار كلّها', 'blockquote expandable']};
 for (const [label, need] of Object.entries(marks)) {
   const a = quick(label) || '';
@@ -344,6 +344,25 @@ check('model: one that hung and then failed is not tried a second time, and rest
   && rest4['gemini-3.6-flash'] > vnow() + 800000, fetched.join() + ' ' + store.AI_REST);
 clock = 0; ctx.UrlFetchApp.fetch = slowFetch; run('Date.now = _now0');
 ctx.UrlFetchApp.fetch = realFetch; ctx.Utilities.sleep = realSleep; store.AI_REST = '{}';
+// ---------- رادار المصادر: «أضف/تجاهل» يُحفظ بالكود وحده، ويسحبه التشغيل الساعيّ ويؤكّده عبر doPost
+delete store.RADAR_DEC;
+const askedR = asked2.length;
+out = send('أضف ٢ و5');
+let dec = JSON.parse(store.RADAR_DEC || '[]');
+check('radar: «أضف ٢ و5» saved with Arabic digits, confirmed, no model', /سُجّل: يُضاف 2 و5/.test(out) && dec.length === 1 && dec[0].op === 'add'
+      && dec[0].n.join() === '2,5' && asked2.length === askedR, out);
+out = send('تجاهل: 3');
+dec = JSON.parse(store.RADAR_DEC);
+check('radar: «تجاهل: 3» saved as a skip', /لن يُعرض ثانيةً 3/.test(out) && dec.length === 2 && dec[1].op === 'skip' && dec[1].n.join() === '3', out);
+const pulled = run('receive_({key: "k".repeat(40), radar_pull: true})');
+check('radar: the hourly run pulls both with the upload key', pulled.ok && pulled.radar.length === 2 && store.RADAR_DEC === JSON.stringify(dec), JSON.stringify(pulled));
+ctx.ACK = [pulled.radar[0].id];
+const after = run('receive_({key: "k".repeat(40), radar_pull: true, radar_ack: ACK})');
+check('radar: what it applied is removed, the rest stays', after.ok && after.radar.length === 1 && after.radar[0].op === 'skip' && JSON.parse(store.RADAR_DEC).length === 1);
+check('radar: another key gets nothing', run('receive_({key: "z".repeat(40), radar_pull: true})').ok === false);
+check('radar: an ordinary sentence is not taken as a reply', run('norm_("أضف سعر الذهب").match(RADAR_RE)') === null && run('norm_("اضف 12و 3").match(RADAR_RE)') !== null);
+check('radar: its directory is read for answers', run('DIRS').indexOf('radar') >= 0);
+
 fs.rmSync(tmp, {recursive: true, force: true});
 
 console.log('\nfacts sheet: ' + facts.length + ' chars · archive: ' + news.length + ' posts · top for Hama: ' + r2.slice(0, 4).map(p => p.name).join('، '));

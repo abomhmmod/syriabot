@@ -107,7 +107,10 @@ def read_channel(src, last, now, pages=4, first_hours=48):
         if len(p['text']) < 5:
             continue                                                   # صورةٌ بلا نصّ
         first = p['text'].split('\n', 1)[0].strip()
-        items.append(item(src, f'tg:{src["id"]}/{p["n"]}', p['ts'] or now, first[:200], p['text'], f'https://t.me/{src["id"]}/{p["n"]}'))
+        it = item(src, f'tg:{src["id"]}/{p["n"]}', p['ts'] or now, first[:200], p['text'], f'https://t.me/{src["id"]}/{p["n"]}')
+        if p['links']:
+            it['links'] = p['links']                                  # لرادار المصادر: المواقع والقنوات التي يذكرها المنشور
+        items.append(it)
     newest = max([p['n'] for p in posts] + ([last] if last is not None else []), default=last)
     return items, newest
 
