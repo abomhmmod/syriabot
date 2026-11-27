@@ -80,6 +80,8 @@ FIELDS = [   # ترتيبها أولويّة العرض ما لم يحدّد ص�
 KEEP_SHOWN = 4          # أسابيع يُعرض فيها اقتراحٌ بلا ردّ قبل أن يُطوى
 SITES_A_DAY = 70        # حدّ ما يُفحص من المواقع في اليوم، ليبقى التشغيل الساعيّ دون حدّه (15 دقيقة)
 SILENT_DAYS = 45
+INBOX = 'radar_inbox.json'   # يكتبه البحث الشهريّ على الحاسوب (sources/monthly.py) ويرفعه؛ البوت يقرؤه ولا يعدّله
+MONTHLY_LATE = 40            # أيّامٌ بلا بحثٍ شهريّ تُذكر بعدها في رسالة الجمعة (الحاسوب مطفأ أو البحث متعطّل)
 
 
 def now():
@@ -319,6 +321,23 @@ def daily(base, state, srcs, t=None, crt=crt_hosts, tg_lookup=tg_info, site_look
                 for kind, v in from_post({'text': r.get('text', '') + ' ' + r.get('url', '')}):
                     add(kind, v, f'جديدٌ في {r.get("source", "فهرس")}', r.get('url', ''), 2 if kind == 'site' and OFFICIAL_TLD.search(v) else 1)
     R['dir_ids'] = sorted(rows)
+    # 4. ما وجده البحث الشهريّ داخل تيليغرام وفيسبوك على الحاسوب (بحساباتٍ لا تصل إليها GitHub)
+    for run in inbox_runs(base, R):
+        for c in run.get('tg', []):
+            v = str(c.get('id', '')).lower().lstrip('@')
+            if not v or v in tgs:
+                continue
+            if int(c.get('proof', 1)) >= 2:
+                seen_t.discard(v)                          # القويّ يُفحص ثانيةً وإن رُئي قبلًا: لعلّه نشط الآن
+            add('tg', v, c.get('via') or 'البحث الشهريّ في تيليغرام', c.get('url', ''), int(c.get('proof', 1)))
+        for x in run.get('fb', []):
+            R.setdefault('added', []).append({'name': x['name'], 'field': field_of(x['name']), 'link': x['url'], 'via': 'البحث الشهريّ في فيسبوك',
+                                              'day': f'{t:%Y-%m-%d}', 'what': 'صفحة فيسبوك (يقرؤها SocialWatch)'})
+        R['monthly'] = {'day': run['id'], 'tg_seen': run.get('tg_seen', 0), 'tg_sent': len(run.get('tg', [])), 'fb_seen': run.get('fb_seen', 0),
+                        'fb_followed': len(run.get('fb', [])), 'note': run.get('note', '')}
+        R['monthly_last'] = run['id']
+        R['inbox_done'] = (R.get('inbox_done', []) + [run['id']])[-24:]
+        log.append(f'monthly {run["id"]}: {len(run.get("tg", []))} tg, {len(run.get("fb", []))} fb')
 
     # الفحص: المواقع أوّلًا (فما تربطه من قنوات يصير دليلًا رسميًّا عليها)
     sites = sorted((c for c in cands.values() if c['kind'] == 'site'), key=lambda c: -c['proof'])
@@ -387,6 +406,16 @@ def daily(base, state, srcs, t=None, crt=crt_hosts, tg_lookup=tg_info, site_look
     R['day'] = f'{t:%Y-%m-%d}'
     log.append(f'{len(cands)} new candidate(s), {sum(1 for a in added if a["day"] == R["day"])} added, {len(pending)} waiting')
     return {'sources': changed, 'log': ', '.join(log)}
+
+
+def inbox_runs(base, R):
+    """جولات البحث الشهريّ التي لم تُقرأ بعد."""
+    try:
+        runs = json.loads((Path(base) / INBOX).read_text(encoding='utf-8')).get('runs', [])
+    except (OSError, ValueError, AttributeError):
+        return []
+    done = set(R.get('inbox_done', []))
+    return [r for r in runs if isinstance(r, dict) and r.get('id') and r['id'] not in done]
 
 
 JUNK = re.compile(r'default|index of|it works|welcome to nginx|apache|iis windows|coming soon|under construction|قريبا|قريبًا|قيد الإنشاء|'
@@ -569,9 +598,13 @@ def weekly(state, srcs, base, cfg, t=None):
         pend[n]['shown'] = pend[n].get('shown', 0) + 1
     shown = sorted(pend.items(), key=lambda kv: ({f: i for i, f in enumerate(prio)}.get(kv[1]['field'], 99), int(kv[0])))
     silent = silent_sources(base, srcs, t)
+    mo, last = R.get('monthly'), R.get('monthly_last') or R.get('monthly_since')
+    if not last:
+        R['monthly_since'] = last = f'{t:%Y-%m-%d}'      # من اليوم يُحسب التأخّر إن لم يعمل البحث الشهريّ قطّ
+    late = (t.date() - datetime.strptime(last, '%Y-%m-%d').date()).days >= MONTHLY_LATE
     a = lambda x: f'<a href="{H.escape(x["link"])}">{H.escape(x["name"])}</a>'
     L = [f'🛰 <b>رادار المصادر · أسبوع {t:%d-%m}</b>']
-    if not (added or needs or bodies or pend or silent):
+    if not (added or needs or bodies or pend or silent or mo or late):
         L.append('لا جديد هذا الأسبوع: لم تظهر جهةٌ رسميّة جديدة، ولم تصمت أيّ مصدر.')
     if added:
         L.append(f'✅ <b>أُضيف تلقائيًّا ({len(added)})</b> · يجمع البوت أخباره بصمت ويجيب عنه\n<blockquote expandable>'
@@ -588,6 +621,11 @@ def weekly(state, srcs, base, cfg, t=None):
     if bodies:
         L.append(f'🏛 <b>جهاتٌ أُحدثت بمرسوم أو قرار ({len(bodies)})</b> · أراقبها حتّى يظهر لها موقعٌ أو قناة\n<blockquote expandable>'
                  + '\n'.join(f'• <a href="{H.escape(b["url"])}">{H.escape(b["name"])}</a>' for b in bodies) + '</blockquote>')
+    if mo:
+        L.append(f'🔎 <b>البحث الشهريّ داخل تيليغرام وفيسبوك</b> ({mo["day"]}): رأى {mo["tg_seen"]} قناة و{mo["fb_seen"]} صفحة؛ '
+                 f'أرسل {mo["tg_sent"]} قناة رسميّة إلى الفحص، وتابع {mo["fb_followed"]} صفحة رسميّة' + (f' · {H.escape(mo["note"])}' if mo.get('note') else ''))
+    elif late:
+        L.append(f'⚠️ <b>البحث الشهريّ لم يعمل منذ {last}</b> · يعمل على الحاسوب متى كان مشغَّلًا؛ إن طال هذا فاطلب من Claude أن ينظر فيه')
     if silent:
         L.append(f'💤 <b>مصادر صامتة منذ {SILENT_DAYS} يومًا ({len(silent)})</b>\n<blockquote expandable>' + '\n'.join('• ' + H.escape(x) for x in silent)
                  + '</blockquote>')
@@ -595,6 +633,7 @@ def weekly(state, srcs, base, cfg, t=None):
     for n in [n for n, c in pend.items() if c['shown'] >= KEEP_SHOWN]:
         pend.pop(n)
     R['added'], R['needs_reader'], R['bodies'], R['week'] = [], [], [], week
+    R.pop('monthly', None)
     return '\n\n'.join(L)
 
 

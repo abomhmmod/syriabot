@@ -12,5 +12,8 @@
  "wfp_market": "Hama",
  "bulletin_hour": 7,
  "move_pct": 2,
- "basket_pct": 5
+ "basket_pct": 5,
+ "radar": {
+  "weekday": 4
+ }
 }

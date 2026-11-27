@@ -151,6 +151,36 @@ p.write_bytes(json.dumps(srcs, ensure_ascii=False, indent=1).replace('\n', '\r\n
 radar.save_sources(p, srcs)
 check('sources.json: written back with its own line endings, round-trips', b'\r\n' in p.read_bytes() and json.loads(p.read_text(encoding='utf-8')) == srcs)
 
+# ---------- صندوق البحث الشهريّ (من الحاسوب)
+T2 = T1 + timedelta(days=3)
+CHANS.update({'monthly_ok': {'title': 'مديرية المياه في حماة', 'desc': 'القناة الرسمية لمؤسسة مياه حماة', 'last': T2.timestamp() - 3600},
+              'monthly_weak': {'title': 'مديرية النقل', 'desc': 'خدمات النقل', 'last': T2.timestamp() - 3600},
+              'monthly_iraq': {'title': 'وزارة الصحة العراقية', 'desc': 'القناة الرسمية', 'last': T2.timestamp() - 3600}})
+inbox = {'runs': [{'id': '2026-11-30', 'tg_seen': 420, 'fb_seen': 900,
+                   'tg': [{'id': 'Monthly_OK', 'proof': 3, 'via': 'موثّقة في تيليغرام'}, {'id': 'monthly_weak', 'proof': 1},
+                          {'id': 'monthly_iraq', 'proof': 3}, {'id': 'known_chan', 'proof': 3}],
+                   'fb': [{'name': 'مديرية صحة حماة', 'url': 'https://www.facebook.com/hama.health'}]}]}
+(tmp / radar.INBOX).write_text(json.dumps(inbox, ensure_ascii=False), encoding='utf-8')
+n_tg = len(srcs['telegram'])
+radar.daily(tmp, state, srcs, T2, crt=crt, tg_lookup=tg_lookup, site_lookup=site_lookup)
+ids = [s['id'] for s in srcs['telegram']]
+check('inbox: a proven channel is added verified; a foreign one and a known one are not',
+      'monthly_ok' in ids and not any(s.get('unverified') for s in srcs['telegram'] if s['id'] == 'monthly_ok')
+      and 'monthly_iraq' not in ids and ids.count('known_chan') == 1, ids[n_tg:])
+check('inbox: a weak one is numbered for approval', any(c['value'] == 'monthly_weak' for c in R['pending'].values()), R['pending'])
+check('inbox: the Facebook follows are listed as added, with the run noted',
+      any(a['what'].startswith('صفحة فيسبوك') for a in R['added']) and R['monthly']['fb_followed'] == 1 and R['monthly_last'] == '2026-11-30')
+before = len(srcs['telegram'])
+radar.daily(tmp, state, srcs, T2 + timedelta(days=1), crt=crt, tg_lookup=tg_lookup, site_lookup=site_lookup)
+check('inbox: a run is read once', len(srcs['telegram']) == before and R['inbox_done'] == ['2026-11-30'])
+FRI2 = datetime(2027, 1, 8, 9, 0, tzinfo=TZ)
+w = radar.weekly(state, srcs, tmp, cfg, FRI2)
+check('weekly: the monthly search line, then it is cleared', 'البحث الشهريّ داخل تيليغرام وفيسبوك' in w and 'تابع 1 صفحة' in w and 'monthly' not in R, w)
+w = radar.weekly(state, srcs, tmp, cfg, datetime(2027, 1, 15, 9, 0, tzinfo=TZ))
+check('weekly: a monthly search 40+ days late is flagged', 'لم يعمل منذ 2026-11-30' in w, w)
+w = radar.weekly(state, srcs, tmp, cfg, datetime(2026, 12, 25, 9, 0, tzinfo=TZ))
+check('weekly: not flagged while on time', w is None or 'لم يعمل منذ' not in w)
+
 shutil.rmtree(tmp, ignore_errors=True)
-print('\nFAILED: ' + ', '.join(fails) if fails else '\nALL PASSED')
+print('\nFAILED:' + ', '.join(fails) if fails else '\nALL PASSED')
 sys.exit(1 if fails else 0)
