@@ -98,10 +98,12 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add state.json news directory
+          # data/osm_hama.json تكتبه directory.py حين تُجيب الخريطة؛ وإن بقي خارج الإيداع منع الملفُّ المعدَّل
+          # «git pull --rebase» فلم تُحفظ الحالة، فأُعيدت نشرة الصباح في النبضة التالية (2026-11-27).
+          git add state.json news directory data
           if git diff --cached --quiet; then echo 'لا تغيير في الحالة'; exit 0; fi
           git commit -q -m "state: $(date '+%Y-%m-%d %H:%M')"
-          for i in 1 2 3; do git pull -q --rebase origin "$GITHUB_REF_NAME" && git push -q origin "HEAD:$GITHUB_REF_NAME" && exit 0; sleep 5; done
+          for i in 1 2 3; do git pull -q --rebase --autostash origin "$GITHUB_REF_NAME" && git push -q origin "HEAD:$GITHUB_REF_NAME" && exit 0; sleep 5; done
           exit 1
 
   wake:
