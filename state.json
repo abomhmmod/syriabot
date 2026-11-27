@@ -1,7 +1,7 @@
 {
  "cache": {
   "lirascope": {
-   "at": "2026-11-27T13:13+03:00",
+   "at": "2026-11-27T14:14+03:00",
    "data": {
     "market": {
      "AED": {
@@ -47,7 +47,7 @@
      "EGP": {
       "buy": 2.79,
       "sell": 2.83,
-      "at": "2026-11-26T11:02:08.804793Z"
+      "at": "2026-11-27T11:03:21.045609Z"
      },
      "EUR": {
       "buy": 166.4,
@@ -160,11 +160,11 @@
      "22K": 108.0,
      "24K": 119.5
     },
-    "usdt_usd": 0.9987777
+    "usdt_usd": 0.99871405
    }
   },
   "sptoday": {
-   "at": "2026-11-27T13:13+03:00",
+   "at": "2026-11-27T14:14+03:00",
    "data": {
     "market": {
      "USD": {
@@ -197,7 +197,7 @@
    }
   },
   "cbs": {
-   "at": "2026-11-27T13:13+03:00",
+   "at": "2026-11-27T14:14+03:00",
    "data": {
     "date": "2026-11-26",
     "rates": {
@@ -213,7 +213,7 @@
    }
   },
   "sytra": {
-   "at": "2026-11-27T13:13+03:00",
+   "at": "2026-11-27T14:14+03:00",
    "data": {
     "unit": "الليرة السورية الجديدة",
     "fuel": {
@@ -254,11 +254,11 @@
      "date": "2026-11-26",
      "page": "https://jihat.org/prices/usd"
     },
-    "generated_at": "2026-11-27T10:13:48+00:00"
+    "generated_at": "2026-11-27T11:14:33+00:00"
    }
   },
   "prayer": {
-   "at": "2026-11-27T13:13+03:00",
+   "at": "2026-11-27T14:14+03:00",
    "data": {
     "date": "2026-11-27",
     "method": "Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan",
@@ -278,9 +278,9 @@
    }
   },
   "weather": {
-   "at": "2026-11-27T13:13+03:00",
+   "at": "2026-11-27T14:14+03:00",
    "data": {
-    "now": 17.5,
+    "now": 18.6,
     "days": [
      {
       "date": "2026-11-27",
@@ -295,14 +295,14 @@
       "max": 18.6,
       "min": 5.3,
       "rain": 0.0,
-      "prob": 8,
+      "prob": 5,
       "code": 3
      }
     ]
    }
   },
   "pma": {
-   "at": "2026-11-27T13:13+03:00",
+   "at": "2026-11-27T14:14+03:00",
    "data": {
     "at": "2026-11-26 07:17:16",
     "g24": {
@@ -375,7 +375,7 @@
       "sell_old": 42.0
      }
     },
-    "ounce": 3669.399902
+    "ounce": 3675.600098
    }
   }
  },
@@ -945,27 +945,27 @@
   }
  },
  "started": true,
- "last_run": "2026-11-27T13:13:43+03:00",
+ "last_run": "2026-11-27T14:14:29+03:00",
  "news": {
   "tg": {
    "bunatmoad": 519,
    "hamaendowments": 2165,
    "syrararmy": 694,
-   "idlibgov1": 34041,
-   "hasakahmd": 16887,
+   "idlibgov1": 34042,
+   "hasakahmd": 16894,
    "raqqaagov1": 3686,
    "sweidagov1": 12849,
    "quneitragov1": 6024,
    "latakiagov1": 21195,
-   "aleppogov1": 15286,
+   "aleppogov1": 15287,
    "hamagov1": 25364,
    "homsgov1": 8937,
    "daraagov1": 10810,
-   "damascusgov1": 16377,
-   "deirezzorgov1": 15753,
-   "rdamascusgov1": 18817,
-   "tartusgov1": 26022,
-   "homsculture": 914,
+   "damascusgov1": 16379,
+   "deirezzorgov1": 15759,
+   "rdamascusgov1": 18818,
+   "tartusgov1": 26023,
+   "homsculture": 920,
    "mhd_alskaf": 163,
    "moisyriaspox": 1125,
    "qtdmoisy": 948,
@@ -984,7 +984,7 @@
    "mopwah": 2109,
    "symofe": 11437,
    "symolaae": 15752,
-   "symoigov": 71138,
+   "symoigov": 71139,
    "symoeai": 8572,
    "syrmoegov": 2273,
    "symoheasr": 14049,
@@ -1000,9 +1000,9 @@
    "syrmofj": 3853,
    "syrmoff": 10304,
    "syrsmot": 11849,
-   "alekhbariahsy": 242299,
-   "sana_gov": 192705,
-   "alsouriyatv": 12844,
+   "alekhbariahsy": 242304,
+   "sana_gov": 192719,
+   "alsouriyatv": 12845,
    "sypresidency": 2875,
    "sy_defense": 2240,
    "z_hama_z": 4320,
@@ -1020,7 +1020,7 @@
    "syrianGASP": 283,
    "SecSyria": 1020,
    "gdca_sy": 832,
-   "fedaa7": 99997,
+   "fedaa7": 99999,
    "mashf_alwatani_hama": 1763,
    "CivilAffairsSy": 522,
    "SyrianVirtualUniversity": 1270,
@@ -1039,26 +1039,12 @@
    "syrmoyas": 4843,
    "almawarid_almayiya_hama": 385,
    "HaamaMD": 2481,
-   "dgam_sy": 717,
-   "synafmp": 546,
+   "dgam_sy": 718,
+   "synafmp": 547,
    "agrighab": 1594
   },
   "rss": {
    "sana": [
-    "https://sana.sy/?p=2643530",
-    "https://sana.sy/?p=2643520",
-    "https://sana.sy/?p=2643551",
-    "https://sana.sy/?p=2643553",
-    "https://sana.sy/?p=2643552",
-    "https://sana.sy/?p=2643548",
-    "https://sana.sy/?p=2643543",
-    "https://sana.sy/?p=2643601",
-    "https://sana.sy/?p=2643522",
-    "https://sana.sy/?p=2643568",
-    "https://sana.sy/?p=2643523",
-    "https://sana.sy/?p=2643565",
-    "https://sana.sy/?p=2643562",
-    "https://sana.sy/?p=2643555",
     "https://sana.sy/?p=2643646",
     "https://sana.sy/?p=2643643",
     "https://sana.sy/?p=2643637",
@@ -1644,7 +1630,21 @@
     "https://sana.sy/?p=2646489",
     "https://sana.sy/?p=2646485",
     "https://sana.sy/?p=2646469",
-    "https://sana.sy/?p=2646470"
+    "https://sana.sy/?p=2646470",
+    "https://sana.sy/?p=2646564",
+    "https://sana.sy/?p=2646544",
+    "https://sana.sy/?p=2646569",
+    "https://sana.sy/?p=2646563",
+    "https://sana.sy/?p=2646545",
+    "https://sana.sy/?p=2646547",
+    "https://sana.sy/?p=2646523",
+    "https://sana.sy/?p=2646535",
+    "https://sana.sy/?p=2646538",
+    "https://sana.sy/?p=2646537",
+    "https://sana.sy/?p=2646514",
+    "https://sana.sy/?p=2646515",
+    "https://sana.sy/?p=2646512",
+    "https://sana.sy/?p=2646492"
    ],
    "fedaa": [
     "https://fedaa.alwehda.gov.sy/?p=132104",
@@ -1707,7 +1707,8 @@
     "https://fedaa.alwehda.gov.sy/?p=132313",
     "https://fedaa.alwehda.gov.sy/?p=132310",
     "https://fedaa.alwehda.gov.sy/?p=132316",
-    "https://fedaa.alwehda.gov.sy/?p=132319"
+    "https://fedaa.alwehda.gov.sy/?p=132319",
+    "https://fedaa.alwehda.gov.sy/?p=132324"
    ],
    "alwatan": [
     "https://alwatan.sy/?p=2490030",
@@ -1923,7 +1924,8 @@
     "https://alwatan.sy/?p=2490755",
     "https://alwatan.sy/?p=2490753",
     "https://alwatan.sy/?p=2490751",
-    "https://alwatan.sy/?p=2490758"
+    "https://alwatan.sy/?p=2490758",
+    "https://alwatan.sy/?p=2490761"
    ],
    "enab": [
     "https://www.enabbaladi.net/?p=834640",
@@ -2084,7 +2086,7 @@
   "silver_buy": 210.0,
   "platinum_sell": 6700.0,
   "platinum_buy": 6200.0,
-  "ounce_usd": 3669.399902
+  "ounce_usd": 3675.600098
  },
  "extract": {
   "queue": [],
