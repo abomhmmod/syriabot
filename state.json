@@ -1,7 +1,7 @@
 {
  "cache": {
   "lirascope": {
-   "at": "2026-11-28T10:32+03:00",
+   "at": "2026-11-28T10:38+03:00",
    "data": {
     "market": {
      "AED": {
@@ -155,16 +155,16 @@
     },
     "gold_usd": {
      "14K": 68.0,
-     "18K": 89.0,
-     "21K": 104.0,
+     "18K": 90.0,
+     "21K": 105.0,
      "22K": 108.0,
-     "24K": 119.5
+     "24K": 120.5
     },
-    "usdt_usd": 0.99900512
+    "usdt_usd": 0.9989378
    }
   },
   "sptoday": {
-   "at": "2026-11-28T10:32+03:00",
+   "at": "2026-11-28T10:38+03:00",
    "data": {
     "market": {
      "USD": {
@@ -197,7 +197,7 @@
    }
   },
   "cbs": {
-   "at": "2026-11-28T10:32+03:00",
+   "at": "2026-11-28T10:39+03:00",
    "data": {
     "date": "2026-11-26",
     "rates": {
@@ -213,7 +213,7 @@
    }
   },
   "sytra": {
-   "at": "2026-11-28T10:32+03:00",
+   "at": "2026-11-28T10:39+03:00",
    "data": {
     "unit": "الليرة السورية الجديدة",
     "fuel": {
@@ -254,11 +254,11 @@
      "date": "2026-11-26",
      "page": "https://jihat.org/prices/usd"
     },
-    "generated_at": "2026-11-28T07:32:37+00:00"
+    "generated_at": "2026-11-28T07:39:45+00:00"
    }
   },
   "prayer": {
-   "at": "2026-11-28T10:32+03:00",
+   "at": "2026-11-28T10:39+03:00",
    "data": {
     "date": "2026-11-28",
     "method": "Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan",
@@ -278,7 +278,7 @@
    }
   },
   "weather": {
-   "at": "2026-11-28T10:32+03:00",
+   "at": "2026-11-28T10:39+03:00",
    "data": {
     "now": 11.8,
     "days": [
@@ -302,15 +302,15 @@
    }
   },
   "pma": {
-   "at": "2026-11-28T10:32+03:00",
+   "at": "2026-11-28T10:39+03:00",
    "data": {
-    "at": "2026-11-28 07:32:15",
+    "at": "2026-11-28 07:35:17",
     "g24": {
      "syp": {
-      "buy": 15850.0,
-      "sell": 16150.0,
-      "buy_old": 17950.0,
-      "sell_old": 18250.0
+      "buy": 18250.0,
+      "sell": 18550.0,
+      "buy_old": 15850.0,
+      "sell_old": 16150.0
      },
      "usd": {
       "buy": 118.5,
@@ -321,58 +321,58 @@
     },
     "g21": {
      "syp": {
-      "buy": 15550.0,
-      "sell": 15850.0,
-      "buy_old": 15200.0,
-      "sell_old": 15500.0
+      "buy": 15850.0,
+      "sell": 16150.0,
+      "buy_old": 15550.0,
+      "sell_old": 15850.0
      },
      "usd": {
-      "buy": 102.0,
-      "sell": 104.0,
-      "buy_old": 99.5,
-      "sell_old": 101.5
+      "buy": 103.0,
+      "sell": 105.0,
+      "buy_old": 102.0,
+      "sell_old": 104.0
      }
     },
     "g18": {
      "syp": {
-      "buy": 13250.0,
-      "sell": 13550.0,
-      "buy_old": 13000.0,
-      "sell_old": 13300.0
+      "buy": 13550.0,
+      "sell": 13850.0,
+      "buy_old": 13250.0,
+      "sell_old": 13550.0
      },
      "usd": {
-      "buy": 87.0,
-      "sell": 89.0,
-      "buy_old": 85.0,
-      "sell_old": 87.0
+      "buy": 88.0,
+      "sell": 90.0,
+      "buy_old": 87.0,
+      "sell_old": 89.0
      }
     },
     "silver": {
      "syp": {
-      "buy": 210.0,
-      "sell": 220.0,
-      "buy_old": 205.0,
-      "sell_old": 215.0
+      "buy": 220.0,
+      "sell": 230.0,
+      "buy_old": 210.0,
+      "sell_old": 220.0
      },
      "usd": {
-      "buy": 1.35,
-      "sell": 1.45,
-      "buy_old": 1.3,
-      "sell_old": 1.4
+      "buy": 1.4,
+      "sell": 1.5,
+      "buy_old": 1.35,
+      "sell_old": 1.45
      }
     },
     "platinum": {
      "syp": {
-      "buy": 6200.0,
-      "sell": 6700.0,
-      "buy_old": 5900.0,
-      "sell_old": 6400.0
+      "buy": 6400.0,
+      "sell": 6900.0,
+      "buy_old": 6200.0,
+      "sell_old": 6700.0
      },
      "usd": {
-      "buy": 39.0,
-      "sell": 43.0,
-      "buy_old": 37.0,
-      "sell_old": 42.0
+      "buy": 40.0,
+      "sell": 45.0,
+      "buy_old": 39.0,
+      "sell_old": 43.0
      }
     },
     "ounce": 3650
@@ -430,7 +430,7 @@
  },
  "ref": {
   "market_usd": 151.5,
-  "gold21": 15700
+  "gold21": 16150.0
  },
  "basket": {
   "stamp": "[2011-04-15T00:00:00 TO 2026-11-15T23:59:59]|2026-11-22T09:23:50.379432",
@@ -946,8 +946,8 @@
   "2026-11-28": {
    "usd_sell": 153.5,
    "official_usd": 134.5,
-   "gold": 15850.0,
-   "silver": 220.0,
+   "gold": 16150.0,
+   "silver": 230.0,
    "gasoline_95": 195.0,
    "gasoline_90": 185.0,
    "diesel": 150.0,
@@ -957,7 +957,7 @@
   }
  },
  "started": true,
- "last_run": "2026-11-28T10:32:28+03:00",
+ "last_run": "2026-11-28T10:38:34+03:00",
  "news": {
   "tg": {
    "bunatmoad": 519,
@@ -1013,7 +1013,7 @@
    "syrmoff": 10304,
    "syrsmot": 11849,
    "alekhbariahsy": 242446,
-   "sana_gov": 192825,
+   "sana_gov": 192826,
    "alsouriyatv": 12904,
    "sypresidency": 2875,
    "sy_defense": 2240,
@@ -1032,7 +1032,7 @@
    "syrianGASP": 283,
    "SecSyria": 1020,
    "gdca_sy": 832,
-   "fedaa7": 100034,
+   "fedaa7": 100035,
    "mashf_alwatani_hama": 1763,
    "CivilAffairsSy": 522,
    "SyrianVirtualUniversity": 1270,
@@ -1057,8 +1057,6 @@
   },
   "rss": {
    "sana": [
-    "https://sana.sy/?p=2644210",
-    "https://sana.sy/?p=2644175",
     "https://sana.sy/?p=2644199",
     "https://sana.sy/?p=2644173",
     "https://sana.sy/?p=2644193",
@@ -1656,7 +1654,9 @@
     "https://sana.sy/?p=2647219",
     "https://sana.sy/?p=2647233",
     "https://sana.sy/?p=2647212",
-    "https://sana.sy/?p=2647214"
+    "https://sana.sy/?p=2647214",
+    "https://sana.sy/?p=2647232",
+    "https://sana.sy/?p=2647245"
    ],
    "fedaa": [
     "https://fedaa.alwehda.gov.sy/?p=132104",
@@ -2080,7 +2080,7 @@
  },
  "gold": {
   "date": "2026-11-28",
-  "time": "07:32",
+  "time": "07:35",
   "src": "هيئة المعادن الثمينة",
   "url": "https://pma.gov.sy/prices",
   "issuer": true,
@@ -2092,40 +2092,40 @@
     "sell_old": 119.5
    },
    "g21": {
-    "buy": 102.0,
-    "sell": 104.0,
-    "buy_old": 99.5,
-    "sell_old": 101.5
+    "buy": 103.0,
+    "sell": 105.0,
+    "buy_old": 102.0,
+    "sell_old": 104.0
    },
    "g18": {
-    "buy": 87.0,
-    "sell": 89.0,
-    "buy_old": 85.0,
-    "sell_old": 87.0
+    "buy": 88.0,
+    "sell": 90.0,
+    "buy_old": 87.0,
+    "sell_old": 89.0
    },
    "silver": {
-    "buy": 1.35,
-    "sell": 1.45,
-    "buy_old": 1.3,
-    "sell_old": 1.4
+    "buy": 1.4,
+    "sell": 1.5,
+    "buy_old": 1.35,
+    "sell_old": 1.45
    },
    "platinum": {
-    "buy": 39.0,
-    "sell": 43.0,
-    "buy_old": 37.0,
-    "sell_old": 42.0
+    "buy": 40.0,
+    "sell": 45.0,
+    "buy_old": 39.0,
+    "sell_old": 43.0
    }
   },
-  "g24_sell": 16150.0,
-  "g24_buy": 15850.0,
-  "g21_sell": 15850.0,
-  "g21_buy": 15550.0,
-  "g18_sell": 13550.0,
-  "g18_buy": 13250.0,
-  "silver_sell": 220.0,
-  "silver_buy": 210.0,
-  "platinum_sell": 6700.0,
-  "platinum_buy": 6200.0,
+  "g24_sell": 18550.0,
+  "g24_buy": 18250.0,
+  "g21_sell": 16150.0,
+  "g21_buy": 15850.0,
+  "g18_sell": 13850.0,
+  "g18_buy": 13550.0,
+  "silver_sell": 230.0,
+  "silver_buy": 220.0,
+  "platinum_sell": 6900.0,
+  "platinum_buy": 6400.0,
   "ounce_usd": 3650
  },
  "extract": {
