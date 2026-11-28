@@ -1,7 +1,7 @@
 {
  "cache": {
   "lirascope": {
-   "at": "2026-11-28T06:27+03:00",
+   "at": "2026-11-28T07:27+03:00",
    "data": {
     "market": {
      "AED": {
@@ -160,11 +160,11 @@
      "22K": 108.0,
      "24K": 119.5
     },
-    "usdt_usd": 0.99895967
+    "usdt_usd": 0.99892201
    }
   },
   "sptoday": {
-   "at": "2026-11-28T06:27+03:00",
+   "at": "2026-11-28T07:27+03:00",
    "data": {
     "market": {
      "USD": {
@@ -197,7 +197,7 @@
    }
   },
   "cbs": {
-   "at": "2026-11-28T06:27+03:00",
+   "at": "2026-11-28T07:27+03:00",
    "data": {
     "date": "2026-11-26",
     "rates": {
@@ -213,7 +213,7 @@
    }
   },
   "sytra": {
-   "at": "2026-11-28T06:27+03:00",
+   "at": "2026-11-28T07:27+03:00",
    "data": {
     "unit": "الليرة السورية الجديدة",
     "fuel": {
@@ -254,11 +254,11 @@
      "date": "2026-11-26",
      "page": "https://jihat.org/prices/usd"
     },
-    "generated_at": "2026-11-28T03:27:13+00:00"
+    "generated_at": "2026-11-28T04:27:55+00:00"
    }
   },
   "prayer": {
-   "at": "2026-11-28T06:27+03:00",
+   "at": "2026-11-28T07:27+03:00",
    "data": {
     "date": "2026-11-28",
     "method": "Ministry of Awqaf, Islamic Affairs and Holy Places, Jordan",
@@ -278,31 +278,31 @@
    }
   },
   "weather": {
-   "at": "2026-11-28T06:27+03:00",
+   "at": "2026-11-28T07:27+03:00",
    "data": {
-    "now": 6.5,
+    "now": 5.3,
     "days": [
      {
       "date": "2026-11-28",
-      "max": 18.7,
-      "min": 5.8,
+      "max": 18.5,
+      "min": 5.3,
       "rain": 0.0,
       "prob": 8,
       "code": 3
      },
      {
       "date": "2026-11-29",
-      "max": 15.9,
-      "min": 10.2,
-      "rain": 0.0,
+      "max": 14.6,
+      "min": 9.8,
+      "rain": 1.1,
       "prob": 40,
-      "code": 3
+      "code": 80
      }
     ]
    }
   },
   "pma": {
-   "at": "2026-11-28T06:27+03:00",
+   "at": "2026-11-28T07:27+03:00",
    "data": {
     "at": "2026-11-26 07:17:16",
     "g24": {
@@ -880,12 +880,12 @@
     ]
    }
   },
-  "checked": "2026-11-27"
+  "checked": "2026-11-28"
  },
  "board": {
   "id": 2
  },
- "bulletin": "2026-11-27",
+ "bulletin": "2026-11-28",
  "days": {
   "2026-11-23": {
    "usd_sell": 152.0,
@@ -957,7 +957,7 @@
   }
  },
  "started": true,
- "last_run": "2026-11-28T06:27:08+03:00",
+ "last_run": "2026-11-28T07:27:50+03:00",
  "news": {
   "tg": {
    "bunatmoad": 519,
@@ -1057,9 +1057,6 @@
   },
   "rss": {
    "sana": [
-    "https://sana.sy/?p=2644114",
-    "https://sana.sy/?p=2644260",
-    "https://sana.sy/?p=2644263",
     "https://sana.sy/?p=2644248",
     "https://sana.sy/?p=2644242",
     "https://sana.sy/?p=2644250",
@@ -1656,7 +1653,10 @@
     "https://sana.sy/?p=2647160",
     "https://sana.sy/?p=2647153",
     "https://sana.sy/?p=2647181",
-    "https://sana.sy/?p=2647186"
+    "https://sana.sy/?p=2647186",
+    "https://sana.sy/?p=2647197",
+    "https://sana.sy/?p=2647193",
+    "https://sana.sy/?p=2647189"
    ],
    "fedaa": [
     "https://fedaa.alwehda.gov.sy/?p=132104",
@@ -2177,9 +2177,22 @@
    "url": "https://t.me/alekhbariahsy/242033"
   }
  },
- "directory_day": "2026-11-27",
+ "directory_day": "2026-11-28",
  "radar": {
-  "pending": {},
+  "pending": {
+   "1": {
+    "key": "tg:alnaql_hama",
+    "kind": "tg",
+    "value": "alnaql_hama",
+    "name": "المديرية العامة للنقل في حماة",
+    "field": "نقل",
+    "link": "https://t.me/alnaql_hama",
+    "via": "وجدها البحث الشهريّ في تيليغرام وتصف نفسها بالرسميّة",
+    "via_url": "https://t.me/alnaql_hama",
+    "desc": "القناة الرسمية للمديرية العامة للنقل في حماة",
+    "shown": 0
+   }
+  },
   "later": {
    "auh.edu.sy": "2026-11-27",
    "borders.gov.sy": "2026-11-27",
@@ -2217,7 +2230,7 @@
    "ziu.edu.sy": "2026-11-27"
   },
   "bodies": [],
-  "news_ts": 1795759662,
+  "news_ts": 1795839356,
   "dir_ids": [
    "app:agents",
    "app:anjez",
@@ -2286,6 +2299,7 @@
    "entity:anas-khattab",
    "entity:anas-radwan-salem",
    "entity:anjez-app",
+   "entity:apostolic-nunciature-in-damascus",
    "entity:arab-international-university",
    "entity:asaad-al-shaibani",
    "entity:aust-hama",
@@ -2332,12 +2346,51 @@
    "entity:edpa",
    "entity:education-agents-platform",
    "entity:electronic-consular-center",
+   "entity:embassy-of-algeria-in-damascus",
+   "entity:embassy-of-argentina-in-damascus",
+   "entity:embassy-of-armenia-in-damascus",
+   "entity:embassy-of-austria-in-damascus",
+   "entity:embassy-of-azerbaijan-in-damascus",
+   "entity:embassy-of-bahrain-in-damascus",
+   "entity:embassy-of-belarus-in-damascus",
+   "entity:embassy-of-brazil-in-damascus",
+   "entity:embassy-of-bulgaria-in-damascus",
+   "entity:embassy-of-chile-in-damascus",
    "entity:embassy-of-china-in-damascus",
+   "entity:embassy-of-cuba-in-damascus",
+   "entity:embassy-of-cyprus-in-damascus",
+   "entity:embassy-of-czechia-in-damascus",
+   "entity:embassy-of-denmark-in-damascus",
+   "entity:embassy-of-egypt-in-damascus",
    "entity:embassy-of-germany-in-damascus",
+   "entity:embassy-of-greece-in-damascus",
+   "entity:embassy-of-hungary-in-damascus",
+   "entity:embassy-of-india-in-damascus",
+   "entity:embassy-of-indonesia-in-damascus",
    "entity:embassy-of-iraq-in-damascus",
+   "entity:embassy-of-italy-in-damascus",
+   "entity:embassy-of-japan-in-damascus",
+   "entity:embassy-of-jordan-in-damascus",
+   "entity:embassy-of-kuwait-in-damascus",
+   "entity:embassy-of-lebanon-in-damascus",
+   "entity:embassy-of-libya-in-damascus",
+   "entity:embassy-of-mauritania-in-damascus",
+   "entity:embassy-of-morocco-in-damascus",
+   "entity:embassy-of-netherlands-in-damascus",
+   "entity:embassy-of-nigeria-in-damascus",
+   "entity:embassy-of-oman-in-damascus",
+   "entity:embassy-of-pakistan-in-damascus",
+   "entity:embassy-of-palestine-in-damascus",
+   "entity:embassy-of-philippines-in-damascus",
    "entity:embassy-of-qatar-in-damascus",
+   "entity:embassy-of-romania-in-damascus",
    "entity:embassy-of-russia-in-damascus",
    "entity:embassy-of-saudi-arabia-in-damascus",
+   "entity:embassy-of-somalia-in-damascus",
+   "entity:embassy-of-south-africa-in-damascus",
+   "entity:embassy-of-spain-in-damascus",
+   "entity:embassy-of-sudan-in-damascus",
+   "entity:embassy-of-sweden-in-damascus",
    "entity:embassy-of-syria-in-algeria-algiers",
    "entity:embassy-of-syria-in-argentina-buenos-aires",
    "entity:embassy-of-syria-in-armenia-yerevan",
@@ -2396,8 +2449,11 @@
    "entity:embassy-of-syria-in-usa-washington",
    "entity:embassy-of-syria-in-venezuela-caracas",
    "entity:embassy-of-syria-in-yemen-sanaa",
+   "entity:embassy-of-tunisia-in-damascus",
    "entity:embassy-of-turkey-in-damascus",
    "entity:embassy-of-uae-in-damascus",
+   "entity:embassy-of-venezuela-in-damascus",
+   "entity:embassy-of-yemen-in-damascus",
    "entity:engineers-syndicate",
    "entity:escan",
    "entity:exam-results-guide",
@@ -2470,6 +2526,7 @@
    "entity:islamic",
    "entity:iust",
    "entity:iyad-ismail-fahsa",
+   "entity:jameati-app",
    "entity:jihad-makdisi",
    "entity:khaled-aboudi",
    "entity:khaled-fawaz-zaarour",
@@ -2477,6 +2534,7 @@
    "entity:latakia-port-company",
    "entity:latakia-university",
    "entity:lawyers-syndicate",
+   "entity:louay-al-hamwi",
    "entity:luna-ahmad-loay-rajab",
    "entity:maher-khalil-al-hassan",
    "entity:mahloula-damascus-app",
@@ -2916,9 +2974,17 @@
    "site:zman-alosl-6de70265",
    "site:zyton-adab3a74"
   ],
-  "added": [],
+  "added": [
+   {
+    "name": "وزارة التعليم العالي والبحث العلمي",
+    "field": "تعليم وجامعات",
+    "link": "https://t.me/mohesr_official_channel",
+    "via": "موثّقة من تيليغرام",
+    "day": "2026-11-28",
+    "what": "قناة تيليغرام"
+   }
+  ],
   "needs_reader": [],
-  "urgent": [],
   "seen_hosts": [
    "14.digital",
    "aalagha.com",
@@ -2950,6 +3016,7 @@
    "alwatan.sy",
    "alwehda.gov.sy",
    "ambassadesyrie.fr",
+   "ambdamasco.esteri.it",
    "ammar.codes",
    "ana.hsoub.com",
    "analysense.net",
@@ -2963,6 +3030,8 @@
    "askyourright.wordpress.com",
    "aspu.edu.sy",
    "asu.edu.sy",
+   "auh.edu.sy",
+   "aussenministerium.at",
    "aust.edu.sy",
    "awqaf-damas.com",
    "baaeed.com",
@@ -2973,6 +3042,7 @@
    "bit-coding.com",
    "blog.moneeraldakkak.com",
    "blog.tareef.sy",
+   "borders.gov.sy",
    "britishnutriclinics.co.uk",
    "bru.coffee",
    "bsu.edu.sy",
@@ -2983,12 +3053,15 @@
    "cbs-bank.sy",
    "cbs-cards.com",
    "cfssyria.sy",
+   "chile.gob.cl",
+   "civilaffair-moi.gov.sy",
    "civilaffairs-moi.gov.sy",
    "cloudev.net",
    "cmlc.gov.sy",
    "cofc.gov.sy",
    "colorpoint.agency",
    "creativememory.org",
+   "cubadiplomatica.cu",
    "cyberx-1.github.io",
    "d9qoqw1mzl.ufs.sh",
    "dabbas.co.uk",
@@ -2997,13 +3070,17 @@
    "daliluk-sy.com",
    "damairport.gov.sy",
    "damapedia.com",
+   "damasc.mae.ro",
    "damascus.gov.sy",
    "damascuschant.com",
+   "damascuspe.dfa.gov.ph",
    "damascusuniversity.edu.sy",
    "damaskus.diplo.de",
+   "damasopera.gov.sy",
    "damasradio.fm",
    "dandashi.de",
    "daraa.gov.sy",
+   "dars-training.edu.sy",
    "dash-tech-solutions.com",
    "dcc.sy",
    "dci-syria.org",
@@ -3021,6 +3098,7 @@
    "ds-fg.com",
    "dse.gov.sy",
    "dse.sy",
+   "easir.cancilleria.gob.ar",
    "ebd3.net",
    "ecsc-expat.sy",
    "ecsc.gov.sy",
@@ -3029,22 +3107,28 @@
    "edu-agentweb.syrian-dev.com",
    "ee.moi-sy.com",
    "egov.sy",
+   "embassies.mofa.gov.sa",
    "emome.me",
    "enabbaladi.net",
    "env.sy",
+   "eoi.gov.in",
    "escan.gov.sy",
+   "esh.gov.sy",
    "etfrealestate.com",
    "evisa.gov.sy",
    "evlnugameworks.com",
+   "exteriores.gob.es",
    "fadihalawani.com",
    "fandawn.com",
    "fbaitech.net",
    "fedcommsyr.sy",
    "feeqdesign.com",
    "flycham.com",
+   "fm.gov.om",
    "fosspost.org",
    "gabc.gov.sy",
    "gaca.gov.sy",
+   "gaf.gov.sy",
    "galalhelany.com",
    "gamesandwich.fun",
    "gasp.gov.sy",
@@ -3052,6 +3136,7 @@
    "gc-tht.edu.sy",
    "gcwr.gov.sy",
    "gdca.gov.sy",
+   "gdp.gov.sy",
    "geniusx.io",
    "geology.gov.sy",
    "ghaith.vc",
@@ -3074,11 +3159,14 @@
    "headteacherapp.education-syria.com",
    "hep.edu.sy",
    "hiast-cie.sy",
+   "hiast.edu.sy",
    "hiba.edu.sy",
    "hihfad.org",
+   "hji.gov.sy",
    "homs-hospital.edu.sy",
    "homs-univ.edu.sy",
    "homschamber.com",
+   "homscitycouncil.gov.sy",
    "homsdream.com",
    "homsgov.sy",
    "hoshblas.com",
@@ -3087,6 +3175,7 @@
    "hurriya.net",
    "hussamaldery.github.io",
    "idlib.edu.sy",
+   "idlib.gov.sy",
    "idlib.university",
    "iftaa.gov.sy",
    "igcc.gov.sy",
@@ -3095,19 +3184,23 @@
    "indb.gov.sy",
    "innoveev.com",
    "invest.gov.sy",
+   "investhoms.gov.sy",
    "io.hsoub.com",
    "ipu.edu.sy",
    "istakteb.com",
    "isu.edu.sy",
    "itcp.gov.sy",
+   "ittc-uoa.edu.sy",
    "iust.edu.sy",
    "jude.edu.sy",
+   "kemlu.go.id",
    "keyfinder.net",
    "kfa-design.com",
    "khaledagha.vercel.app",
    "khamsat.com",
    "kids.sakat3sh.com",
    "kitabeye.com",
+   "konzinfo.mfa.gov.hu",
    "kudushilali.org",
    "kutaibashikhani.com",
    "lahjty.com",
@@ -3126,6 +3219,8 @@
    "med.gov.sy",
    "mei.gov.sy",
    "metrobrazil.com",
+   "mfa.bg",
+   "mfa.gov.jo",
    "mhabash.com",
    "mhmd3mmr.com",
    "mhsabbagh.com",
@@ -3140,19 +3235,30 @@
    "mod.gov.sy",
    "moe.gov.sy",
    "moed.gov.sy",
+   "moedm.gov.sy",
    "moenergy.gov.sy",
    "mof.gov.sy",
    "mofa.education-syria.com",
+   "mofa.gov.ae",
+   "mofa.gov.bh",
+   "mofa.gov.iq",
+   "mofa.gov.pk",
    "mofa.gov.sy",
    "mofaex.gov.sy",
+   "mofsyr.gov.sy",
    "moh.gov.sy",
    "mohammad-khayata.sy",
    "mohe.gov.sy",
+   "moi-mis.gov.sy",
+   "moi-nc.gov.sy",
    "moi.gov.sy",
+   "moid.gov.sy",
    "moj.gov.sy",
+   "mola.gov.sy",
    "molae.gov.sy",
    "molhamteam.com",
    "momc.gov.sy",
+   "mopmr.gov.sy",
    "mopwh.gov.sy",
    "morek360.com",
    "mosal.gov.sy",
@@ -3168,6 +3274,7 @@
    "mukhtar.edu.sy",
    "mutaz.net",
    "myway.academy",
+   "mzv.gov.cz",
    "naits.gov.sy",
    "najahbiotech.com",
    "name.gov.sy",
@@ -3178,11 +3285,13 @@
    "ncmp.gov.sy",
    "nctj.gov.sy",
    "nerc.gov.sy",
+   "netherlandsandyou.nl",
    "news.dcc.sy",
    "nextgensy.org",
    "ngo.gov.sy",
    "nibras-center.org",
    "nibrasaboalzahab.com",
+   "nigeriaembassydamascus.org",
    "nour-elsham.sy",
    "npd.sy",
    "octo-tech.co",
@@ -3192,22 +3301,27 @@
    "opensyr.com",
    "oqeirbatnews.com",
    "ortas.gov.sy",
+   "palemb-sy.com",
    "parliament.gov.sy",
    "paymera.net",
    "perc.gov.sy",
    "petde.gov.sy",
    "picalica.com",
    "pixelpedia.net",
+   "pm.gov.sy",
    "pma.gov.sy",
+   "pministry.gov.sy",
    "poetspub.com",
    "ports-sy.com",
    "prohelpify.com",
    "ps.gov.sy",
    "psc.gov.sy",
    "ptco-sy.com",
+   "qamishliairport.gov.sy",
    "qarah.com",
    "radyf.com",
    "rakeez-llc.com",
+   "rd.gov.sy",
    "redlight-store.com",
    "rif-dimashq.gov.sy",
    "riserhub.org",
@@ -3221,6 +3335,8 @@
    "sahafa.sy",
    "sakat3sh.com",
    "salehram.com",
+   "sam-be.mfa.gov.tr",
+   "sana.gov.sy",
    "sana.sy",
    "sarabperfumes.com",
    "sasmo.gov.sy",
@@ -3230,6 +3346,7 @@
    "scot.gov.sy",
    "seb.gov.sy",
    "seife.gov.sy",
+   "sem.edu.sy",
    "sep.com.sy",
    "sepel.edu.sy",
    "sewar-sy.org",
@@ -3243,6 +3360,7 @@
    "sirajsy.net",
    "siranapp.com",
    "sitcp.gov.sy",
+   "skills.gov.sy",
    "skratsh.com",
    "slp.gov.sy",
    "smartware.me",
@@ -3267,9 +3385,11 @@
    "svuonline.edu.sy",
    "svuonline.org",
    "swdelec.gov.sy",
+   "swedenabroad.se",
    "swish-scores.com",
    "swo.gov.sy",
    "sy.china-embassy.gov.cn",
+   "sy.emb-japan.go.jp",
    "sydialogue.org",
    "symfonix.io",
    "syr.im",
@@ -3277,6 +3397,8 @@
    "syrevarch.com",
    "syrfund.gov.sy",
    "syria-rebuild.com",
+   "syria.mfa.am",
+   "syria.mfa.gov.by",
    "syria.mid.ru",
    "syria.org.cn",
    "syria2011.own0.com",
@@ -3317,6 +3439,7 @@
    "syriawayz.com",
    "syrmh.com",
    "sytpra.gov.sy",
+   "sytra.gov.sy",
    "sytra.me",
    "taawon.gov.sy",
    "takaful-austria.org",
@@ -3324,8 +3447,10 @@
    "tartous-city.gov.sy",
    "tartous-governorate.gov.sy",
    "tartous-univ.edu.sy",
+   "tartousindust.gov.sy",
    "tawfeer.nl",
    "tde.gov.sy",
+   "telecom.gov.sy",
    "tep.edu.sy",
    "textpolish.fbaitech.net",
    "thaura.ai",
@@ -3336,6 +3461,7 @@
    "tosyria.com",
    "traveltosyria.net",
    "tweetkod.com",
+   "um.dk",
    "untold.coffee",
    "uok.edu.sy",
    "var.sy",
@@ -3350,15 +3476,18 @@
    "wiu.edu.sy",
    "wpu.edu.sy",
    "wrraq.com",
+   "xmpp.gov.sy",
    "yallasyrianews.com",
    "yousree.org",
    "ypu.edu.sy",
+   "yqu.edu.sy",
    "zaetoon.com",
    "zaitech.dev",
    "zaitera.com",
    "zamanalwsl.net",
    "zamanmasdar.com",
-   "zerocamps.gov.sy"
+   "zerocamps.gov.sy",
+   "ziu.edu.sy"
   ],
   "seen_tg": [
    "agrighab",
@@ -3366,6 +3495,7 @@
    "alekhbariahsy",
    "aleppogov1",
    "almawarid_almayiya_hama",
+   "alnaql_hama",
    "alriyada_hama",
    "alsiyaha_hama",
    "alsouriyatv",
@@ -3393,6 +3523,7 @@
    "hamaemergency",
    "hamaendowments",
    "hamaengineerssyndicate",
+   "hamagov",
    "hamagov1",
    "hamah_medical_association",
    "hamahelth",
@@ -3411,6 +3542,7 @@
    "mashf_alwatani_hama",
    "masyafgov1",
    "mhd_alskaf",
+   "mohesr_official_channel",
    "moisyriaspox",
    "mopwah",
    "qasr_adli_hama",
@@ -3469,7 +3601,20 @@
    "thaqafa_hama",
    "z_hama_z"
   ],
-  "day": "2026-11-27",
-  "week": "2026-W48"
+  "day": "2026-11-28",
+  "week": "2026-W48",
+  "monthly": {
+   "day": "2026-11-27",
+   "tg_seen": 285,
+   "tg_sent": 2,
+   "fb_seen": 1513,
+   "fb_followed": 0,
+   "note": "7 صفحة نشطة اسمها اسم جهة ولم يصنّفها فيسبوك جهةً حكوميّة، فلم تُتابع"
+  },
+  "monthly_last": "2026-11-27",
+  "inbox_done": [
+   "2026-11-27"
+  ],
+  "next_num": 2
  }
 }

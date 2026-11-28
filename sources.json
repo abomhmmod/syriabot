@@ -775,6 +775,14 @@
    "kind": "مديرية",
    "tier": 1,
    "hama": true
+  },
+  {
+   "id": "mohesr_official_channel",
+   "name": "وزارة التعليم العالي والبحث العلمي",
+   "kind": "جهة رسميّة",
+   "tier": 1,
+   "hama": false,
+   "radar": "2026-11-28"
   }
  ],
  "rss": [
